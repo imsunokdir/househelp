@@ -1,0 +1,23 @@
+.custom-modal .ant-modal-content {
+    animation: slide-up 0.4s ease-out;
+  }
+
+  
+  .custom-rate .ant-rate-star-zero {
+    color: green; /* Set the color for unfilled stars */
+  }
+  .custom-rate .ant-rate-star-full {
+    color: red; /* Set the color for filled stars */
+  }
+  
+  @keyframes slide-up {
+    from {
+      transform: translateY(50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
