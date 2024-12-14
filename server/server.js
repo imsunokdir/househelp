@@ -26,6 +26,7 @@ const store = new mongoDbSession({
 });
 
 // Middlewares
+app.set("trust proxy", 1);
 app.set("view engine", "ejs");
 
 // CORS Middleware
