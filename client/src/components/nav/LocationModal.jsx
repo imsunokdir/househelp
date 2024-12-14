@@ -19,8 +19,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { AuthContext } from "../../contexts/AuthProvider";
 import { Spin } from "antd";
-import { ConsoleSqlOutlined, LoadingOutlined } from "@ant-design/icons";
+import { LoadingOutlined } from "@ant-design/icons";
 import { useCookies } from "react-cookie";
+// test
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -32,8 +33,6 @@ function SlideTransition(props) {
 
 const LocationModal = () => {
   const {
-    user,
-    userLocation,
     getLocation,
     setSnackbar,
     openSnackbar,
