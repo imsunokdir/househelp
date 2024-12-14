@@ -8,7 +8,7 @@
         },
         {
             "src":"src/**/*",
-            "user":"@vercel/static"
+            "use":"@vercel/static"
         }
     ],
     "routes":[
