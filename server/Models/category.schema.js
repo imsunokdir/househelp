@@ -7,6 +7,14 @@ const categorySchema = new Schema({
     required: true,
     unique: true,
   },
+  maxPrice: {
+    type: Number,
+    default: 0,
+  },
+  maxExp: {
+    type: Number,
+    default: 0,
+  },
 });
 
 const Category = mongoose.model("Category", categorySchema);

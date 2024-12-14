@@ -62,6 +62,20 @@ const sendEmailVerificationMail = ({ email, verifiedToken }) => {
       border-radius:5px;">Activate Account</a>
               </td>
     
+              <a href="http://localhost:5173/email-verification-done/${verifiedToken}" style=" border: none;
+              background-color: #ef7e5c;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+    
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 175px;
+      cursor: pointer;
+      border-radius:5px;">Activate Account redirect</a>
+              </td>
+    
           </table>
         </td>
       </tr>

@@ -139,7 +139,6 @@ const serviceSchema = new Schema(
 
 // Add indexes
 serviceSchema.index({
-  serviceName: "text",
   location: "2dsphere",
 });
 

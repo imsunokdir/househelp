@@ -9,6 +9,7 @@ const {
   authCheck,
   saveUserCurrLocation,
   getUserDetails,
+  updateUserInfo,
 } = require("../Controllers/user.controller");
 const { isAuth } = require("../Middlewares/isAuth");
 
@@ -20,8 +21,9 @@ userRouter.post("/login", loginUser);
 userRouter.post("/user-mobile-verify", verifyMobile);
 userRouter.post("/logout", isAuth, logoutUser);
 userRouter.post("/logout-out-from-all", logoutFromAllDevice);
-userRouter.get("/auth/check", authCheck);
+userRouter.get("/auth-check", authCheck);
 userRouter.get("/get-user-details", getUserDetails);
+userRouter.put("/update-user-info", updateUserInfo);
 
 //
 userRouter.post("/save-user-current-location", saveUserCurrLocation);

@@ -7,6 +7,10 @@ const {
   getMyServices,
   updateService,
   getNearbyServices,
+  getNearbyServicesTest,
+  getFilteredServices,
+  deleteService,
+  getNearbyServicesTest2,
 } = require("../Controllers/service.controller");
 const { isAuth } = require("../Middlewares/isAuth");
 const serviceRouter = express.Router();
@@ -31,6 +35,8 @@ serviceRouter.post(
   upload.array("updatedImages", 8),
   updateService
 );
-serviceRouter.get("/get-nearby-services/:categoryId", getNearbyServices);
+serviceRouter.post("/get-nearby-services/:categoryId", getNearbyServicesTest2);
+serviceRouter.get("/filter-services/:categoryId", getFilteredServices);
+serviceRouter.delete("/delete-service/:serviceId", deleteService);
 
 module.exports = { serviceRouter };

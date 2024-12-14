@@ -2,7 +2,11 @@ const express = require("express");
 const { userRouter } = require("./Routes/user.route");
 const dbConfig = require("./Configurations/db.config");
 const cors = require("cors");
+
 require("dotenv").config();
+
+const passport = require("./passport/google");
+const authRoutes = require("./Routes/auth");
 
 const { categoryRouter } = require("./Routes/category.route");
 const { serviceRouter } = require("./Routes/service.route");
@@ -10,6 +14,7 @@ const reviewRouter = require("./Routes/review.route");
 const ratingRouter = require("./Routes/rating.route");
 const session = require("express-session");
 const imageRouter = require("./Routes/image.route");
+
 const mongoDbSession = require("connect-mongodb-session")(session);
 
 // constants
@@ -33,6 +38,9 @@ app.use(
   })
 );
 
+// Add this to handle preflight requests explicitly
+app.options("*", cors());
+
 // Handle preflight requests explicitly
 
 app.use(express.urlencoded({ extended: true }));
@@ -48,9 +56,13 @@ app.use(
     cookie: {
       httpOnly: true,
       secure: false, // Set true if using HTTPS
+      maxAge: 24 * 60 * 60 * 1000,
     },
   })
 );
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Router-level middlewares
 app.use("/api/v1/user", userRouter);
@@ -59,6 +71,7 @@ app.use("/api/v1/service", serviceRouter);
 app.use("/api/v1/review", reviewRouter);
 app.use("/api/v1/rating", ratingRouter);
 app.use("/api/v1/image", imageRouter);
+app.use(authRoutes);
 
 //server side rendering rooutes for testing only
 app.get("/login-page", (req, res) => {

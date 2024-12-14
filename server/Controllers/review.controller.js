@@ -68,7 +68,7 @@ const getReviews = async (req, res) => {
   try {
     // Fetch the reviews for the given serviceId with pagination
     const reviews = await Review.find({ service: serviceId })
-      .populate("user", "username email")
+      .populate("user", "username email avatar")
       .select("comment createdAt rating")
       .skip(skip)
       .limit(limit);

@@ -1,6 +1,7 @@
 const { default: mongoose } = require("mongoose");
 const Rating = require("../Models/rating.schema");
 const Service = require("../Models/service.schema");
+const Category = require("../Models/category.schema");
 const { find } = require("../Models/user.schema");
 const { validateServiceData } = require("../Utils/validateServiceData");
 
@@ -45,6 +46,7 @@ const registerService = async (req, res) => {
   try {
     // Destructure and sanitize input
     console.log("req.files", req.files);
+    console.log("req.body:", req.body);
 
     const { serviceName, description, experience, category } = req.body;
 
@@ -99,38 +101,9 @@ const registerService = async (req, res) => {
         errors: validationResult.errors,
       });
     }
-    // return res.status(201).json({
-    //   success: true,
-    //   message: "Service registered successfully",
-    // });
 
-    //process image upload
     const uploadedImageUrls = await uploadImagesToCloudinary(req.files);
-    // console.log("req.files", req);
-    // if (req.files && req.files.length > 0) {
-    //   console.log("hello form files");
-    //   for (const file of req.files) {
-    //     await new Promise((resolve, reject) => {
-    //       const uploadStream = cloudinary.uploader.upload_stream(
-    //         { folder: "services" },
-    //         (error, result) => {
-    //           if (error) {
-    //             console.error("Cloudinary upload error:", error);
-    //             reject(new Error("Upload to Cloudinary failed"));
-    //           } else {
-    //             console.log("from inside cloudinary", result.secure_url);
-    //             uploadedImageUrls.push(result.secure_url);
-    //             resolve();
-    //           }
-    //         }
-    //       );
-    //       uploadStream.end(file.buffer); // Ensure to end the stream with the file buffer
-    //     });
-    //   }
-    // }
 
-    //   // Create service object with sanitized data
-    //   console.log("uploade images url:", uploadedImageUrls);
     const serviceObj = new Service({
       serviceName: serviceName.trim(),
       description: description.trim(),
@@ -152,6 +125,23 @@ const registerService = async (req, res) => {
 
     //   // Save to database
     const newService = await serviceObj.save();
+
+    //update maxPrice in the Category schema if necessary
+    const categoryDoc = await Category.findById(category.trim());
+    if (categoryDoc) {
+      let isUpdated = false;
+      if (priceRange.maximum > categoryDoc.maxPrice) {
+        categoryDoc.maxPrice = priceRange.maximum;
+        isUpdated = true;
+      }
+      if (experience > categoryDoc.maxExp) {
+        categoryDoc.maxExp = experience;
+        isUpdated = true;
+      }
+      if (isUpdated) {
+        await categoryDoc.save();
+      }
+    }
 
     //   // Return success response
     return res.status(201).json({
@@ -413,7 +403,7 @@ const getNearbyServices = async (req, res) => {
 
   const lon = parseFloat(longitude);
   const lat = parseFloat(latitude);
-  console.log("catId:", categoryId);
+  console.log("catId1:", categoryId);
   console.log("lon:", lon);
   console.log("lat:", lat);
 
@@ -433,12 +423,6 @@ const getNearbyServices = async (req, res) => {
           query: { category: new mongoose.Types.ObjectId(categoryId) },
         },
       },
-      // {
-      //   $match: {
-      //     category: mongoose.Types.ObjectId(categoryId),
-      //   },
-      // },
-
       {
         $sort: { distance: 1 },
       },
@@ -473,6 +457,261 @@ const getNearbyServices = async (req, res) => {
   }
 };
 
+const getNearbyServicesTest = async (req, res) => {
+  console.log("nearby");
+  const { categoryId } = req.params;
+  const { page = 1, limit = 5, longitude, latitude, filterData } = req.query; // Add page and limit
+  const lon = parseFloat(longitude);
+  const lat = parseFloat(latitude);
+
+  const { priceRange, rating, experience } = filterData;
+
+  console.log("catId:", categoryId);
+  console.log("lon:", lon);
+  console.log("lat:", lat);
+  console.log("page:", page);
+  console.log("limit:", limit);
+  console.log("filter data:", filterData);
+
+  if (isNaN(lon) || isNaN(lat)) {
+    return res.status(400).json({
+      message: "Invalid location coordinates.",
+    });
+  }
+
+  try {
+    // Count total number of services
+    const totalServices = await Service.countDocuments({
+      category: new mongoose.Types.ObjectId(categoryId),
+    });
+
+    // Fetch services with pagination
+    const services = await Service.aggregate([
+      {
+        $geoNear: {
+          near: { type: "Point", coordinates: [lon, lat] },
+          distanceField: "distance",
+          spherical: true,
+          query: { category: new mongoose.Types.ObjectId(categoryId) },
+        },
+      },
+      {
+        $addFields: {
+          distanceInKm: { $divide: ["$distance", 1000] },
+        },
+      },
+      {
+        $sort: {
+          distance: 1,
+          _id: 1, //secondary sort to ensure consistent ordering
+        },
+      },
+      {
+        $skip: (page - 1) * limit,
+      },
+      {
+        $limit: parseInt(limit),
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "createdBy",
+        },
+      },
+      {
+        $unwind: "$createdBy",
+      },
+      {
+        $lookup: {
+          from: "categories", // Assuming the categories collection is named 'categories'
+          localField: "category",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      {
+        $unwind: "$category",
+      },
+    ]);
+
+    // Determine if there are more services to load
+    const hasMore = page * limit < totalServices;
+
+    //
+
+    return res.status(200).json({
+      message: "Nearby services fetched successfully.",
+      services,
+      totalCount: totalServices, // Include total count in the response
+      hasMore, // Include hasMore flag
+    });
+  } catch (error) {
+    console.log("Error in fetching nearby services:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message, // Send the error message
+    });
+  }
+};
+
+const getNearbyServicesTest2 = async (req, res) => {
+  console.log("nearby");
+  const { categoryId } = req.params;
+  const { page = 1, limit = 5, longitude, latitude, filterData } = req.body; // Add page and limit
+  const lon = parseFloat(longitude);
+  const lat = parseFloat(latitude);
+
+  const { priceRange = {}, rating, experience } = filterData;
+
+  const minPrice = priceRange.minimum;
+  const maxPrice = priceRange.maximum || Infinity;
+  const exp = experience || 0;
+  const servicerating = rating || 0;
+
+  console.log("catId:", categoryId);
+  console.log("lon:", lon);
+  console.log("lat:", lat);
+  console.log("page:", page);
+  console.log("limit:", limit);
+  console.log("filter data:", filterData);
+  console.log("price range :", priceRange);
+  console.log("minPrice:", minPrice);
+  console.log("maxPrice:", maxPrice);
+  console.log("exp:", exp);
+  console.log("servicerating:", servicerating);
+  // console.log("rating :", rating);
+  // console.log("experience :", experience);
+
+  if (isNaN(lon) || isNaN(lat)) {
+    return res.status(400).json({
+      message: "Invalid location coordinates.",
+    });
+  }
+
+  const query = {
+    category: new mongoose.Types.ObjectId(categoryId),
+    ...(minPrice && { "priceRange.minimum": { $gte: minPrice } }),
+    ...(maxPrice && { "priceRange.maximum": { $lte: maxPrice } }),
+    ...(servicerating && { averageRating: { $gte: servicerating } }),
+    ...(exp && { experience: { $gte: exp } }),
+  };
+
+  try {
+    //test
+    // const countResult = await Service.find(query);
+    // console.log("counrt query resukt:", countResult);
+
+    // Count total number of services
+    const totalServices = await Service.countDocuments(query);
+
+    // Fetch services with pagination
+    const services = await Service.aggregate([
+      {
+        $geoNear: {
+          near: { type: "Point", coordinates: [lon, lat] },
+          distanceField: "distance",
+          spherical: true,
+          query,
+        },
+      },
+      {
+        $addFields: {
+          distanceInKm: { $divide: ["$distance", 1000] },
+        },
+      },
+      {
+        $sort: {
+          distance: 1,
+          _id: 1, //secondary sort to ensure consistent ordering
+        },
+      },
+      {
+        $skip: (page - 1) * limit,
+      },
+      {
+        $limit: parseInt(limit),
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "createdBy",
+        },
+      },
+      {
+        $unwind: "$createdBy",
+      },
+      {
+        $lookup: {
+          from: "categories", // Assuming the categories collection is named 'categories'
+          localField: "category",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      {
+        $unwind: "$category",
+      },
+    ]);
+
+    // console.log("nby services:", services);
+
+    // Determine if there are more services to load
+    const hasMore = page * limit < totalServices;
+
+    //
+
+    return res.status(200).json({
+      message: "Nearby services fetched successfully.",
+      services,
+      totalCount: totalServices, // Include total count in the response
+      hasMore, // Include hasMore flag
+    });
+  } catch (error) {
+    console.log("Error in fetching nearby services:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message, // Send the error message
+    });
+  }
+};
+
+const deleteService = async (req, res) => {
+  const { serviceId } = req.params;
+  try {
+    const deletedService = await Service.deleteOne({ _id: serviceId });
+
+    if (deletedService.deletedCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Service not found or already deleted",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Service deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting service:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to delete service. Please try again later.",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
+  }
+};
+
+const getFilteredServices = async (req, res) => {
+  const { categoryId } = req.params;
+  const { longitude, latitude, filterOptions } = req.query;
+};
+
 module.exports = {
   registerService,
   getAllServices,
@@ -481,4 +720,8 @@ module.exports = {
   getMyServices,
   updateService,
   getNearbyServices,
+  getNearbyServicesTest,
+  getFilteredServices,
+  deleteService,
+  getNearbyServicesTest2,
 };

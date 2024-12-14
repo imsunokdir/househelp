@@ -24,7 +24,7 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-      required: true,
+      // required: true,
       select: false,
     },
     isEmailVerified: {
@@ -41,12 +41,21 @@ const userSchema = new Schema(
       default: "",
     },
     mobile: {
-      type: Number,
-      required: true,
+      type: String,
+      // required: true,
     },
     isMobileVerified: {
       type: Boolean,
       default: false,
+    },
+    dateOfBirth: {
+      type: Date,
+      validate: {
+        validator: function (v) {
+          return v instanceof Date && !this.isNaN(v);
+        },
+        message: (props) => `${props.value} is not a valid date!`,
+      },
     },
     avatar: {
       type: String,
@@ -71,7 +80,12 @@ const userSchema = new Schema(
         type: [Number],
       },
     },
+    isProfileCompleted: {
+      type: Boolean,
+      default: false,
+    },
   },
+
   {
     timestamps: true,
   }

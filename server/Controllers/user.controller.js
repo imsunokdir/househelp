@@ -9,6 +9,7 @@ const {
 } = require("../Utils/auth");
 const ShoutoutClient = require("shoutout-sdk");
 const { default: mongoose } = require("mongoose");
+const checkProfileCompletion = require("../Utils/checkProfileCompletion");
 
 require("dotenv").config();
 
@@ -48,6 +49,7 @@ const registerUser = async (req, res) => {
     console.log("userDB:", userDb);
     return res.status(200).json({
       message: "Email verification sent, verify email and login",
+      user: userDb,
     });
   } catch (error) {
     return res.status(500).json({
@@ -265,6 +267,78 @@ const getUserDetails = async (req, res) => {
   }
 };
 
+const updateUserInfo = async (req, res) => {
+  const { userId } = req.session.user;
+  const updates = req.body;
+
+  if (!userId) {
+    return res
+      .status(401)
+      .send({ error: "Unauthorized: No user session found" });
+  }
+
+  const allowedUpdates = [
+    "firstName",
+    "lastName",
+    "email",
+    "dateOfBirth",
+    "mobile",
+    "whatsapp",
+    "bio",
+  ];
+  const sanitizedUpdates = {};
+
+  for (const key of Object.keys(updates)) {
+    if (allowedUpdates.includes(key)) {
+      sanitizedUpdates[key] = updates[key];
+    }
+  }
+
+  if (!Object.keys(sanitizedUpdates).length) {
+    return res.status(400).send({ error: "Invalid updates provided" });
+  }
+
+  try {
+    // First, find the existing user to check current profile status
+    const existingUser = await User.findById(userId);
+
+    if (!existingUser) {
+      return res.status(404).send({ error: "User not found" });
+    }
+
+    // Merge existing user data with new updates
+    const updatedUserData = {
+      ...existingUser.toObject(),
+      ...sanitizedUpdates,
+    };
+
+    // Check profile completion based on merged data
+    const isProfileCompleted = checkProfileCompletion(updatedUserData);
+
+    // Update user with new data and profile completion status
+    const user = await User.findByIdAndUpdate(
+      userId,
+      {
+        ...sanitizedUpdates,
+        isProfileCompleted: isProfileCompleted,
+      },
+      { new: true }
+    );
+
+    res.status(200).json({
+      message: "User info updated successfully",
+      user,
+    });
+  } catch (error) {
+    console.error("Error updating user:", {
+      userId,
+      updates: sanitizedUpdates,
+      error: error.message,
+    });
+    res.status(500).send({ error: "Error updating user details" });
+  }
+};
+
 module.exports = {
   registerUser,
   verifyUser,
@@ -275,4 +349,5 @@ module.exports = {
   authCheck,
   saveUserCurrLocation,
   getUserDetails,
+  updateUserInfo,
 };
