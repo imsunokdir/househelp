@@ -12,7 +12,10 @@ import { Skeleton } from "antd";
 
 const ServiceCard = ({ service }) => {
   const handleClick = () => {
-    window.open(`/show-service-details/${service._id}`);
+    // window.open(`/show-service-details/${service._id}`);
+    window.open(
+      `${window.location.origin}/show-service-details/${service._id}`
+    );
   };
 
   return (
