@@ -12,7 +12,7 @@ const Home = () => {
   return (
     <>
       <Search />
-      <div className="navigation sticky top-[60px] z-10 w-full px-2 flex items-center justify-between bg-white shadow-md">
+      <div className="navigation sticky top-[60px] z-10 w-full px-2 flex items-center justify-between  shadow-md">
         <NavigationTabs />
         <Filter />
       </div>
