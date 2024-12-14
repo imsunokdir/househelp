@@ -5,18 +5,15 @@ import { SearchOutlined } from "@ant-design/icons";
 const Search = () => {
   return (
     <div className="search flex items-center justify-center mt-2">
-      <div className="w-full sm:w-auto  px-4">
-        <div className="border border-gray-300 p-2 rounded input-div flex justify-center items-center w-full">
+      <div className="w-full px-2 sm:px-4 flex justify-center itrems-center">
+        <div className=" border border-gray-300 p-2 rounded input-div flex flex-wrap gap-2 justify-center items-center w-full sm:max-w-md overflow-hidden">
           <input
             placeholder="Who do you need?...."
-            className="search-input h-full outline-none w-full"
+            className="search-input flex-1 min-w-0 h-full outline-none p-1"
           />
-
-          <div>
-            <button className="search-button ">
-              <SearchOutlined />
-            </button>
-          </div>
+          <button className="search-button p-2 bg-gray-200 rounded">
+            <SearchOutlined />
+          </button>
         </div>
       </div>
     </div>
