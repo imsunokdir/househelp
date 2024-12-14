@@ -7,12 +7,12 @@ export default defineConfig({
   server: {
     proxy: {
       "/auth": {
-        target: "http://localhost:8000",
+        target: import.meta.env.VITE_ROOT_ROUTE,
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/auth/, ""), // Optional path rewrite
       },
       "/api": {
-        target: "http://localhost:8000", // Backend server
+        target: import.meta.env.VITE_ROOT_ROUTE, // Backend server
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""), // Adjust backend paths if necessary
       },

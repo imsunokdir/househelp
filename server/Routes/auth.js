@@ -21,7 +21,6 @@ router.get(
   async (req, res) => {
     try {
       //   console.log("google req:", req);
-      //   res.redirect("http://localhost:5173");
       const existingUser = await User.findOne({
         email: req.user.emails[0].value,
       });
@@ -51,7 +50,6 @@ router.get(
         };
       }
       req.session.isAuth = true;
-      // res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
       // res.setHeader("Access-Control-Allow-Credentials", "true");
 
       //   redirect user to home after login
@@ -67,7 +65,7 @@ router.get(
 router.get("/logout", (req, res) => {
   req.logout((err) => {
     if (err) return next(err);
-    res.redirect("http://localhost:5173"); // Redirect to React app
+    res.redirect(process.env.REDIRECT_LINK); // Redirect to React app
   });
 });
 
