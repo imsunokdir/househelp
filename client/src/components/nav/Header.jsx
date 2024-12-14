@@ -33,9 +33,6 @@ const Header = () => {
             </Fade>
           </Link>
           <LocationModal />
-          {/* {isLocationLoading && (
-          <Spin indicator={<LoadingOutlined spin />} size="small" />
-        )} */}
         </div>
 
         <div className="mr-5 flex items-center">

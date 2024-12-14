@@ -9,14 +9,14 @@ const AccountTabs = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div
           className="shadow-md p-2 rounded hover:shadow-lg cursor-pointer"
-          onClick={() => navigate("/test4/personal-info")}
+          onClick={() => navigate("/accounts/personal-info")}
         >
           <p className="text-[25px]">Personal info</p>
           <p className="">provide your personal details</p>
         </div>
         <div
           className="shadow-md p-2 rounded hover:shadow-lg cursor-pointer"
-          onClick={() => navigate("/test4/my-services")}
+          onClick={() => navigate("/accounts/my-service-menu")}
         >
           <p className="text-[25px]">My Services</p>
           <p className="">create and manage your service</p>

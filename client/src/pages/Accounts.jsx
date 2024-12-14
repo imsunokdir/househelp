@@ -3,6 +3,10 @@ import AccountTabs from "./AccountTabs";
 import { Route, Routes } from "react-router-dom";
 import PersonalInfo from "./PersonalInfo";
 import MyServices from "../components/services/MyServices";
+import ProfileCheck from "./ProfileCheck";
+import MyServiceMenu from "./MyServiceMenu";
+import AddServiceForm from "../components/services/AddServiceForm";
+import AddService from "../components/services/AddService";
 const Accounts = () => {
   return (
     <div className=" p-4">
@@ -10,6 +14,9 @@ const Accounts = () => {
         <Route path="/" element={<AccountTabs />} />
         <Route path="/personal-info" element={<PersonalInfo />} />
         <Route path="/my-services" element={<MyServices />} />
+        <Route path="/profile-check" element={<ProfileCheck />} />
+        <Route path="/my-service-menu" element={<MyServiceMenu />} />
+        <Route path="/add-service-form" element={<AddService />} />
       </Routes>
     </div>
   );

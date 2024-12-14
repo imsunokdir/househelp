@@ -1,4 +1,5 @@
 import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
 export const getAllCategories = async () =>
-  await axios.get(`http://localhost:8000/api/v1/category/get-categories`);
+  await axiosInstance.get(`/category/get-categories`);

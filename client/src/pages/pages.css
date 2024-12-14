@@ -1,0 +1,28 @@
+.carousel-img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover; /* Ensures the image covers the entire area without distortion */
+    object-position: center; /* Centers the image within its container */
+    border-radius: 8px; /* Optional: for rounded edges */
+  }
+  
+ 
+  
+  @media (max-width: 450px) {
+    .carousel-img {
+      height: 450px; /* Height when only one image per slide is shown */
+    }
+  }
+  
+  @media (min-width: 451px) and (max-width: 640px) {
+    .carousel-img {
+      height: 350px; /* Height for 450px breakpoint with two images per slide */
+    }
+  }
+  
+  @media (min-width: 641px) {
+    .carousel-img {
+      height: 200px; /* Default height for larger screens with multiple images */
+    }
+  }
+  

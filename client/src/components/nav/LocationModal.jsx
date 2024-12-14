@@ -19,7 +19,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { AuthContext } from "../../contexts/AuthProvider";
 import { Spin } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
+import { ConsoleSqlOutlined, LoadingOutlined } from "@ant-design/icons";
+import { useCookies } from "react-cookie";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -38,10 +39,14 @@ const LocationModal = () => {
     openSnackbar,
     handleSnackbarClose,
     isLocationLoading,
-    setLocationLoading,
   } = useContext(AuthContext);
   const [data, setData] = useState([]);
   const [page, setPage] = useState(1);
+
+  // location Related web storage
+  const [cookies, setCookies] = useCookies(["user_location"]);
+  const user_location = JSON.parse(localStorage.getItem("user_location"));
+
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // Detect small screen size
   const isMediumScreen = useMediaQuery(theme.breakpoints.between("sm", "md"));
@@ -66,6 +71,9 @@ const LocationModal = () => {
         }
       });
   };
+
+  const [locationDetails, setLocationDetails] = useState();
+
   return (
     <React.Fragment>
       <div
@@ -83,14 +91,15 @@ const LocationModal = () => {
                 <Spin indicator={<LoadingOutlined spin />} size="small" />
               </span>
             </Fade>
-          ) : userLocation.address ? (
+          ) : cookies?.user_location?.address ? (
             <Fade in={true} timeout={2000}>
               <p className="m-0 text-[12px] ">
-                {userLocation.address.slice(0, 28)}...
+                {cookies?.user_location?.address.slice(0, 28)}...
               </p>
             </Fade>
           ) : (
-            <p className="m-0 text-[12px]">{userLocation.country}</p>
+            <p className="m-0 text-[12px]">{cookies?.user_location?.country}</p>
+            // <p className="m-0 text-[12px]">Please select a location</p>
           )}
         </div>
       </div>
@@ -140,12 +149,12 @@ const LocationModal = () => {
         >
           <div className=" flex flex-col">
             {/* <FontAwesomeIcon icon={faLocationDot} size="2xl" /> */}
-            {userLocation.address ? (
+            {cookies?.user_location?.address ? (
               <div className="flex gap-2 mb-2">
                 <div>
                   <FontAwesomeIcon icon={faLocationDot} size="sm" />
                 </div>
-                <div>{userLocation.address}</div>
+                <div>{cookies.user_location.address}</div>
               </div>
             ) : (
               <p className="text-center italic text-red-400">

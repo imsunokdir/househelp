@@ -3,9 +3,10 @@ import { Button, Popconfirm } from "antd";
 import { icon } from "@fortawesome/fontawesome-svg-core";
 import { DeleteOutlined } from "@ant-design/icons";
 import { deleteUserAvatar } from "../../services/user";
-const ConfirmDeletePic = ({ imageUrl, setImageUrl }) => {
+const ConfirmDeletePic = ({ imageUrl, setImageUrl, setUserUpdated }) => {
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+
   const showPopconfirm = () => {
     setOpen(true);
   };
@@ -19,6 +20,7 @@ const ConfirmDeletePic = ({ imageUrl, setImageUrl }) => {
       const response = await deleteUserAvatar(imageUrl);
       if (response.status === 200) {
         setImageUrl("");
+        setUserUpdated((prev) => !prev);
       }
     } catch (error) {
       console.log("error:", error);

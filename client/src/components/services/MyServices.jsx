@@ -15,6 +15,7 @@ const MyServices = () => {
 
   const handleAddService = () => {
     navigate("/add-service");
+    // navigate("/accounts/profile-check");
   };
 
   useEffect(() => {
@@ -59,9 +60,9 @@ const MyServices = () => {
         ) : (
           <div>
             <Empty description="No services found.. !!" />
-            {/* <p className=" mt-2">Do you wanna be a service provider?</p> */}
-            <Typography>Do you wanna be a service provider?</Typography>
-            <Button onClick={handleAddService}>+ Add Service</Button>
+            <p className=" mt-2">Do you wanna be a service provider?</p>
+            {/* <Typography>Do you wanna be a service provider?</Typography> */}
+            {/* <Button onClick={handleAddService}>+ Add Service</Button> */}
           </div>
         )}
         <div className="mt-3">

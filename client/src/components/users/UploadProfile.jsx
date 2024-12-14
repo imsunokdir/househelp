@@ -17,6 +17,7 @@ import ConfirmDeletePic from "./ConfirmDeletePic";
 const UploadProfile = ({ user }) => {
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState();
+  const { isUserUpdated, setUserUpdated } = useContext(AuthContext);
 
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
@@ -57,6 +58,7 @@ const UploadProfile = ({ user }) => {
 
       if (response.status === 200) {
         setImageUrl(response.data.avatar);
+        setUserUpdated((prev) => !prev);
         // Convert to base64 for preview
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -139,7 +141,11 @@ const UploadProfile = ({ user }) => {
                 <Button icon={<UploadOutlined />}>Change Profile</Button>
               </Upload>
 
-              <ConfirmDeletePic imageUrl={imageUrl} setImageUrl={setImageUrl} />
+              <ConfirmDeletePic
+                setUserUpdated={setUserUpdated}
+                imageUrl={imageUrl}
+                setImageUrl={setImageUrl}
+              />
             </div>
           </Fade>
         )}

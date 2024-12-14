@@ -18,6 +18,7 @@ const useCreateService = (formData, setFormData) => {
   useEffect(() => {
     const fetchCategories = async () => {
       setLoading(true); // Start loading
+      console.log("form-data:", formData);
       try {
         // Replace the URL with your API endpoint
         const response = await getAllCategories();
@@ -26,7 +27,6 @@ const useCreateService = (formData, setFormData) => {
             value: item._id, // Value for the select option
             label: item.name, // Label to display in the dropdown
           }));
-          console.log("formatted::", formattedCategories);
           setCategories(formattedCategories);
         }
       } catch (error) {

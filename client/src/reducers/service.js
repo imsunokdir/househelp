@@ -6,8 +6,13 @@ const serviceSlice = createSlice({
     servicesByCategoryId: {}, // Stores services per category
     currentPage: {}, // Tracks the current page for each category
     hasMoreServicesByCategory: {}, // Indicates if more services are available for each category
+    serviceLoading: false,
+    error: false,
   },
   reducers: {
+    setServiceLoading: (state, action) => {
+      state.serviceLoading = action.payload;
+    },
     setServicesForCategory: (state, action) => {
       const { categoryId, services, page } = action.payload;
 
@@ -43,6 +48,14 @@ const serviceSlice = createSlice({
         ...state.currentPage,
         [categoryId]: page,
       };
+    },
+    setError: (state, action) => {
+      state.error = action.payload;
+    },
+    clearServices: (state) => {
+      state.servicesByCategoryId = {};
+      state.hasMoreServicesByCategory = {};
+      state.currentPage = {};
     },
   },
 });

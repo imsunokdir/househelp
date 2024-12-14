@@ -9,18 +9,33 @@ import { AuthContext } from "../../contexts/AuthProvider";
 import { UIContext } from "../../contexts/UIProvider";
 import Message from "../Messages/WarningMessage";
 import FullBackdrop from "../FullBackdrop";
-import { logoutUser } from "../../services/user";
+import { getUserDetails, logoutUser } from "../../services/user";
 import { useNavigate } from "react-router-dom";
-import { Fade } from "@mui/material";
+import { Fade, keyframes } from "@mui/material";
 
 const MenuDropdown = () => {
   const { showModal } = useContext(UIContext);
-  const { isAuth } = useContext(AuthContext);
-  const { setUser } = useContext(AuthContext);
+  const { setUser, user, isAuth, isUserUpdated } = useContext(AuthContext);
+  const [userDetails, setUserDetails] = useState();
   const navigate = useNavigate();
 
   const [messageFunctions, setMessageFunctions] = useState({});
   const { messageApi, contextHolder } = message.useMessage();
+
+  useEffect(() => {
+    setUserDetails();
+    const fetchUserDetails = async () => {
+      if (isAuth) {
+        try {
+          const response = await getUserDetails();
+          setUserDetails(response.data.user);
+        } catch (error) {
+          console.log("failed to fetch user details.");
+        }
+      }
+    };
+    fetchUserDetails();
+  }, [isAuth, isUserUpdated, user]);
 
   const handleLogout = async () => {
     const key = "logoutMessage";
@@ -31,8 +46,10 @@ const MenuDropdown = () => {
       console.log("logout-response", response);
       if (response.status === 200) {
         setUser(null);
+
         messageFunctions.destroy(key);
         messageFunctions.success("Logged out successfully");
+        navigate("/");
       }
     } catch (error) {
       console.log("logouterror:", error);
@@ -92,9 +109,13 @@ const MenuDropdown = () => {
       >
         <a onClick={(e) => e.preventDefault()}>
           <Space>
-            <Fade in timeout={1000}>
+            {userDetails && userDetails?.avatar ? (
+              <Fade in timeout={500}>
+                <Avatar src={userDetails.avatar} className="shadow" />
+              </Fade>
+            ) : (
               <Avatar />
-            </Fade>
+            )}
           </Space>
         </a>
       </Dropdown>

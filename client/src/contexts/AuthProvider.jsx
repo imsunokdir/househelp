@@ -1,9 +1,11 @@
 import { createContext, useEffect, useState } from "react";
 import { authCheck } from "../services/user";
 import axios from "axios";
+import { useCookies } from "react-cookie";
 import Message from "../components/Messages/WarningMessage";
 import { Slide, Snackbar } from "@mui/material";
 import { message } from "antd";
+import { getAllCategories } from "../services/category";
 
 const AuthContext = createContext(null);
 
@@ -11,7 +13,27 @@ const AuthProvider = ({ children }) => {
   const mapApi = import.meta.env.VITE_MAP_API;
   const [user, setUser] = useState(null);
   const [messageApi, contextHolder] = message.useMessage();
-  const [isLocationLoading, setLocationLoading] = useState(true);
+  const [isLocationLoading, setLocationLoading] = useState(false);
+  const [isUserUpdated, setUserUpdated] = useState(false);
+  const [cookies, setCookies] = useCookies(["user_location"]);
+  const [serviceLoading, setServiceLoading] = useState(true);
+
+  //get all the categories
+  const [allCategories, setAllCategories] = useState([]);
+
+  const fetchAllCategories = async () => {
+    {
+      try {
+        const response = await getAllCategories();
+        if (response.status === 200) {
+          const fetchedCategories = response.data.data;
+          setAllCategories(fetchedCategories);
+        }
+      } catch (error) {
+        console.log("category fetch error:", error);
+      }
+    }
+  };
 
   const [userLocation, setUserLocation] = useState({
     address: null,
@@ -57,6 +79,33 @@ const AuthProvider = ({ children }) => {
                   coordinates: [longitude, latitude],
                   country,
                 }));
+
+                const user_location = {
+                  address,
+                  coordinates: [longitude, latitude],
+                  country,
+                };
+                // Set location in local storage
+
+                localStorage.setItem(
+                  "user_location",
+                  JSON.stringify(user_location)
+                );
+
+                //set location in cookie
+                setCookies(
+                  "user_location",
+                  JSON.stringify({
+                    address,
+                    coordinates: [longitude, latitude],
+                    country,
+                  }),
+                  {
+                    path: "/",
+                    maxAge: 1800,
+                  }
+                );
+
                 setLocationLoading(false);
 
                 resolve({
@@ -91,22 +140,56 @@ const AuthProvider = ({ children }) => {
   const fetchCountry = async () => {
     try {
       const response = await axios.get("https://ipapi.co/json/");
-      console.log("country response data:", response);
+      // console.log("country response data:", response);
       if (response.status === 200) {
+        //set location in state
         setUserLocation((prev) => ({
           ...prev,
           country: response.data.country_name,
           coordinates: [response.data.longitude, response.data.latitude],
         }));
+        // Set location in local storage
+
+        const user_location = {
+          address: "",
+          country: response.data.country_name,
+          coordinates: [response.data.longitude, response.data.latitude],
+        };
+        localStorage.setItem(
+          "aprx_user_location",
+          JSON.stringify(user_location)
+        );
+        setCookies(
+          "user_location",
+          JSON.stringify({
+            address: "",
+            country: response.data.country_name,
+            coordinates: [response.data.longitude, response.data.latitude],
+          }),
+          {
+            path: "/",
+            maxAge: 1800,
+          }
+        );
       }
     } catch (error) {
       console.log("country error:", error);
     }
   };
 
-  // useEffect(() => {
-  //   console.log("user location:", userLocation);
-  // }, [userLocation]);
+  const getLoc = async () => {
+    if (!cookies?.user_location?.address) {
+      getLocation()
+        .then(() => {})
+        .catch((error) => {
+          if (error.code === 1) {
+            fetchCountry();
+          }
+        });
+    } else {
+      setLocationLoading(false);
+    }
+  };
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -123,14 +206,8 @@ const AuthProvider = ({ children }) => {
       }
     };
     checkAuth();
-    // fetchCountry();
-    getLocation()
-      .then(() => {})
-      .catch((error) => {
-        if (error.code === 1) {
-          fetchCountry();
-        }
-      });
+    getLoc();
+    fetchAllCategories();
   }, []);
   return (
     <AuthContext.Provider
@@ -146,6 +223,11 @@ const AuthProvider = ({ children }) => {
         handleSnackbarClose,
         isLocationLoading,
         setLocationLoading,
+        isUserUpdated,
+        setUserUpdated,
+        serviceLoading,
+        setServiceLoading,
+        allCategories,
       }}
     >
       {children}

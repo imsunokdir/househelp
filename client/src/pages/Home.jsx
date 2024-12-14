@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import NavigationTabs from "../components/nav/NavigationTabs";
 import "./pages.css";
-import Filter from "../components/Filter";
+import Filter from "../components/Filters/Filter";
 import Services from "./Services";
 import Search from "../components/forms/Search";
 import { AuthContext } from "../contexts/AuthProvider";

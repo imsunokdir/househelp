@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
 import validateServiceData from "../../utils/validateForm";
 import Message from "../Messages/WarningMessage";
-import { fetchServiceById, updateService } from "../../services/service";
+import {
+  deleteService,
+  fetchServiceById,
+  updateService,
+} from "../../services/service";
 import { useParams } from "react-router-dom";
 import { Fade } from "@mui/material";
-import { Button as ABtn } from "antd";
+import { Button as ABtn, message } from "antd";
 import SetLocationField from "./SetLocationField";
 import SetServiceDescriptionField from "./SetServiceDescriptionField";
 import ServiceFormValiddationError from "./ServiceFormValiddationError";
@@ -20,6 +24,8 @@ import SkeletonLoad from "../LoadingSkeleton/SkeletonLoad";
 import UploadServiceImages from "./UploadServiceImages";
 import CurrentServiceImages from "./CurrentServiceImages";
 import UploadImagesByLen from "./UploadImagesByLen";
+import { Delete } from "lucide-react";
+import { DeleteFilled } from "@ant-design/icons";
 
 const AddServiceForm = () => {
   const { serviceId } = useParams();
@@ -158,10 +164,25 @@ const AddServiceForm = () => {
     console.log("formdata:", formData);
   }, [formData]);
 
+  const handleDeleteService = async () => {
+    try {
+      const response = await deleteService(serviceId);
+      if (response.status === 200) {
+        message.success("Service Deleted.");
+        navigate("/accounts/my-services");
+      }
+    } catch (error) {}
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <Message onMessage={setFunctions} />
-      <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md">
+      <div
+        className={`max-w-2xl mx-auto bg-white rounded-lg shadow-md relative ${
+          isUpdating ? "opacity-50 pointer-events-none" : ""
+        }`}
+        // style={{ cursor: isUpdating ? "not-allowed" : "not-allowed" }}
+      >
         <div className="p-6">
           <h2 className="text-2xl font-bold mb-6">Update Service</h2>
           {isServiceLoading ? (
@@ -170,6 +191,10 @@ const AddServiceForm = () => {
             <Fade in timeout={1000}>
               <form onSubmit={handleUpdate} className="space-y-6">
                 {/* service name */}
+                <ABtn danger onClick={handleDeleteService}>
+                  <DeleteFilled />
+                  Delete{" "}
+                </ABtn>
                 <SetServiceName
                   formData={formData}
                   handleInputChange={handleInputChange}

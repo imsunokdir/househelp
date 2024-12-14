@@ -97,6 +97,11 @@ const CurrentServiceImages = (params) => {
                   src={image.url}
                   style={{
                     objectFit: "cover",
+                    opacity: imagesToBeDeleted.some(
+                      (img) => img._id === image._id
+                    )
+                      ? 0.5
+                      : 1,
                   }}
                   className="border shadow-md"
                 />

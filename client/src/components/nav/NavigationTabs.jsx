@@ -26,7 +26,6 @@ const NavigationTabs = () => {
 
   const handleChange = (event, newValue) => {
     const categoryId = event.target.getAttribute("data-id");
-    console.log("New Tab Selected:", newValue, "Category ID:", categoryId);
     setValue(newValue);
     dispatch(categoryActions.changeCategory(categoryId));
   };
@@ -42,7 +41,6 @@ const NavigationTabs = () => {
             setCategories(fetchedCategories);
             setLoading(false);
             // Set initial value and categoryId to the first category
-            setValue(0);
             dispatch(categoryActions.changeCategory(fetchedCategories[0]._id));
           } else {
             functions.warning("No categories found..!!");

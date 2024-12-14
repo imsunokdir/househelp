@@ -1,18 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
-import { Fade, Grow } from "@mui/material";
+import { Avatar, Fade, Grow } from "@mui/material";
+
+import { useCookies } from "react-cookie";
 
 const SingleServiceCard = ({ service }) => {
   const { serviceName, description, averageRating } = service;
+  const [cookies, setCookies] = useCookies(["user_location"]);
 
   const handleClick = () => {
     window.open(`/show-service-details/${service._id}`);
   };
+
   return (
-    // <Grow in={true} style={{ transformOrigin: "center center" }}>
     <Fade in timeout={700}>
       <div
-        className="sm:max-w-full  w-full lg:max-w-full lg:flex justify-center max-w-full cursor-pointer shadow-md rounded h-full"
+        className="bg-red-100 sm:max-w-full  w-full lg:max-w-full lg:flex justify-center max-w-full cursor-pointer shadow-md rounded h-full"
         onClick={handleClick}
       >
         {/* Image container with background image */}
@@ -28,20 +31,19 @@ const SingleServiceCard = ({ service }) => {
         ></div>
 
         {/* Card content */}
-        <div className="bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
+        <div className=" rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal">
           <div className="mb-8">
             <div className="text-gray-900 font-bold text-xl mb-2">
               {serviceName}
             </div>
             <p className="text-gray-700 text-base">{description}</p>
           </div>
+          <div className="flex justify-end">
+            <p>{service.distanceInKm.toFixed(2)} Km</p>
+          </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1">
-              <img
-                className="w-10 h-10 rounded-full"
-                src="https://cdn-icons-png.flaticon.com/512/6858/6858504.png"
-                alt="Avatar of Jonathan Reinink"
-              />
+              <Avatar src={service.createdBy?.avatar} />
               <div className="text-sm flex justify-between">
                 <p className="text-gray-900 leading-none m-0">
                   @{service.createdBy.username}

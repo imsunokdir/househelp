@@ -1,15 +1,26 @@
 import axios from "axios";
-const api = import.meta.env.VITE_API_ROUTE;
+// const api = import.meta.env.VITE_API_ROUTE;
+import axiosInstance from "./axiosInstance";
 
 export const fetchServiceByCategory = async (
   categoryId,
   page,
   limit,
+  longitude,
+  latitude,
+  filterData,
   cancelToken
 ) => {
   try {
-    const response = await axios.get(
-      `http://localhost:8000/api/v1/service/service-category/${categoryId}?page=${page}&limit=${limit}`,
+    const response = await axiosInstance.post(
+      `/service/get-nearby-services/${categoryId}`,
+      {
+        page,
+        limit,
+        longitude,
+        latitude,
+        filterData,
+      },
       {
         cancelToken: cancelToken, // Pass the cancelToken in the request options
       }
@@ -25,27 +36,31 @@ export const fetchServiceByCategory = async (
   }
 };
 
-export const fetchServiceById = async (serviceId) =>
-  await axios.get(
-    `http://localhost:8000/api/v1/service/get-service/${serviceId}`
+export const fetchFilteredServices = async (filterData) => {
+  const { categoryId, filterOptions, userLocation } = filterData;
+  const latitude = userLocation.coordinates[0];
+  const longitude = userLocation.coordinates[1];
+  console.log("filter options:", filterOptions);
+
+  const response = await axiosInstance.get(
+    `/service/filter-services/${categoryId}?longitude=${longitude}&latitude=${latitude}&filterOptions=${filterOptions}`
   );
+
+  return response;
+};
+
+export const fetchServiceById = async (serviceId) =>
+  await axiosInstance.get(`/service/get-service/${serviceId}`);
 
 export const getMyServices = async () =>
-  await axios.get(`http://localhost:8000/api/v1/service/my-services`, {
-    withCredentials: true,
-  });
+  await axiosInstance.get(`/service/my-services`, {});
 
 export const createService = async (formDataToSend) => {
-  return await axios.post(
-    `http://localhost:8000/api/v1/service/register-service`,
-    formDataToSend,
-    { withCredentials: true }
-  );
+  return await axiosInstance.post(`/service/register-service`, formDataToSend);
 };
 
 export const updateService = async (formDataToSend) =>
-  await axios.post(
-    `http://localhost:8000/api/v1/service/update-service`,
-    formDataToSend,
-    { withCredentials: true }
-  );
+  await axiosInstance.post(`/service/update-service`, formDataToSend);
+
+export const deleteService = async (serviceId) =>
+  await axiosInstance.delete(`/service/delete-service/${serviceId}`);
