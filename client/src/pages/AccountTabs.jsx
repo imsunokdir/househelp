@@ -21,9 +21,12 @@ const AccountTabs = () => {
           <p className="text-[25px]">My Services</p>
           <p className="">create and manage your service</p>
         </div>
-        <div className="shadow-md p-2 rounded hover:shadow-lg cursor-pointer">
-          <p className="text-[25px]">Accont Settings</p>
-          <p className="">Not created</p>
+        <div
+          className="shadow-md p-2 rounded hover:shadow-lg cursor-pointer"
+          onClick={() => navigate("/accounts/account-settings-menu")}
+        >
+          <p className="text-[25px]">Account Settings</p>
+          <p className="">Manage your account</p>
         </div>
         <div className="shadow-md p-2 rounded hover:shadow-lg cursor-pointer">
           <p className="text-[25px]">Something</p>

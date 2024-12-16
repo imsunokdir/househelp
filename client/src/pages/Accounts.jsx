@@ -7,6 +7,11 @@ import ProfileCheck from "./ProfileCheck";
 import MyServiceMenu from "./MyServiceMenu";
 import AddServiceForm from "../components/services/AddServiceForm";
 import AddService from "../components/services/AddService";
+import AccSettings from "./AccSettings";
+import AcccSettingsMenu from "./AcccSettingsMenu";
+import PasswordChange from "./PasswordChange";
+import LogOutAll from "./LogOutAll";
+import DeleteAcc from "./DeleteAcc";
 const Accounts = () => {
   return (
     <div className=" p-4">
@@ -17,6 +22,10 @@ const Accounts = () => {
         <Route path="/profile-check" element={<ProfileCheck />} />
         <Route path="/my-service-menu" element={<MyServiceMenu />} />
         <Route path="/add-service-form" element={<AddService />} />
+        <Route path="/account-settings-menu" element={<AcccSettingsMenu />} />
+        <Route path="/change-password" element={<PasswordChange />} />
+        <Route path="/log-out-all" element={<LogOutAll />} />
+        <Route path="/delete-acc" element={<DeleteAcc />} />
       </Routes>
     </div>
   );
