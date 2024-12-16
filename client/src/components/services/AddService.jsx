@@ -6,7 +6,7 @@ import { Link } from "@mui/material";
 
 const AddService = () => {
   const [userLoading, setUserLoading] = useState(true);
-  const [user, setUser] = useState();
+  const [user, setUser] = useState(null);
 
   const fetchUser = async () => {
     setUserLoading(true);
@@ -31,20 +31,22 @@ const AddService = () => {
   return (
     <div>
       {userLoading && <LoadBalls />}
-      {user && user.isProfileCompleted ? (
-        <AddServiceForm />
-      ) : (
-        <div>
-          <p>
-            You have not completed your profile, please complete your profile
-            first before continuing
-          </p>
 
-          <p>
-            <Link href="/accounts/personal-info">Go to profile</Link>
-          </p>
-        </div>
-      )}
+      {user &&
+        (user.isProfileCompleted ? (
+          <AddServiceForm />
+        ) : (
+          <div>
+            <p>
+              You have not completed your profile, please complete your profile
+              first before continuing
+            </p>
+
+            <p>
+              <Link href="/accounts/personal-info">Go to profile</Link>
+            </p>
+          </div>
+        ))}
     </div>
   );
 };

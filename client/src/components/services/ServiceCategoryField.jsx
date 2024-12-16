@@ -15,7 +15,8 @@ const ServiceCategoryField = (params) => {
       <Select
         showSearch
         style={{
-          width: 300,
+          width: "100%",
+          maxWidth: 300,
         }}
         placeholder="Select a category"
         optionFilterProp="label"
