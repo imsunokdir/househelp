@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createContext } from "react";
 import { getAllCategories } from "../services/category";
 import { useDispatch } from "react-redux";
@@ -8,6 +8,7 @@ const CategoryContext = createContext(null);
 
 const CategoryProvider = ({ children }) => {
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
   const fetchCategories = async () => {
@@ -29,9 +30,11 @@ const CategoryProvider = ({ children }) => {
       console.log("Error:", err);
     }
   };
-
+  useEffect(() => {
+    fetchCategories();
+  }, []);
   return (
-    <CategoryContext.Provider value={categories}>
+    <CategoryContext.Provider value={{ categories, loading }}>
       {children}
     </CategoryContext.Provider>
   );

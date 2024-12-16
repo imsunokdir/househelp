@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
@@ -12,15 +12,17 @@ import { useSelector } from "react-redux";
 import { Skeleton } from "antd";
 import Message from "../Messages/WarningMessage";
 import { Fade } from "@mui/material";
+import { CategoryContext } from "../../contexts/CategoryProvider";
 
 const numberOfNavTabs = new Array(10).fill(null);
 const { TabPane } = Tabs;
 
 const NavigationTabs = () => {
   const [value, setValue] = useState(0);
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [functions, setFunctions] = useState({});
+  const { categories, loading } = useContext(CategoryContext);
+  // const [categories, setCategories] = useState([]);
+  // const [loading, setLoading] = useState(true);
+  // const [functions, setFunctions] = useState({});
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -30,32 +32,32 @@ const NavigationTabs = () => {
     dispatch(categoryActions.changeCategory(categoryId));
   };
 
-  useEffect(() => {
-    setLoading(true);
-    const fetchCategories = async () => {
-      try {
-        const response = await getAllCategories();
-        if (response.status === 200) {
-          const fetchedCategories = response.data.data;
-          if (fetchedCategories.length > 0) {
-            setCategories(fetchedCategories);
-            setLoading(false);
-            // Set initial value and categoryId to the first category
-            dispatch(categoryActions.changeCategory(fetchedCategories[0]._id));
-          } else {
-            functions.warning("No categories found..!!");
-          }
-        }
-      } catch (err) {
-        console.log("Error:", err);
-      }
-    };
-    fetchCategories();
-  }, []);
+  // useEffect(() => {
+  //   setLoading(true);
+  //   const fetchCategories = async () => {
+  //     try {
+  //       const response = await getAllCategories();
+  //       if (response.status === 200) {
+  //         const fetchedCategories = response.data.data;
+  //         if (fetchedCategories.length > 0) {
+  //           setCategories(fetchedCategories);
+  //           setLoading(false);
+  //           // Set initial value and categoryId to the first category
+  //           dispatch(categoryActions.changeCategory(fetchedCategories[0]._id));
+  //         } else {
+  //           functions.warning("No categories found..!!");
+  //         }
+  //       }
+  //     } catch (err) {
+  //       console.log("Error:", err);
+  //     }
+  //   };
+  //   fetchCategories();
+  // }, []);
 
   return (
     <div className="w-3/4">
-      <Message onMessage={setFunctions} />
+      {/* <Message onMessage={setFunctions} /> */}
       <Fade in timeout={1000}>
         <Box sx={{ width: "99%", bgcolor: "background.paper" }}>
           {loading ? (
