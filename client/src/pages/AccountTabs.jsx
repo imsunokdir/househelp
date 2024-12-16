@@ -22,7 +22,7 @@ const AccountTabs = () => {
           <p className="">create and manage your service</p>
         </div>
         <div className="shadow-md p-2 rounded hover:shadow-lg cursor-pointer">
-          <p className="text-[25px]">Settings</p>
+          <p className="text-[25px]">Accont Settings</p>
           <p className="">Not created</p>
         </div>
         <div className="shadow-md p-2 rounded hover:shadow-lg cursor-pointer">

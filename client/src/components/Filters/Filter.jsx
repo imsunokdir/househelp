@@ -91,18 +91,14 @@ const Filter = () => {
   };
 
   return (
-    <div className="w-1/6 flex justify-center">
-      <Badge
-        size="small"
-        count={filterApplied ? filterCount : 0}
-        style={{ backgroundColor: "#4CAF50" }}
-      >
+    <div className="w-3/12 flex justify-center">
+      <Badge size="small" count={filterApplied ? filterCount : 0}>
         <button
           onClick={handleClickOpen}
           type="button"
-          className="flex gap-2 border p-1 rounded shadow-sm"
+          className="flex gap-2 border p-2 rounded shadow-sm"
         >
-          <SlidersHorizontal /> Filter
+          <SlidersHorizontal />
         </button>
       </Badge>
       <React.Fragment>
