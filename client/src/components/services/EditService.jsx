@@ -154,11 +154,14 @@ const AddServiceForm = () => {
     let currLen = currImages.length;
     let fileLen = fileList.length;
     let imagesDelLen = imagesToBeDeleted.length;
+    console.log("currLen:", currLen);
+    console.log("fileLen:", fileLen);
+    console.log("imagesDelLen:", imagesDelLen);
 
     setAvlSlots(currLen + fileLen - imagesDelLen);
 
     console.log("calculate:", currLen + fileLen - imagesDelLen);
-  }, [fileList, imagesToBeDeleted]);
+  }, [fileList, imagesToBeDeleted, currImages]);
 
   useEffect(() => {
     console.log("formdata:", formData);

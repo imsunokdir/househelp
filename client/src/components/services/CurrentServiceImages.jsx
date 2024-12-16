@@ -49,7 +49,7 @@ const CurrentServiceImages = (params) => {
       >
         Service images
       </label>
-      <div className="flex gap-2">
+      <div className="flex gap-3 flex-wrap overflow-auto max-h-[400px]">
         <Image.PreviewGroup
           preview={{
             onChange: (current, prev) =>
