@@ -56,7 +56,7 @@ const NavigationTabs = () => {
   // }, []);
 
   return (
-    <div className="w-3/4">
+    <div className="w-5/6">
       {/* <Message onMessage={setFunctions} /> */}
       <Fade in timeout={1000}>
         <Box sx={{ width: "99%", bgcolor: "background.paper" }}>

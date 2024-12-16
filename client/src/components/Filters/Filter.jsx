@@ -91,7 +91,7 @@ const Filter = () => {
   };
 
   return (
-    <div className="w-1/3 flex justify-center">
+    <div className="w-1/6 flex justify-center">
       <Badge
         size="small"
         count={filterApplied ? filterCount : 0}
