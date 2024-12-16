@@ -2,11 +2,14 @@ import React from "react";
 
 import { UIProvider } from "./UIProvider";
 import { AuthProvider } from "./AuthProvider";
+import { CategoryProvider } from "./CategoryProvider";
 
 const AppProvider = ({ children }) => {
   return (
     <AuthProvider>
-      <UIProvider>{children}</UIProvider>
+      <UIProvider>
+        <CategoryProvider>{children}</CategoryProvider>
+      </UIProvider>
     </AuthProvider>
   );
 };

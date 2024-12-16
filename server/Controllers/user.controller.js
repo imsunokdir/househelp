@@ -246,6 +246,11 @@ const saveUserCurrLocation = async (req, res) => {
 };
 
 const getUserDetails = async (req, res) => {
+  if (!req.session.user) {
+    return res.status(404).json({
+      message: "user not found",
+    });
+  }
   const { userId } = req.session.user;
   try {
     const user = await User.findById(userId);
