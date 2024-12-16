@@ -71,7 +71,7 @@ const LoginForm = () => {
 
   const handleGoogleLogin = () => {
     setIsGoogleLogginIn(true);
-    window.location.href = "http://localhost:8000/auth/google";
+    window.location.href = import.meta.env.VITE_GOOGLE_REDIRECT;
   };
   return (
     <div>
