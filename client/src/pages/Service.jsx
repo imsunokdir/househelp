@@ -19,6 +19,7 @@ import { getRatingDistribution } from "../services/review";
 import ImageCarousel from "./ImageCarousel";
 import noprofile from "../../src/assets/noprofile.jpg";
 import ServiceAndUser from "./ServiceAndUser";
+import LoadBalls from "../components/LoadingSkeleton/LoadBalls";
 
 const boxShadowStyle = {
   boxShadow: "-8px 6px 10px rgba(0, 0, 0, 0.2)", // Left and bottom shadow
@@ -29,6 +30,7 @@ const Service = () => {
   const [service, setService] = useState();
   const [showMore, setShowMore] = useState(false);
   const [totalReviews, setTotalReviews] = useState(null);
+  const [serviceLoading, setServiceLoading] = useState(true);
   const [rateDist, setRateDist] = useState(null);
   const [averageRating, setAverageRating] = useState(null);
   const navigate = useNavigate();
@@ -62,10 +64,13 @@ const Service = () => {
         if (response.status === 200) {
           setService(response.data.data);
           // console.log("Service:", service);
+
           console.log("service:", response.data.data);
         }
       } catch (error) {
         console.log("error", error);
+      } finally {
+        setServiceLoading(false);
       }
     };
     fetchService();
@@ -84,7 +89,9 @@ const Service = () => {
     navigate(`/write-review/${serviceId}`);
   };
 
-  return (
+  return serviceLoading ? (
+    <LoadBalls />
+  ) : (
     service && (
       <div className="bg-white flex flex-col">
         <div className="mx-1 md:mx-4 mt-2  bg-white rounded p-2">
