@@ -71,6 +71,7 @@ const LoginForm = () => {
 
   const handleGoogleLogin = () => {
     setIsGoogleLogginIn(true);
+    console.log("Google Redirect URL:", import.meta.env.VITE_GOOGLE_REDIRECT);
     window.location.href = import.meta.env.VITE_GOOGLE_REDIRECT;
   };
   return (
