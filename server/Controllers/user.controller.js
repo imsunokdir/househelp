@@ -205,12 +205,12 @@ const logoutFromAllDevice = async (req, res) => {
     res.clearCookie("connect.sid", {
       path: "/", // Ensure the path matches the one used in session config
     });
-    // return res.status(200).json({
-    //   success: true,
-    //   message: "Logout successfull",
-    // });
+    return res.status(200).json({
+      success: true,
+      message: "Logout successfull",
+    });
 
-    res.redirect(`${process.env.REDIRECT_LINK}`);
+    // res.redirect(`${process.env.REDIRECT_LINK}`);
   } catch (error) {
     return res.status(500).json({
       message: "internal server error",
