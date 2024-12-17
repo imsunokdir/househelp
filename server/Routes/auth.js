@@ -2,6 +2,7 @@ const express = require("express");
 const passport = require("../passport/google");
 const { findOne } = require("../Models/user.schema");
 const User = require("../Models/user.schema");
+const uap = require("ua-parser-js");
 require("dotenv").config();
 
 const router = express.Router();
@@ -65,6 +66,8 @@ router.get(
         };
       }
       req.session.isAuth = true;
+      let ua = uap(req.headers["user-agent"]);
+      req.session.userAgent = ua;
       const redirectTo = req.session.redirectPath || process.env.REDIRECT_LINK;
       console.log("redirect to:", redirectTo);
 
