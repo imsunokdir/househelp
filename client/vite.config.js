@@ -18,6 +18,7 @@ export default defineConfig({
       "/api": {
         target: process.env.VITE_ROOT_ROUTE, // Backend server
         changeOrigin: true,
+        secure: false,
         rewrite: (path) => path.replace(/^\/api/, ""), // Adjust backend paths if necessary
       },
     },
