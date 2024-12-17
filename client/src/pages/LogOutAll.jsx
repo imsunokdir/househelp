@@ -34,11 +34,12 @@ const LogOutAll = () => {
     try {
       setIsLoggingOut(true);
       const response = await logOutAll();
-      // if (response.status === 200) {
-      //   setActiveSessions([]);
-      //   setUser();
-      //   navigate(import.meta.env.VITE_HOME_ROUTE);
-      // }
+      if (response.status === 200) {
+        setActiveSessions([]);
+        // setUser();
+        window.location.href = import.meta.env.VITE_HOME_ROUTE;
+        // navigate(import.meta.env.VITE_HOME_ROUTE);
+      }
     } catch (error) {
       console.log("logout all error");
     } finally {
