@@ -38,6 +38,7 @@ const LoginForm = () => {
   //email and password related errors messages
   const [functions, setFunctions] = useState({});
   const [isGoogelLogginIn, setIsGoogleLogginIn] = useState(false);
+  const from = location.state?.from?.pathname || "/";
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -54,7 +55,7 @@ const LoginForm = () => {
         setLoginId("");
         setPassword("");
         handleClose();
-        const from = location.state?.from?.pathname || "/";
+
         navigate(from, { replace: true });
       }
     } catch (error) {
@@ -71,10 +72,22 @@ const LoginForm = () => {
     }
   };
 
+  // const handleGoogleLogin = () => {
+  //   setIsGoogleLogginIn(true);
+  //   const redirectTo = encodeURIComponent(from);
+
+  //   window.location.href = `${
+  //     import.meta.env.VITE_GOOGLE_REDIRECT
+  //   }?redirectTo=${redirectTo}`; // Redirect to Google with state
+  // };
   const handleGoogleLogin = () => {
     setIsGoogleLogginIn(true);
-    console.log("Google Redirect URL:", import.meta.env.VITE_GOOGLE_REDIRECT);
-    window.location.href = import.meta.env.VITE_GOOGLE_REDIRECT;
+    const redirectTo = encodeURIComponent(from);
+    const state = encodeURIComponent(`redirectTo=${redirectTo}`); // encode the state
+
+    window.location.href = `${
+      import.meta.env.VITE_GOOGLE_REDIRECT
+    }?state=${state}`; // Pass the state
   };
   return (
     <div>

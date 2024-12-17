@@ -11,8 +11,17 @@ passport.use(
       clientID: CLIENT_ID,
       clientSecret: CLIENT_SECRET,
       callbackURL: "/auth/google/callback",
+      passReqToCallback: true,
     },
-    (accessToken, refreshToken, profile, done) => {
+    (req, accessToken, refreshToken, profile, done) => {
+      // Get the state from the request
+      const state = req.query.state;
+
+      if (state) {
+        const params = new URLSearchParams(state);
+        req.session.redirectPath = params.get("redirectTo");
+      }
+
       done(null, profile);
     }
   )

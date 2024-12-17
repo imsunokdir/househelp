@@ -9,6 +9,12 @@ const router = express.Router();
 // Google Authentication
 router.get(
   "/auth/google",
+  (req, res, next) => {
+    const state = req.query.state;
+    const params = new URLSearchParams(state);
+    req.session.redirectPath = params.get("redirectTo");
+    return next();
+  },
   passport.authenticate("google", {
     scope: ["profile", "email"],
     prompt: "select_account",
@@ -17,15 +23,24 @@ router.get(
 
 router.get(
   "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/error" }),
+  (req, res, next) => {
+    const savedRedirectPath = req.session.redirectPath;
+    passport.authenticate("google", { failureRedirect: "/error" })(
+      req,
+      res,
+      () => {
+        req.session.redirectPath = savedRedirectPath;
+        next();
+      }
+    );
+  },
   async (req, res) => {
     try {
-      //   console.log("google req:", req);
+      console.log("session session json:", req.session);
+
       const existingUser = await User.findOne({
         email: req.user.emails[0].value,
       });
-
-      // console.log("req.user:", req.user);
 
       const avatarUrl = req.user.photos[0].value;
       if (!existingUser) {
@@ -50,11 +65,10 @@ router.get(
         };
       }
       req.session.isAuth = true;
-      // res.setHeader("Access-Control-Allow-Credentials", "true");
+      const redirectTo = req.session.redirectPath || process.env.REDIRECT_LINK;
+      console.log("redirect to:", redirectTo);
 
-      //   redirect user to home after login
-      console.log("res:", res);
-      res.redirect(process.env.REDIRECT_LINK);
+      res.redirect(`${process.env.REDIRECT_LINK}${redirectTo}`);
     } catch (error) {
       console.log("google error", error);
     }
