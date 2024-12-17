@@ -56,3 +56,14 @@ export const updateUserInfo = async (data) => {
   const response = await axiosInstance.put("/user/update-user-info", data);
   return response;
 };
+
+export const changePassword = async (password) => {
+  const response = await axiosInstance.put("/user/change-password", password);
+  return response;
+};
+
+export const getActiveSessions = async () =>
+  await axiosInstance.get("/user/active-sessions");
+
+export const logOutAll = async () =>
+  await axiosInstance.post("/user/logout-out-from-all");

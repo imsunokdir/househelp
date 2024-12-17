@@ -24,6 +24,7 @@ import AuthRootRoute from "./components/auth/AuthRootRoute";
 import EmailVrfSent from "./components/auth/EmailVrfSent";
 import EmailVerified from "./components/auth/EmailVerified";
 import DummyLogin from "./Test5/DummyLogin";
+import ProtectedRoutes from "./components/Routes/ProtectedRoutes";
 
 const App = () => {
   return (
@@ -42,16 +43,8 @@ const App = () => {
                 path="/show-service-details/:serviceId"
                 element={<Service />}
               />
-              <Route path="/accounts/*" element={<Accounts />} />
-              <Route path="/add-service" element={<AddServiceForm />} />
-              <Route
-                path="/edit-service/:serviceId"
-                element={<EditService />}
-              />
-              <Route
-                path="/write-review/:serviceId"
-                element={<GiveReviewPage />}
-              />
+              {/* <Route path="/accounts/*" element={<Accounts />} /> */}
+
               {/* <Route path="/register" element={<Register />} /> */}
               <Route path="/user-auth/*" element={<AuthRootRoute />} />
               <Route
@@ -67,6 +60,20 @@ const App = () => {
               <Route path="/error" element={<Error />} />
               <Route path="/success" element={<Success />} />
               <Route path="/test-login" element={<DummyLogin />} />
+
+              {/* protected routes */}
+              <Route element={<ProtectedRoutes />}>
+                <Route path="/accounts/*" element={<Accounts />} />
+                <Route path="/add-service" element={<AddServiceForm />} />
+                <Route
+                  path="/edit-service/:serviceId"
+                  element={<EditService />}
+                />
+                <Route
+                  path="/write-review/:serviceId"
+                  element={<GiveReviewPage />}
+                />
+              </Route>
             </Routes>
           </div>
         </BrowserRouter>

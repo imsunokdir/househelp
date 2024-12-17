@@ -17,6 +17,7 @@ const AuthProvider = ({ children }) => {
   const [isUserUpdated, setUserUpdated] = useState(false);
   const [cookies, setCookies] = useCookies(["user_location"]);
   const [serviceLoading, setServiceLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(true);
 
   //get all the categories
   const [allCategories, setAllCategories] = useState([]);
@@ -203,6 +204,8 @@ const AuthProvider = ({ children }) => {
         }
       } catch (error) {
         console.log("auth check error:", error);
+      } finally {
+        setAuthLoading(false);
       }
     };
     checkAuth();
@@ -228,6 +231,7 @@ const AuthProvider = ({ children }) => {
         serviceLoading,
         setServiceLoading,
         allCategories,
+        authLoading,
       }}
     >
       {children}

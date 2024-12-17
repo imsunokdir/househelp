@@ -16,7 +16,7 @@ const AcccSettingsMenu = () => {
         className="shadow-md p-2 rounded hover:shadow-lg cursor-pointer"
         onClick={() => navigate("/accounts/log-out-all")}
       >
-        Log out of all devices
+        Logged in devices
       </div>
       <div
         className="shadow-md p-2 rounded hover:shadow-lg cursor-pointer"

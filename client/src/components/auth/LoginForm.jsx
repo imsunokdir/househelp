@@ -16,7 +16,7 @@ import LoginIcon from "@mui/icons-material/Login";
 import GoogleIcon from "@mui/icons-material/Google";
 
 import Grid from "antd/es/card/Grid";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button as AntdBtn, Divider, message, Space } from "antd";
 import Message from "../Messages/WarningMessage";
 import { LoginUser } from "../../services/user";
@@ -34,6 +34,7 @@ const LoginForm = () => {
   const { handleClose } = useContext(UIContext);
   const { messageApi } = useContext(UIContext);
   const navigate = useNavigate();
+  const location = useLocation();
   //email and password related errors messages
   const [functions, setFunctions] = useState({});
   const [isGoogelLogginIn, setIsGoogleLogginIn] = useState(false);
@@ -53,7 +54,8 @@ const LoginForm = () => {
         setLoginId("");
         setPassword("");
         handleClose();
-        navigate("/");
+        const from = location.state?.from?.pathname || "/";
+        navigate(from, { replace: true });
       }
     } catch (error) {
       if (error.status === 404) {

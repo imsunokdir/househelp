@@ -1,6 +1,8 @@
 const User = require("../Models/user.schema");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const http = require("http");
+const uap = require("ua-parser-js");
 const {
   generateJWTToken,
   sendEmailVerificationMail,
@@ -10,6 +12,7 @@ const {
 const ShoutoutClient = require("shoutout-sdk");
 const { default: mongoose } = require("mongoose");
 const checkProfileCompletion = require("../Utils/checkProfileCompletion");
+const Session = require("../Models/session.schema");
 
 require("dotenv").config();
 
@@ -120,7 +123,12 @@ const loginUser = async (req, res) => {
     });
   }
 
+  let ua = uap(req.headers["user-agent"]);
+
+  console.log("user agebt:", ua);
+
   req.session.isAuth = true;
+  req.session.userAgent = ua;
 
   req.session.user = {
     userId: user._id,
@@ -187,20 +195,22 @@ const logoutUser = async (req, res) => {
 
 const logoutFromAllDevice = async (req, res) => {
   // console.log("session req:", req.session);
-  const { email } = req.session.user;
-  console.log("email", email);
-  const sessionSchema = new mongoose.Schema({ _id: String }, { strict: false });
-  const sessionModel = mongoose.model("session", sessionSchema);
+  const { userId } = req.session.user;
 
   try {
-    const deleteDb = await sessionModel.deleteMany({
-      "session.user.email": email,
+    const deleteDb = await Session.deleteMany({
+      "session.user.userId": userId,
     });
     console.log("deletedDB: ", deleteDb);
+    res.clearCookie("connect.sid", {
+      path: "/", // Ensure the path matches the one used in session config
+    });
     return res.status(200).json({
       success: true,
       message: "Logout successfull",
     });
+
+    // res.redirect("http://localhost:5173");
   } catch (error) {
     return res.status(500).json({
       message: "internal server error",
@@ -344,6 +354,82 @@ const updateUserInfo = async (req, res) => {
   }
 };
 
+const changePassword = async (req, res) => {
+  try {
+    const { currPassword, newPassword } = req.body;
+
+    const { userId } = req.session.user;
+    if (!currPassword || !newPassword) {
+      return res
+        .status(400)
+        .json({ message: "Both current and new passwords are required." });
+    }
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized. Please log in." });
+    }
+    // Find the user by ID
+    const user = await User.findById(userId).select("+password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    console.log("user:", user);
+
+    // verify current password
+    const isPasswordCorrect = await bcrypt.compare(currPassword, user.password);
+    if (!isPasswordCorrect) {
+      return res
+        .status(400)
+        .json({ message: "Current password is incorrect." });
+    }
+
+    //hash new password
+    const hashedPassword = await bcrypt.hash(
+      newPassword,
+      Number(process.env.SALT)
+    );
+    user.password = hashedPassword;
+    await user.save();
+    return res.status(200).json({ message: "Password changed successfully." });
+  } catch (error) {
+    console.log("pass error:", error);
+    return res
+      .status(500)
+      .json({ message: "Internal server error. Please try again later." });
+  }
+
+  // const isMatched = await bcrypt.compare(password, user.password);
+  // const hashedPassword = await bcrypt.hash(password, Number(process.env.SALT));
+};
+
+const activeSessions = async (req, res) => {
+  const session = req.session;
+
+  // Ensure userId exists
+  if (!session.user || !session.user.userId) {
+    return res.status(401).json({ error: "User not authenticated." });
+  }
+
+  const { userId } = session.user;
+
+  try {
+    const now = new Date();
+    const userActiveSessions = await Session.find({
+      "session.user.userId": userId,
+      expires: { $gt: now }, // Ensure the session has not expired
+    });
+
+    // Return the active sessions
+    return res.json({
+      activeSessions: userActiveSessions,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   registerUser,
   verifyUser,
@@ -355,4 +441,6 @@ module.exports = {
   saveUserCurrLocation,
   getUserDetails,
   updateUserInfo,
+  changePassword,
+  activeSessions,
 };

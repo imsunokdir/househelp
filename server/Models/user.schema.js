@@ -52,7 +52,7 @@ const userSchema = new Schema(
       type: Date,
       validate: {
         validator: function (v) {
-          return v instanceof Date && !this.isNaN(v);
+          return v instanceof Date && !isNaN(v);
         },
         message: (props) => `${props.value} is not a valid date!`,
       },
