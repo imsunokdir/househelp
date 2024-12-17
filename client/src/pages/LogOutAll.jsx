@@ -38,8 +38,6 @@ const LogOutAll = () => {
       if (response.status === 200) {
         setActiveSessions([]);
         setUser();
-        // window.location.href = import.meta.env.VITE_HOME_ROUTE;
-        // navigate(import.meta.env.VITE_HOME_ROUTE);
       }
     } catch (error) {
       console.log("logout all error");

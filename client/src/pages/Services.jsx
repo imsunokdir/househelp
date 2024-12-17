@@ -117,14 +117,18 @@ const Services = () => {
                 <div
                   ref={lastServiceElement}
                   key={service._id}
-                  className="rounded"
+                  className="rounded h-[400px] "
                 >
                   <ServiceCard service={service} />
                 </div>
               );
             } else {
               return (
-                <div key={service._id} className="rounded">
+                <div
+                  key={service._id}
+                  className="rounded h-[400px] "
+                  // style={{ borderRadius: "10%" }}
+                >
                   <ServiceCard service={service} />
                 </div>
               );
