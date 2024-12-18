@@ -80,7 +80,7 @@ const ReviewDialog = ({
         sx={{
           "& .MuiDialog-paper": {
             width: isSmallScreen ? "100%" : isMediumScreen ? "90%" : "80%",
-            height: isSmallScreen ? "100vh" : "90vh",
+            height: "100%",
             maxWidth: "none",
           },
         }}
