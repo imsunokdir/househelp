@@ -39,6 +39,7 @@ const AuthProvider = ({ children }) => {
   const [userLocation, setUserLocation] = useState({
     address: null,
     country: null,
+    _normalized_city: null,
     coordinates: [null, null],
   });
 
@@ -67,22 +68,26 @@ const AuthProvider = ({ children }) => {
             );
             if (response.ok) {
               const data = await response.json();
-              // console.log(data);
+              console.log("loca data", data);
 
               if (data.results && data.results[0]) {
                 const address = data.results[0].formatted;
+                const _normalized_city =
+                  data.results[0].components._normalized_city;
                 const country = data.results[0].components.country;
 
                 // Set the location data
                 setUserLocation((prev) => ({
                   ...prev,
                   address,
+                  _normalized_city,
                   coordinates: [longitude, latitude],
                   country,
                 }));
 
                 const user_location = {
                   address,
+                  _normalized_city,
                   coordinates: [longitude, latitude],
                   country,
                 };
@@ -99,6 +104,7 @@ const AuthProvider = ({ children }) => {
                   JSON.stringify({
                     address,
                     coordinates: [longitude, latitude],
+                    _normalized_city,
                     country,
                   }),
                   {
@@ -112,6 +118,7 @@ const AuthProvider = ({ children }) => {
                 resolve({
                   address,
                   coordinates: [longitude, latitude],
+                  _normalized_city,
                   country,
                 });
               } else {
@@ -179,6 +186,8 @@ const AuthProvider = ({ children }) => {
   };
 
   const getLoc = async () => {
+    const localLocation = JSON.parse(localStorage.getItem("user_location"));
+
     if (!cookies?.user_location?.address) {
       getLocation()
         .then(() => {})

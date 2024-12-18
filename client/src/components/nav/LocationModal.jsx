@@ -73,6 +73,10 @@ const LocationModal = () => {
 
   const [locationDetails, setLocationDetails] = useState();
 
+  useEffect(() => {
+    console.log("cookie location:", cookies);
+  }, [cookies]);
+
   return (
     <React.Fragment>
       <div
@@ -93,7 +97,8 @@ const LocationModal = () => {
           ) : cookies?.user_location?.address ? (
             <Fade in={true} timeout={2000}>
               <p className="m-0 text-[12px] ">
-                {cookies?.user_location?.address.slice(0, 28)}...
+                {/* {cookies?.user_location?.address.slice(0, 28)}... */}
+                {`${cookies?.user_location?._normalized_city}, ${cookies?.user_location?.country}`}
               </p>
             </Fade>
           ) : (
