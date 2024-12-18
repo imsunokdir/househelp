@@ -113,12 +113,13 @@ const Filter = () => {
               width: isSmallScreen ? "100%" : "500px", // Adjust width
               maxWidth: "none",
               borderRadius: isSmallScreen ? "30px 30px 0 0" : "16px", // Rounded corners
-              marginTop: isSmallScreen ? "30px" : "0 auto", // Margin for small screens
+              marginTop: "30px", // Margin for small screens
               display: "flex",
               flexDirection: "column", // Flex column for layout
-              height: "100vh", // Full height for the dialog
+              height: "100%", // Full height for the dialog
             },
           }}
+          className="relative"
         >
           <Toolbar className="">
             <IconButton
@@ -139,9 +140,28 @@ const Filter = () => {
           </div>
 
           {/* Footer */}
-          <div className="p-2 border-t flex items-center justify-between bg-white">
+          {/* <div className=" border-t flex items-center justify-between bg-red-200">
             <p
-              className="m-0 hover:bg-gray-100 p-1 rounded cursor-pointer"
+              className="m-0 p-1 hover:bg-gray-100  rounded cursor-pointer"
+              onClick={handleFilterClear}
+            >
+              Clear all
+            </p>
+            <Button
+              variant="contained"
+              onClick={handleFilterSubmit}
+              // disabled={!filterApplying}
+            >
+              Filter
+            </Button>
+          </div> */}
+          <div
+            className="absolute bottom-0 left-0 w-full p-4 
+          border-t flex items-center justify-between bg-white"
+          >
+            {/* This is a sticky footer! */}
+            <p
+              className="m-0 p-1 hover:bg-gray-100  rounded cursor-pointer"
               onClick={handleFilterClear}
             >
               Clear all
