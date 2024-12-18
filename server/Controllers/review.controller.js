@@ -61,7 +61,7 @@ const getReviews = async (req, res) => {
 
   // Get page and limit from query parameters (default to 1 and 10 if not provided)
   const page = parseInt(req.query.page) || 1; // Default to page 1
-  const limit = parseInt(req.query.limit) || 3; // Default to 5 reviews per page
+  const limit = parseInt(req.query.limit) || 10; // Default to 5 reviews per page
 
   const skip = (page - 1) * limit; // Calculate the number of reviews to skip
 

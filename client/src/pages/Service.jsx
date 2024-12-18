@@ -117,6 +117,7 @@ const Service = () => {
           rateDist={rateDist}
           serviceId={serviceId}
           totalReviews={totalReviews}
+          averageRating={service.averageRating.toFixed(1)}
         />
       </div>
     )

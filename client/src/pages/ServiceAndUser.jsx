@@ -94,7 +94,7 @@ const ServiceAndUser = ({
 
           <div className="flex gap-3 items-end">
             <p className="text-[20px] m-0 flex items-center">
-              {service.averageRating}
+              {service.averageRating.toFixed(1)}
               <StarFilled />
             </p>
 

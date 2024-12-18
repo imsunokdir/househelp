@@ -29,6 +29,7 @@ const ReviewDialog = ({
   rateDist,
   serviceId,
   totalReviews,
+  averageRating,
 }) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // Detect small screen size
@@ -48,7 +49,7 @@ const ReviewDialog = ({
 
     setLoading(true);
     try {
-      const response = await getServiceReviews(serviceId, page, 5);
+      const response = await getServiceReviews(serviceId, page, 10);
       // console.log("REVIEW RESP**:", response);
       const reviews = response.data.data; // The actual reviews
       const pagination = response.data.pagination; // Pagination details
@@ -124,7 +125,7 @@ const ReviewDialog = ({
             style={{ minHeight: "90vh" }} // Minimum height for the scroll container
           >
             <div className="flex flex-col items-center">
-              <h2>4.55✰</h2>
+              <h2>{averageRating}✰</h2>
               <RatingDistribution rateDist={rateDist} />
             </div>
             <div className="h-full p-4">
