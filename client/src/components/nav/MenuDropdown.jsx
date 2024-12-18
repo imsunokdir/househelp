@@ -12,6 +12,7 @@ import FullBackdrop from "../FullBackdrop";
 import { getUserDetails, logoutUser } from "../../services/user";
 import { useNavigate } from "react-router-dom";
 import { Fade, keyframes } from "@mui/material";
+import "./nav.css";
 
 const MenuDropdown = () => {
   const { showModal } = useContext(UIContext);
@@ -116,6 +117,11 @@ const MenuDropdown = () => {
             ) : (
               <Avatar className="shadow-md" />
             )}
+            <div className="hamburger">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
           </Space>
         </a>
       </Dropdown>
