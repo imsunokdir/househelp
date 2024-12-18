@@ -1,6 +1,8 @@
 import React from "react";
 import "./form.css";
 import { SearchOutlined } from "@ant-design/icons";
+import { SearchIcon } from "lucide-react";
+import { SearchOffTwoTone } from "@mui/icons-material";
 
 const Search = () => {
   return (
@@ -12,7 +14,8 @@ const Search = () => {
             className="search-input flex-1 min-w-0 h-full outline-none p-1"
           />
           <button className="search-button p-2 bg-gray-200 rounded">
-            <SearchOutlined />
+            <SearchOutlined style={{ color: "#5e17eb", fontSize: "30px" }} />
+            {/* <SearchIcon style={{ color: "#5e17eb", fontSize: "15px" }} /> */}
           </button>
         </div>
       </div>

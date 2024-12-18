@@ -114,7 +114,7 @@ const MenuDropdown = () => {
                 <Avatar src={userDetails.avatar} className="shadow" />
               </Fade>
             ) : (
-              <Avatar />
+              <Avatar className="shadow-md" />
             )}
           </Space>
         </a>
