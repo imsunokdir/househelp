@@ -112,7 +112,7 @@ const LocationModal = () => {
         sx={{
           "& .MuiDialog-paper": {
             width: isSmallScreen ? "100%" : isMediumScreen ? "50%" : "80%",
-            height: isSmallScreen ? "100vh" : "50vh",
+            height: isSmallScreen ? "100%" : "50vh",
             maxWidth: "none",
           },
         }}
