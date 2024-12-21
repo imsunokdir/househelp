@@ -25,6 +25,7 @@ import EmailVrfSent from "./components/auth/EmailVrfSent";
 import EmailVerified from "./components/auth/EmailVerified";
 import DummyLogin from "./Test5/DummyLogin";
 import ProtectedRoutes from "./components/Routes/ProtectedRoutes";
+import Test5 from "./Test5";
 
 const App = () => {
   return (
@@ -56,6 +57,7 @@ const App = () => {
               <Route path="/test2" element={<Test2 />} />
               <Route path="/test3" element={<Test3 />} />
               <Route path="/test4/*" element={<Test4 />} />
+              <Route path="/test5/*" element={<Test5 />} />
               <Route path="/load" element={<LoadBalls />} />
               <Route path="/error" element={<Error />} />
               <Route path="/success" element={<Success />} />

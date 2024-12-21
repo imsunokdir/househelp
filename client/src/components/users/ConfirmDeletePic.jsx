@@ -34,8 +34,8 @@ const ConfirmDeletePic = ({ imageUrl, setImageUrl, setUserUpdated }) => {
   };
   return (
     <Popconfirm
-      title="Title"
-      description="Open Popconfirm with async logic"
+      title="Delete"
+      description="Click OK to delete profile picture"
       open={open}
       onConfirm={handleOk}
       okButtonProps={{

@@ -16,6 +16,7 @@ import SkeletonCard2 from "../components/LoadingSkeleton/SkeletonCards2";
 import { fetchServicesThunk } from "../reducers/thunks/serviceThunk";
 import { useCookies } from "react-cookie";
 import NoServiceAvl from "./NoServiceAvl";
+import ServiceCard2 from "../components/services/ServiceCard2";
 
 const Services = () => {
   const dispatch = useDispatch();
@@ -120,6 +121,7 @@ const Services = () => {
                   className="rounded h-[400px] "
                 >
                   <ServiceCard service={service} />
+                  {/* <ServiceCard2 service={service} /> */}
                 </div>
               );
             } else {
@@ -130,6 +132,7 @@ const Services = () => {
                   // style={{ borderRadius: "10%" }}
                 >
                   <ServiceCard service={service} />
+                  {/* <ServiceCard2 service={service} /> */}
                 </div>
               );
             }
