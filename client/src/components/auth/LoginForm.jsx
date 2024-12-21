@@ -29,7 +29,7 @@ const theme = createTheme();
 const LoginForm = () => {
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
-  const [isLogginIn, setIsLoggingIn] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const { user, isAuth, setUser } = useContext(AuthContext);
   const { handleClose } = useContext(UIContext);
   const { messageApi } = useContext(UIContext);
@@ -72,14 +72,6 @@ const LoginForm = () => {
     }
   };
 
-  // const handleGoogleLogin = () => {
-  //   setIsGoogleLogginIn(true);
-  //   const redirectTo = encodeURIComponent(from);
-
-  //   window.location.href = `${
-  //     import.meta.env.VITE_GOOGLE_REDIRECT
-  //   }?redirectTo=${redirectTo}`; // Redirect to Google with state
-  // };
   const handleGoogleLogin = () => {
     setIsGoogleLogginIn(true);
     const redirectTo = encodeURIComponent(from);
@@ -128,7 +120,7 @@ const LoginForm = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          {isLogginIn ? (
+          {isLoggingIn ? (
             <Button
               fullWidth
               variant="contained"
@@ -199,6 +191,24 @@ const LoginForm = () => {
           </div>
         </Box>
         <Message onMessage={setFunctions} />
+        {(isLoggingIn || isGoogelLogginIn) && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              backgroundColor: "rgba(0, 0, 0, 0.3)", // Gray transparent overlay
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 9999,
+            }}
+          >
+            {/* <div>Place your custom spinner here</div> */}
+          </div>
+        )}
       </ThemeProvider>
     </div>
   );
