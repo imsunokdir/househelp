@@ -100,13 +100,14 @@ const MenuDropdown = () => {
     },
   ];
   return (
-    <>
+    <div className="flex h-full w-full rounded-full justify-center items-center">
       <Message onMessage={setMessageFunctions}></Message>
       <Dropdown
         menu={{
           items,
         }}
         trigger={["click"]}
+        className="flex rounded-full"
       >
         <a onClick={(e) => e.preventDefault()}>
           <Space>
@@ -126,7 +127,7 @@ const MenuDropdown = () => {
         </a>
       </Dropdown>
       <LoginModal />
-    </>
+    </div>
   );
 };
 export default MenuDropdown;

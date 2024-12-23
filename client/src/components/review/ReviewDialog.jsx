@@ -28,7 +28,6 @@ const ReviewDialog = ({
   open,
   rateDist,
   serviceId,
-  totalReviews,
   averageRating,
 }) => {
   const theme = useTheme();
@@ -129,7 +128,7 @@ const ReviewDialog = ({
               <RatingDistribution rateDist={rateDist} />
             </div>
             <div className="h-full p-4">
-              <h2>{totalReviews} Reviews</h2>
+              <h2> Reviews</h2>
               <Reviews serviceId={serviceId} data={data} />
             </div>
           </InfiniteScroll>

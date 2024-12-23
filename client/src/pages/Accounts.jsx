@@ -13,6 +13,7 @@ import PasswordChange from "./PasswordChange";
 import LogOutAll from "./LogOutAll";
 import DeleteAcc from "./DeleteAcc";
 import ProtectedRoutes from "../components/Routes/ProtectedRoutes";
+import MyServiceDetails from "../components/services/MyServiceDetails";
 const Accounts = () => {
   return (
     <div className=" p-4">
@@ -30,6 +31,10 @@ const Accounts = () => {
           <Route path="/change-password" element={<PasswordChange />} />
           <Route path="/log-out-all" element={<LogOutAll />} />
           <Route path="/delete-acc" element={<DeleteAcc />} />
+          <Route
+            path="/my-service/details/:serviceId"
+            element={<MyServiceDetails />}
+          />
         </Route>
       </Routes>
     </div>

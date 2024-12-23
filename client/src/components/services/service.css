@@ -9,6 +9,26 @@
   .custom-rate .ant-rate-star-full {
     color: red; /* Set the color for filled stars */
   }
+
+  .service-dropdown {
+    display: flex;
+    flex-direction: column;
+    gap:2px;
+    cursor: pointer; 
+    width: 20px;
+    justify-content: center;
+    align-items: center;
+  }
+  .dot {
+    width: 5px; 
+    height: 5px; 
+    border-radius: 50%; 
+    background-color: #605d5d;
+    transition: background-color 0.3s ease; 
+  }
+  .service-dropdown:hover .dot {
+    background-color: #555; 
+  }
   
   @keyframes slide-up {
     from {

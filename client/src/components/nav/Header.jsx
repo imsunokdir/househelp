@@ -33,7 +33,7 @@ const Header = () => {
         <LocationModal />
       </div>
 
-      <div className="mr-5 flex items-center cursor-pointer gap-1 shadow-md p-1 rounded-full">
+      <div className="mr-5 flex items-center cursor-pointer shadow-md hover:shadow-lg p-1 rounded-full">
         <MenuDropdown />
       </div>
     </header>

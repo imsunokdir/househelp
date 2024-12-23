@@ -18,7 +18,13 @@ const MyServiceMenu = () => {
       >
         View My Services
       </div>
-      <div className="shadow-md p-2">Service analytics</div>
+      <div
+        className="shadow-md p-2 rounded hover:shadow-lg cursor-pointer"
+        onClick={() => navigate("/accounts/my-services")}
+      >
+        Manage my services
+      </div>
+      {/* <div className="shadow-md p-2">Service analytics</div> */}
       {/* <div className="shadow-md">Service analytics</div> */}
     </div>
   );

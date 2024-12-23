@@ -6,6 +6,7 @@ import { Empty, Button, Typography } from "antd";
 import { useNavigate } from "react-router-dom";
 import { Fade } from "@mui/material";
 import LoadBalls from "../LoadingSkeleton/LoadBalls";
+import MyServiceCard from "./MyServiceCard";
 
 const MyServices = () => {
   const [myServices, setMyServices] = useState(null);
@@ -49,9 +50,11 @@ const MyServices = () => {
           <div className="">
             {myServices && myServices.length > 0 && (
               <Fade in timeout={500}>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"> */}
+                <div className="grid grid-cols-1  gap-3">
                   {myServices.map((service) => (
-                    <MyServiceSingle service={service} key={service._id} />
+                    // <MyServiceSingle service={service} key={service._id} />
+                    <MyServiceCard service={service} key={service._id} />
                   ))}
                 </div>
               </Fade>
