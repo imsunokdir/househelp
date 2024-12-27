@@ -11,6 +11,7 @@ const {
   getFilteredServices,
   deleteService,
   getNearbyServicesTest2,
+  updateServiceViews,
 } = require("../Controllers/service.controller");
 const { isAuth } = require("../Middlewares/isAuth");
 const serviceRouter = express.Router();
@@ -38,5 +39,6 @@ serviceRouter.post(
 serviceRouter.post("/get-nearby-services/:categoryId", getNearbyServicesTest2);
 serviceRouter.get("/filter-services/:categoryId", getFilteredServices);
 serviceRouter.delete("/delete-service/:serviceId", deleteService);
+serviceRouter.put("/views/inc", updateServiceViews);
 
 module.exports = { serviceRouter };

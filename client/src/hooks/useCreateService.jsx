@@ -168,6 +168,7 @@ const useCreateService = (formData, setFormData) => {
     formDataToSend.append("serviceName", formData.serviceName);
     formDataToSend.append("description", formData.description);
     formDataToSend.append("experience", formData.experience);
+    formDataToSend.append("status", formData.status);
     formDataToSend.append("skills", JSON.stringify(formData.skills)); // Serialize array
     formDataToSend.append("priceRange", JSON.stringify(formData.priceRange)); // Serialize object
     formDataToSend.append(

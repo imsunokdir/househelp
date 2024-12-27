@@ -77,9 +77,16 @@ const getReviews = async (req, res) => {
     const totalReviews = await Review.countDocuments({ service: serviceId });
 
     if (reviews.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: false,
         message: "No reviews found...",
+        data: [],
+        pagination: {
+          total: 0,
+          page,
+          limit,
+          totalPages: 1,
+        },
       });
     }
 

@@ -11,6 +11,7 @@ import "./service.css";
 import { EyeIcon } from "lucide-react";
 import noimg from "../../assets/no-img.jpg";
 import { useNavigate } from "react-router-dom";
+import numeral from "numeral";
 
 const MyServiceCard = ({ service }) => {
   const navigate = useNavigate();
@@ -32,7 +33,6 @@ const MyServiceCard = ({ service }) => {
     // },
   ];
 
-  const serviceDropdown = () => {};
   return (
     <div className="p-2">
       <div className="shadow-md cursor-pointer">
@@ -75,7 +75,7 @@ const MyServiceCard = ({ service }) => {
           </div>
           {/* second col */}
           <div className="w-2/3 border-l p-1">
-            <p className="m-0">Status: Active</p>
+            <p className="m-0">Status: {service.status}</p>
             <p className="m-0">
               description: "{service.description.slice(0, 55)}"
             </p>
@@ -84,15 +84,14 @@ const MyServiceCard = ({ service }) => {
         <div className="flex gap-2 border">
           <div className="flex gap-1 items-center justify-center">
             <EyeIcon />
-            <p className="m-0">views:2.1k</p>
+            <p className="m-0">
+              {numeral(service.views).format("0.[0]a")} views
+            </p>
           </div>
 
           <div className="flex gap-1 items-center justify-center p-1">
             <ReviewsOutlined />
-            <p className="m-0 underline cursor-pointer hover:text-blue-500">
-              {" "}
-              {service.ratingCount} reviews
-            </p>
+            <p className="m-0"> {service.ratingCount} reviews</p>
           </div>
         </div>
       </div>

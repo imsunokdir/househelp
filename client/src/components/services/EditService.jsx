@@ -26,6 +26,7 @@ import CurrentServiceImages from "./CurrentServiceImages";
 import UploadImagesByLen from "./UploadImagesByLen";
 import { Delete } from "lucide-react";
 import { DeleteFilled } from "@ant-design/icons";
+import SetServiceStatus from "./SetServiceStatus";
 
 const AddServiceForm = () => {
   const { serviceId } = useParams();
@@ -131,6 +132,7 @@ const AddServiceForm = () => {
         JSON.stringify(formData.availability)
       ); // Serialize array
       formDataToSend.append("category", formData.category);
+      formDataToSend.append("status", formData.status);
       formDataToSend.append("location", JSON.stringify(formData.location));
       formDataToSend.append("serviceId", serviceId);
       formDataToSend.append(
@@ -140,7 +142,7 @@ const AddServiceForm = () => {
 
       const response = await updateService(formDataToSend);
       if (response.status === 200) {
-        navigate("/accounts");
+        navigate("/accounts/my-services");
       }
     } catch (error) {
       console.log("error:", error);
@@ -167,16 +169,6 @@ const AddServiceForm = () => {
     console.log("formdata:", formData);
   }, [formData]);
 
-  const handleDeleteService = async () => {
-    try {
-      const response = await deleteService(serviceId);
-      if (response.status === 200) {
-        message.success("Service Deleted.");
-        navigate("/accounts/my-services");
-      }
-    } catch (error) {}
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <Message onMessage={setFunctions} />
@@ -194,10 +186,7 @@ const AddServiceForm = () => {
             <Fade in timeout={1000}>
               <form onSubmit={handleUpdate} className="space-y-6">
                 {/* service name */}
-                <ABtn danger onClick={handleDeleteService}>
-                  <DeleteFilled />
-                  Delete{" "}
-                </ABtn>
+
                 <SetServiceName
                   formData={formData}
                   handleInputChange={handleInputChange}
@@ -265,6 +254,10 @@ const AddServiceForm = () => {
                   formData={formData}
                   avlSlots={avlSlots}
                   setAvlSlots={avlSlots}
+                />
+                <SetServiceStatus
+                  formData={formData}
+                  handleInputChange={handleInputChange}
                 />
 
                 {/* Description */}

@@ -40,6 +40,11 @@ const isValidExperience = (experience) => {
   return typeof experience === "number" && experience >= 0 && experience <= 100;
 };
 
+const isValidStatus = (status) => {
+  const validStatuses = ["Active", "Inactive", "Pending"];
+  return validStatuses.includes(status);
+};
+
 /**
  * Validates service data before registration
  * @param {Object} serviceData - The service data to validate
@@ -57,6 +62,7 @@ const validateServiceData = (serviceData) => {
     priceRange,
     availability,
     category,
+    status,
   } = serviceData;
 
   // Validate serviceName
@@ -132,4 +138,4 @@ const validateServiceData = (serviceData) => {
 
 // Export the validation function
 
-module.exports =  {validateServiceData};
+module.exports = { validateServiceData };

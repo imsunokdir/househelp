@@ -22,6 +22,7 @@ import SetServiceName from "./SetServiceName";
 import ServiceExperience from "./ServiceExperience";
 import useCreateService from "../../hooks/useCreateService";
 import UploadServiceImages from "./UploadServiceImages";
+import SetServiceStatus from "./SetServiceStatus";
 
 const AddServiceForm = () => {
   const [formData, setFormData] = useState({
@@ -41,6 +42,7 @@ const AddServiceForm = () => {
       type: "Point",
       coordinates: [null, null],
     },
+    status: "Active",
   });
   const {
     // formData,
@@ -145,6 +147,11 @@ const AddServiceForm = () => {
 
               {/* Description */}
               <SetServiceDescriptionField
+                formData={formData}
+                handleInputChange={handleInputChange}
+              />
+
+              <SetServiceStatus
                 formData={formData}
                 handleInputChange={handleInputChange}
               />

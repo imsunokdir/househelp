@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { fetchServiceById } from "../services/service";
+import { fetchServiceById, updateServiceViews } from "../services/service";
 import UserDetails from "../components/UserDetails";
 import { Rate } from "antd";
 import Reviews from "../components/services/Reviews";
@@ -78,6 +78,14 @@ const Service = () => {
     loadRatingDistribution();
     // getAverageRating();
   }, []);
+
+  useEffect(() => {
+    try {
+      serviceId && updateServiceViews(serviceId);
+    } catch (error) {
+      console.error("there was an error in updating the service views");
+    }
+  }, [serviceId]);
   const truncateDescription = (text, wordLimit) => {
     const words = text.split(" ");
     return words.length > wordLimit

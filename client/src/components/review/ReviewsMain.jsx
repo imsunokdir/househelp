@@ -6,6 +6,7 @@ import RatingDistribution from "./RatingDistribution";
 import Reviews from "../services/Reviews";
 import { getServiceReviews } from "../../services/reviews";
 import { getRatingDistribution } from "../../services/review";
+import { rating } from "@material-tailwind/react";
 
 const ReviewsMain = ({ serviceId, averageRating }) => {
   const [loading, setLoading] = useState(false);
@@ -25,6 +26,7 @@ const ReviewsMain = ({ serviceId, averageRating }) => {
       const response = await getServiceReviews(serviceId, page, 10);
       const reviews = response.data.data; // The actual reviews
       const pagination = response.data.pagination; // Pagination details
+      console.log("response. response:", response);
       setData((prevData) => [...prevData, ...reviews]);
       setTotalPages(pagination.totalPages);
       setHasMore(page < pagination.totalPages);
@@ -39,6 +41,7 @@ const ReviewsMain = ({ serviceId, averageRating }) => {
   const loadRatingDistribution = async () => {
     try {
       const response = await getRatingDistribution(serviceId);
+      console.log("rating response:", response);
       if (response.status === 200) {
         setRateDist(response.data);
       }
@@ -49,11 +52,12 @@ const ReviewsMain = ({ serviceId, averageRating }) => {
 
   useEffect(() => {
     loadMoreData();
+    loadRatingDistribution();
   }, [serviceId]);
 
-  useEffect(() => {
-    loadRatingDistribution();
-  }, []);
+  // useEffect(() => {
+  //   loadRatingDistribution();
+  // }, []);
 
   useEffect(() => {
     console.log("rating distribution", rateDist);
@@ -79,6 +83,7 @@ const ReviewsMain = ({ serviceId, averageRating }) => {
           {loading && (
             <Skeleton avatar paragraph={{ rows: 1 }} active className="p-4" />
           )}
+
           {!loading && hasMore && (
             <button
               onClick={loadMoreData}

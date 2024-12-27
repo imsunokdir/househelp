@@ -64,3 +64,6 @@ export const updateService = async (formDataToSend) =>
 
 export const deleteService = async (serviceId) =>
   await axiosInstance.delete(`/service/delete-service/${serviceId}`);
+
+export const updateServiceViews = async (serviceId) =>
+  await axiosInstance.put(`/service/views/inc`, { serviceId });

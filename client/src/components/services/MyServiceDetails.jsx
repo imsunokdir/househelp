@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { fetchServiceById } from "../../services/service";
+import { deleteService, fetchServiceById } from "../../services/service";
 import LoadBalls from "../LoadingSkeleton/LoadBalls";
 import MyServiceImageCarousel from "./MyServiceImageCarousel";
 import { formatDistanceToNow } from "date-fns";
 import { Delete, Edit } from "lucide-react";
 import { DeleteFilled } from "@ant-design/icons";
-import { Button, Divider, Modal } from "antd";
+import { Button, Divider, message, Modal } from "antd";
 import { content } from "flowbite-react/tailwind";
 import ReviewsMain from "../review/ReviewsMain";
 
@@ -14,6 +14,7 @@ const MyServiceDetails = () => {
   const { serviceId } = useParams();
   const [service, setService] = useState();
   const [serviceLoading, setServiceLoading] = useState(true);
+  const [isServiceDeleting, setisServiceDeleting] = useState(false);
   const navigate = useNavigate();
 
   //modal
@@ -40,6 +41,21 @@ const MyServiceDetails = () => {
     console.log("Service:", service);
   }, [service]);
 
+  const handleDelete = async () => {
+    setisServiceDeleting(true);
+    try {
+      const response = await deleteService(serviceId);
+      if (response.status === 200) {
+        setModal2Open(false);
+        setisServiceDeleting(false);
+        navigate("/accounts/my-services", { replace: true });
+      }
+    } catch (error) {
+      setisServiceDeleting(false);
+      message.error;
+    }
+  };
+
   return serviceLoading ? (
     <LoadBalls />
   ) : (
@@ -47,7 +63,7 @@ const MyServiceDetails = () => {
       <div className="flex flex-col md:flex-row gap-2 w-full ">
         {/* Image Carousel */}
         <div className=" w-full lg:w-3/4 ">
-          <div className="bg-red-200 shadow-md">
+          <div className="bg-gray-200 shadow-md">
             <MyServiceImageCarousel images={service.images} />
           </div>
           {/* service details */}
@@ -185,8 +201,10 @@ const MyServiceDetails = () => {
       <Modal
         centered
         open={modal2Open}
-        onOk={() => setModal2Open(false)}
+        // onOk={() => setModal2Open(false)}
+        onOk={handleDelete}
         onCancel={() => setModal2Open(false)}
+        okButtonProps={{ loading: isServiceDeleting }}
       >
         <h4 className="text-center">Confirm Delete</h4>
         <p className="m-0">Are you sure you want to remove this service</p>

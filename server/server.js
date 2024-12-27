@@ -14,6 +14,8 @@ const reviewRouter = require("./Routes/review.route");
 const ratingRouter = require("./Routes/rating.route");
 const session = require("express-session");
 const imageRouter = require("./Routes/image.route");
+const schemaUpdate = require("./Models/schema");
+const dbRouter = require("./Routes/db.route");
 
 const mongoDbSession = require("connect-mongodb-session")(session);
 
@@ -73,6 +75,7 @@ app.use("/api/v1/service", serviceRouter);
 app.use("/api/v1/review", reviewRouter);
 app.use("/api/v1/rating", ratingRouter);
 app.use("/api/v1/image", imageRouter);
+app.use("/mongo", dbRouter);
 app.use(authRoutes);
 
 //server side rendering rooutes for testing only

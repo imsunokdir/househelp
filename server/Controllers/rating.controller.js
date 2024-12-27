@@ -97,9 +97,7 @@ const getRatingDistribution = async (req, res) => {
     });
 
     if (totalReviews === 0) {
-      return res
-        .status(404)
-        .json({ message: "No reviews found for this service" });
+      return res.status(200).json([]);
     }
 
     // Perform aggregation to get the count of each rating
@@ -120,6 +118,7 @@ const getRatingDistribution = async (req, res) => {
       count: item.count,
       percentage: ((item.count / totalReviews) * 100).toFixed(2), // Calculate percentage
     }));
+    console.log("rating dist:", result);
 
     res.status(200).json(result);
   } catch (error) {

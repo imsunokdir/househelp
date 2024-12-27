@@ -107,8 +107,8 @@ const serviceSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["active", "inactive", "pending"],
-      default: "active",
+      enum: ["Active", "Inactive", "Pending"],
+      default: "Active",
     },
     averageRating: {
       type: Number,
@@ -131,6 +131,10 @@ const serviceSchema = new Schema(
         url: { type: String },
       },
     ],
+    views: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

@@ -45,10 +45,11 @@ const uploadImagesToCloudinary = async (files) => {
 const registerService = async (req, res) => {
   try {
     // Destructure and sanitize input
-    console.log("req.files", req.files);
+    // console.log("req.files", req.files);
     console.log("req.body:", req.body);
 
-    const { serviceName, description, experience, category } = req.body;
+    const { serviceName, description, experience, category, status } = req.body;
+    console.log("status:", status);
 
     const skills = JSON.parse(req.body.skills);
     const priceRange = JSON.parse(req.body.priceRange);
@@ -92,6 +93,7 @@ const registerService = async (req, res) => {
       priceRange,
       availability,
       category,
+      status,
     });
 
     if (!validationResult.isValid) {
@@ -119,6 +121,7 @@ const registerService = async (req, res) => {
       category: category.trim(),
       createdBy: req.session.user.userId,
       location,
+      status,
       images: uploadedImageUrls.map((url) => ({ url })),
       createdAt: new Date(),
     });
@@ -210,15 +213,15 @@ const getServiceByCategory = async (req, res) => {
 
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 5;
-  console.log("page:", page);
-  console.log("limit:", limit);
+  // console.log("page:", page);
+  // console.log("limit:", limit);
   try {
     // Count total number of services in the category
     const totalServices = await Service.countDocuments({
       category: categoryId,
     });
 
-    console.log("total cconut:", totalServices);
+    // console.log("total cconut:", totalServices);
     // Fetch services with pagination
     const services = await Service.find({ category: categoryId })
       .populate("category", "name")
@@ -303,7 +306,7 @@ const getMyServices = async (req, res) => {
 
 const updateService = async (req, res) => {
   console.time("Total Time");
-  const { serviceName, description, experience, category, serviceId } =
+  const { serviceName, description, experience, category, serviceId, status } =
     req.body;
 
   try {
@@ -320,6 +323,7 @@ const updateService = async (req, res) => {
 
     const updatedData = {
       ...(serviceName && { serviceName: serviceName.trim() }),
+      ...(status && { status: status.trim() }),
       ...(description && { description: description.trim() }),
       ...(experience && { experience: Number(experience) }),
       ...(skills.length > 0 && { skills: skills.map((skill) => skill.trim()) }),
@@ -403,9 +407,9 @@ const getNearbyServices = async (req, res) => {
 
   const lon = parseFloat(longitude);
   const lat = parseFloat(latitude);
-  console.log("catId1:", categoryId);
-  console.log("lon:", lon);
-  console.log("lat:", lat);
+  // console.log("catId1:", categoryId);
+  // console.log("lon:", lon);
+  // console.log("lat:", lat);
 
   if (isNaN(lon) || isNaN(lat)) {
     return res.status(400).json({
@@ -458,7 +462,7 @@ const getNearbyServices = async (req, res) => {
 };
 
 const getNearbyServicesTest = async (req, res) => {
-  console.log("nearby");
+  // console.log("nearby");
   const { categoryId } = req.params;
   const { page = 1, limit = 5, longitude, latitude, filterData } = req.query; // Add page and limit
   const lon = parseFloat(longitude);
@@ -466,12 +470,12 @@ const getNearbyServicesTest = async (req, res) => {
 
   const { priceRange, rating, experience } = filterData;
 
-  console.log("catId:", categoryId);
-  console.log("lon:", lon);
-  console.log("lat:", lat);
-  console.log("page:", page);
-  console.log("limit:", limit);
-  console.log("filter data:", filterData);
+  // console.log("catId:", categoryId);
+  // console.log("lon:", lon);
+  // console.log("lat:", lat);
+  // console.log("page:", page);
+  // console.log("limit:", limit);
+  // console.log("filter data:", filterData);
 
   if (isNaN(lon) || isNaN(lat)) {
     return res.status(400).json({
@@ -558,7 +562,7 @@ const getNearbyServicesTest = async (req, res) => {
 };
 
 const getNearbyServicesTest2 = async (req, res) => {
-  console.log("nearby");
+  // console.log("nearby");
   const { categoryId } = req.params;
   const { page = 1, limit = 5, longitude, latitude, filterData } = req.body; // Add page and limit
   const lon = parseFloat(longitude);
@@ -571,17 +575,17 @@ const getNearbyServicesTest2 = async (req, res) => {
   const exp = experience || 0;
   const servicerating = rating || 0;
 
-  console.log("catId:", categoryId);
-  console.log("lon:", lon);
-  console.log("lat:", lat);
-  console.log("page:", page);
-  console.log("limit:", limit);
-  console.log("filter data:", filterData);
-  console.log("price range :", priceRange);
-  console.log("minPrice:", minPrice);
-  console.log("maxPrice:", maxPrice);
-  console.log("exp:", exp);
-  console.log("servicerating:", servicerating);
+  // console.log("catId:", categoryId);
+  // console.log("lon:", lon);
+  // console.log("lat:", lat);
+  // console.log("page:", page);
+  // console.log("limit:", limit);
+  // console.log("filter data:", filterData);
+  // console.log("price range :", priceRange);
+  // console.log("minPrice:", minPrice);
+  // console.log("maxPrice:", maxPrice);
+  // console.log("exp:", exp);
+  // console.log("servicerating:", servicerating);
   // console.log("rating :", rating);
   // console.log("experience :", experience);
 
@@ -707,6 +711,29 @@ const deleteService = async (req, res) => {
   }
 };
 
+// Increment the views for a service
+const updateServiceViews = async (req, res) => {
+  const { serviceId } = req.body;
+  console.log("serciveId views:", serviceId);
+
+  try {
+    // Increment the views field by 1
+    const updatedService = await Service.findByIdAndUpdate(
+      serviceId,
+      { $inc: { views: 1 } },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedService) {
+      return res.status(404).json({ message: "Service not found" });
+    }
+
+    res.status(200).json({ message: "View updated", service: updatedService });
+  } catch (error) {
+    res.status(500).json({ error: "Error updating views" });
+  }
+};
+
 const getFilteredServices = async (req, res) => {
   const { categoryId } = req.params;
   const { longitude, latitude, filterOptions } = req.query;
@@ -724,4 +751,5 @@ module.exports = {
   getFilteredServices,
   deleteService,
   getNearbyServicesTest2,
+  updateServiceViews,
 };
