@@ -139,7 +139,12 @@ const Services = () => {
           })}
 
           {/* Show loading skeletons if loading */}
-          {loading && numOfCards.map((_, i) => <SkeletonCard2 key={i} />)}
+          {loading &&
+            numOfCards.map((_, i) => (
+              <div key={i} className="rounded h-[400px] ">
+                <SkeletonCard2 />
+              </div>
+            ))}
         </div>
 
         {/* no service available */}
