@@ -22,6 +22,18 @@ const Experience = ({ currCategory }) => {
         min={0}
         max={currCategory.maxExp}
         onChange={handleExpChange}
+        sx={{
+          color: "gray", // Sets the slider's active color to gray
+          "& .MuiSlider-thumb": {
+            backgroundColor: "gray", // Thumb (circular knob) color
+          },
+          "& .MuiSlider-rail": {
+            backgroundColor: "#d3d3d3", // Rail color (track behind the slider)
+          },
+          "& .MuiSlider-track": {
+            backgroundColor: "gray", // Active track color
+          },
+        }}
       />
       <div>
         <p className="m-0">

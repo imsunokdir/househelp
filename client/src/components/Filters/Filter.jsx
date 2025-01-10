@@ -131,7 +131,7 @@ const Filter = () => {
               <CloseIcon />
             </IconButton>
           </Toolbar>
-          <div className="flex-grow p-3 overflow-y-auto">
+          <div className="flex-grow p-5 overflow-y-auto">
             <PriceSlider currCategory={currCategory} />
             <Divider />
             <RatingStar currCategory={currCategory} />

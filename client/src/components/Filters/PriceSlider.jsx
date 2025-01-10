@@ -57,6 +57,18 @@ const PriceSlider = ({ currCategory }) => {
         step={500}
         min={0}
         max={currCategory.maxPrice}
+        sx={{
+          color: "gray", // Sets the slider's active color to gray
+          "& .MuiSlider-thumb": {
+            backgroundColor: "gray", // Thumb (circular knob) color
+          },
+          "& .MuiSlider-rail": {
+            backgroundColor: "#d3d3d3", // Rail color (track behind the slider)
+          },
+          "& .MuiSlider-track": {
+            backgroundColor: "gray", // Active track color
+          },
+        }}
       />
       <div className="flex justify-between">
         <p>Min: ₹{price.minimum}</p>
