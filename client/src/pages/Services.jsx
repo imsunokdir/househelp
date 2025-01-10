@@ -49,7 +49,7 @@ const Services = () => {
   };
 
   const debouncedFetch = debounce(() => {
-    setIsFetching(true);
+    // setIsFetching(true);
     try {
       dispatch(fetchServicesThunk(categoryId, page, userLocation, filterData));
     } catch (error) {
@@ -71,6 +71,7 @@ const Services = () => {
       observer.current = new IntersectionObserver(
         (entries) => {
           if (entries[0].isIntersecting && hasMore) {
+            setIsFetching(true);
             debouncedFetch();
           }
         },
