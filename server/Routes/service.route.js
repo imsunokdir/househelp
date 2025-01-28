@@ -12,6 +12,9 @@ const {
   deleteService,
   getNearbyServicesTest2,
   updateServiceViews,
+
+  checkSavedService,
+  toggleSaveService,
 } = require("../Controllers/service.controller");
 const { isAuth } = require("../Middlewares/isAuth");
 const serviceRouter = express.Router();
@@ -40,5 +43,7 @@ serviceRouter.post("/get-nearby-services/:categoryId", getNearbyServicesTest2);
 serviceRouter.get("/filter-services/:categoryId", getFilteredServices);
 serviceRouter.delete("/delete-service/:serviceId", deleteService);
 serviceRouter.put("/views/inc", updateServiceViews);
+serviceRouter.put("/save-service", toggleSaveService);
+serviceRouter.get("/check-saved-service", checkSavedService);
 
 module.exports = { serviceRouter };

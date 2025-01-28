@@ -113,7 +113,13 @@ const MenuDropdown = () => {
           <Space>
             {userDetails && userDetails?.avatar ? (
               <Fade in timeout={500}>
-                <Avatar src={userDetails.avatar} className="shadow" />
+                <Avatar
+                  src={`${userDetails.avatar.replace(
+                    "/upload/",
+                    "/upload/f_auto,q_auto,w_50/"
+                  )}`}
+                  className="shadow"
+                />
               </Fade>
             ) : (
               <Avatar className="shadow-md" />

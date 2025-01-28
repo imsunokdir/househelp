@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import { Image, Upload } from "antd";
 import { faL } from "@fortawesome/free-solid-svg-icons";
+import imageCompression from "browser-image-compression";
 
 const getBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -24,8 +25,32 @@ const UploadServiceImages = (params) => {
     setPreviewOpen(true);
   };
 
-  const handleChange = ({ fileList: newFileList }) => {
-    setFileList(newFileList);
+  // const handleChange = ({ fileList: newFileList }) => {
+  //   setFileList(newFileList);
+  // };
+
+  const handleChange = async ({ fileList: newFileList }) => {
+    const compressedFileList = await Promise.all(
+      newFileList.map(async (file) => {
+        if (file.originFileObj) {
+          const options = {
+            maxSizeMB: 0.25, // Specify max size in MB
+            maxWidthOrHeight: 1920, // Resize image to a maximum width or height
+            useWebWorker: true, // Use web worker for performance
+          };
+          const compressedFile = await imageCompression(
+            file.originFileObj,
+            options
+          );
+          return {
+            ...file,
+            originFileObj: compressedFile, // Use the compressed file for upload
+          };
+        }
+        return file;
+      })
+    );
+    setFileList(compressedFileList);
   };
 
   useEffect(() => {

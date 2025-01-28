@@ -4,6 +4,7 @@ const Service = require("../Models/service.schema");
 const Category = require("../Models/category.schema");
 const { find } = require("../Models/user.schema");
 const { validateServiceData } = require("../Utils/validateServiceData");
+const User = require("../Models/user.schema");
 
 // let objectId;
 // objectId = mongoose.Types.ObjectId(categoryId);
@@ -739,6 +740,70 @@ const getFilteredServices = async (req, res) => {
   const { longitude, latitude, filterOptions } = req.query;
 };
 
+const toggleSaveService = async (req, res) => {
+  const { serviceId } = req.body;
+  const { userId } = req.session.user;
+
+  console.log("service id toggle:", serviceId);
+
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const serviceObjectId = new mongoose.Types.ObjectId(serviceId); // Use 'new' keyword
+
+    const serviceExists = user.savedServices.some((id) =>
+      id.equals(serviceObjectId)
+    );
+    const updatedServices = serviceExists
+      ? user.savedServices.filter((id) => !id.equals(serviceObjectId))
+      : [...user.savedServices, serviceObjectId];
+
+    user.savedServices = updatedServices;
+    await user.save();
+
+    res.status(200).json({
+      message: `Service ${serviceExists ? "removed" : "saved"} successfully`,
+      isSaved: !serviceExists,
+      services: user.savedServices,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error.", error });
+  }
+};
+
+const checkSavedService = async (req, res) => {
+  const { serviceId } = req.query; // This is a string
+  const { userId } = req.session.user;
+
+  console.log("service id check:", serviceId);
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const serviceObjectId = new mongoose.Types.ObjectId(serviceId); // Use 'new' keyword to create ObjectId
+
+    const serviceExists = user.savedServices.some((id) =>
+      id.equals(serviceObjectId)
+    );
+
+    res.status(200).json({
+      message: "Service check successful",
+      isSaved: serviceExists,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error.", error });
+  }
+};
+
 module.exports = {
   registerService,
   getAllServices,
@@ -752,4 +817,6 @@ module.exports = {
   deleteService,
   getNearbyServicesTest2,
   updateServiceViews,
+  toggleSaveService,
+  checkSavedService,
 };

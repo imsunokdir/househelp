@@ -121,7 +121,7 @@ const Services = () => {
                   key={service._id}
                   className="rounded h-[400px] "
                 >
-                  <ServiceCard service={service} />
+                  <ServiceCard service={service} delay={100} index={i} />
                   {/* <ServiceCard2 service={service} /> */}
                 </div>
               );
@@ -132,7 +132,7 @@ const Services = () => {
                   className="rounded h-[400px] "
                   // style={{ borderRadius: "10%" }}
                 >
-                  <ServiceCard service={service} />
+                  <ServiceCard service={service} delay={100} index={i} />
                   {/* <ServiceCard2 service={service} /> */}
                 </div>
               );
@@ -143,7 +143,7 @@ const Services = () => {
           {loading &&
             numOfCards.map((_, i) => (
               <div key={i} className="rounded h-[400px] ">
-                <SkeletonCard2 />
+                <SkeletonCard2 delay={50} index={i} />
               </div>
             ))}
         </div>

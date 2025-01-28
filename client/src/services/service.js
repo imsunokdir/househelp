@@ -67,3 +67,11 @@ export const deleteService = async (serviceId) =>
 
 export const updateServiceViews = async (serviceId) =>
   await axiosInstance.put(`/service/views/inc`, { serviceId });
+
+export const toggleSave = async (serviceId) =>
+  await axiosInstance.put(`/service/save-service`, { serviceId });
+
+export const checkSaveService = async (serviceId) =>
+  await axiosInstance.get(`/service/check-saved-service`, {
+    params: { serviceId },
+  });

@@ -43,7 +43,13 @@ const ImageCarousel = ({ service }) => {
         {service.images.map((image) => {
           return (
             <SwiperSlide key={image._id}>
-              <img src={image.url} className="carousel-img" />
+              <img
+                src={`${image.url.replace(
+                  "/upload/",
+                  "/upload/f_auto,q_auto,w_1200/"
+                )}`} // Adjusting to load images at width 1200
+                className="carousel-img"
+              />
             </SwiperSlide>
           );
         })}

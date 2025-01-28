@@ -84,6 +84,12 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    savedServices: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Service",
+      },
+    ],
   },
 
   {
