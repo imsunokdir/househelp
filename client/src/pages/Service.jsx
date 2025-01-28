@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { fetchServiceById, updateServiceViews } from "../services/service";
 import UserDetails from "../components/UserDetails";
@@ -20,6 +20,7 @@ import ImageCarousel from "./ImageCarousel";
 import noprofile from "../../src/assets/noprofile.jpg";
 import ServiceAndUser from "./ServiceAndUser";
 import LoadBalls from "../components/LoadingSkeleton/LoadBalls";
+import { AuthContext } from "../contexts/AuthProvider";
 
 const boxShadowStyle = {
   boxShadow: "-8px 6px 10px rgba(0, 0, 0, 0.2)", // Left and bottom shadow
@@ -35,6 +36,13 @@ const Service = () => {
   const [averageRating, setAverageRating] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const { user, isAuth } = useContext(AuthContext);
+
+  useEffect(() => {
+    console.log("user:", user);
+    // if(user.isAuth)
+  }, [user]);
 
   //modal states
   const [open, setOpen] = useState(false);

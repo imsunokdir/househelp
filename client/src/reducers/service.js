@@ -6,7 +6,7 @@ const serviceSlice = createSlice({
     servicesByCategoryId: {}, // Stores services per category
     currentPage: {}, // Tracks the current page for each category
     hasMoreServicesByCategory: {}, // Indicates if more services are available for each category
-    serviceLoading: false,
+    serviceLoading: true,
     error: false,
   },
   reducers: {

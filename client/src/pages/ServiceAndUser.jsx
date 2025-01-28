@@ -134,7 +134,7 @@ const ServiceAndUser = ({
                 style={{ fontSize: "24px" }}
                 onClick={toggleSaveService}
               /> */}
-              {isServiceSaved ? (
+              {user && isServiceSaved ? (
                 <div>
                   <SaveFilled
                     style={{ fontSize: "24px" }}
