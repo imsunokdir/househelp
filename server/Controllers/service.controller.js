@@ -1,4 +1,4 @@
-const { default: mongoose } = require("mongoose");
+const mongoose  = require("mongoose");
 const Rating = require("../Models/rating.schema");
 const Service = require("../Models/service.schema");
 const Category = require("../Models/category.schema");
@@ -598,6 +598,7 @@ const getNearbyServicesTest2 = async (req, res) => {
 
   const query = {
     category: new mongoose.Types.ObjectId(categoryId),
+    status:"Active",
     ...(minPrice && { "priceRange.minimum": { $gte: minPrice } }),
     ...(maxPrice && { "priceRange.maximum": { $lte: maxPrice } }),
     ...(servicerating && { averageRating: { $gte: servicerating } }),
@@ -804,6 +805,62 @@ const checkSavedService = async (req, res) => {
   }
 };
 
+const getSavedServices = async(req, res)=>{
+  try{
+    const {userId} = req.session.user;
+
+  const user = await User.findById(userId).populate("savedServices").exec();
+
+  if(!user){
+    return res.status(404).json({message:"User not found"})
+  }
+
+  return res.status(200).json({
+    message:"Saved services fetched successfully",
+    savedServices:user.savedServices
+  })
+}catch(error){
+  console.error("Error fetching saved services:", error);
+  return res.status(500).json({
+    success:false,
+    message:"Internal server error",
+    error:error.message
+  })
+}
+
+}
+
+
+const deleteSingleSavedService = async(req, res)=>{
+  try{
+  const {serviceId} = req.body;
+  const {userId} = req.session.user;
+
+  if (!serviceId || !userId) {
+      return res.status(400).json({ message: "Service ID and User ID are required" });
+    }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    {$pull:{savedServices:serviceId}},
+    {new:true}
+    )
+
+  if(!updatedUser){
+    return res.status(404).json({
+      message:"User not found."
+    })
+  }
+
+  res.status(200).json({
+    message: "Service removed successfully", updatedUser
+  })
+  }catch(error){
+    console.error("Error deleting saved service:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
 module.exports = {
   registerService,
   getAllServices,
@@ -819,4 +876,6 @@ module.exports = {
   updateServiceViews,
   toggleSaveService,
   checkSavedService,
+  getSavedServices,
+  deleteSingleSavedService
 };

@@ -75,3 +75,11 @@ export const checkSaveService = async (serviceId) =>
   await axiosInstance.get(`/service/check-saved-service`, {
     params: { serviceId },
   });
+
+export const fetchSavedServices = async () =>
+  await axiosInstance.get("/service/get-saved-services");
+
+export const deleteSavedService = async (serviceId) =>
+  await axiosInstance.post("/service/delete-single-saved-service", {
+    serviceId,
+  });

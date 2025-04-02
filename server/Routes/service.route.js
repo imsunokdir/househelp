@@ -15,6 +15,8 @@ const {
 
   checkSavedService,
   toggleSaveService,
+  getSavedServices,
+  deleteSingleSavedService
 } = require("../Controllers/service.controller");
 const { isAuth } = require("../Middlewares/isAuth");
 const serviceRouter = express.Router();
@@ -45,5 +47,7 @@ serviceRouter.delete("/delete-service/:serviceId", deleteService);
 serviceRouter.put("/views/inc", updateServiceViews);
 serviceRouter.put("/save-service", toggleSaveService);
 serviceRouter.get("/check-saved-service", checkSavedService);
+serviceRouter.get("/get-saved-services", getSavedServices)
+serviceRouter.post("/delete-single-saved-service", deleteSingleSavedService)
 
 module.exports = { serviceRouter };

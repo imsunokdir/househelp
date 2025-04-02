@@ -12,17 +12,23 @@ const MyServiceMenu = () => {
         <p className="m-0">Create Services</p>
         <p className="m-0 italic text-[15px]">Become a service provider</p>
       </div>
-      <div
+      {/* <div
         className="shadow-md p-2 rounded hover:shadow-lg cursor-pointer"
         onClick={() => navigate("/accounts/my-services")}
       >
         View My Services
-      </div>
+      </div> */}
       <div
         className="shadow-md p-2 rounded hover:shadow-lg cursor-pointer"
         onClick={() => navigate("/accounts/my-services")}
       >
         Manage my services
+      </div>
+      <div
+        className="shadow-md p-2 rounded hover:shadow-lg cursor-pointer"
+        onClick={() => navigate("/accounts/saved-services")}
+      >
+        Saved Services
       </div>
       {/* <div className="shadow-md p-2">Service analytics</div> */}
       {/* <div className="shadow-md">Service analytics</div> */}

@@ -13,7 +13,10 @@ const SkeletonCard2 = ({ index, delay }) => {
   const fadeOut = (index + 1) * delay;
 
   return (
-    <Card className="cursor-pointer" style={{ borderRadius: "10%" }}>
+    <Card
+      className="cursor-pointer h-[400px] flex flex-col"
+      style={{ borderRadius: "10%" }}
+    >
       <Fade in={true} timeout={{ enter: 0, exit: fadeOut }}>
         <CardHeader
           shadow={false}
@@ -57,9 +60,9 @@ const SkeletonCard2 = ({ index, delay }) => {
         <div className=" p-[2px] rounded">
           <Skeleton.Input active={true} size="small" />
         </div>
-        <div>
+        {/* <div>
           <Skeleton.Input active={true} size="small" />
-        </div>
+        </div> */}
       </CardFooter>
     </Card>
   );
