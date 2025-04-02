@@ -68,6 +68,7 @@ const ServiceAndUser = ({
   });
 
   const toggleSaveService = async () => {
+    console.log("user logged???::", user);
     try {
       setSaveLoading(true);
       const res = await toggleSave(service._id);
@@ -123,33 +124,35 @@ const ServiceAndUser = ({
           <div>
             <h2 className="m-0">{service.serviceName}</h2>
           </div>
-          <div className=" mx-3">
-            <Spin
-              indicator={<LoadingOutlined spin />}
-              size="small"
-              // tip="saving"
-              spinning={saveLoading}
-            >
-              {/* <SaveOutlined
+          {user && (
+            <div className=" mx-3">
+              <Spin
+                indicator={<LoadingOutlined spin />}
+                size="small"
+                // tip="saving"
+                spinning={saveLoading}
+              >
+                {/* <SaveOutlined
                 style={{ fontSize: "24px" }}
                 onClick={toggleSaveService}
               /> */}
-              {user && isServiceSaved ? (
-                <div>
-                  <SaveFilled
+                {user && isServiceSaved ? (
+                  <div>
+                    <SaveFilled
+                      style={{ fontSize: "24px" }}
+                      onClick={toggleSaveService}
+                    />
+                  </div>
+                ) : (
+                  <SaveOutlined
                     style={{ fontSize: "24px" }}
                     onClick={toggleSaveService}
                   />
-                </div>
-              ) : (
-                <SaveOutlined
-                  style={{ fontSize: "24px" }}
-                  onClick={toggleSaveService}
-                />
-              )}
-            </Spin>
-            {/* <LoadingOutlined /> */}
-          </div>
+                )}
+              </Spin>
+              {/* <LoadingOutlined /> */}
+            </div>
+          )}
 
           {/* <p className="italic m-0">(Electrician)</p> */}
         </div>

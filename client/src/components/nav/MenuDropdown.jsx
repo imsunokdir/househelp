@@ -90,14 +90,15 @@ const MenuDropdown = () => {
           key: "1",
           icon: <Login sx={{ width: 18, height: 18 }} />,
         },
-    {
-      type: "divider",
-    },
-    {
-      label: "Settings",
-      key: "3",
-      icon: <SettingOutlined />,
-    },
+    //     ,
+    // {
+    //   type: "divider",
+    // },
+    // {
+    //   label: "Settings",
+    //   key: "3",
+    //   icon: <SettingOutlined />,
+    // },
   ];
   return (
     <div className="flex h-full w-full rounded-full justify-center items-center">

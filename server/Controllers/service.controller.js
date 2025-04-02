@@ -743,6 +743,11 @@ const getFilteredServices = async (req, res) => {
 
 const toggleSaveService = async (req, res) => {
   const { serviceId } = req.body;
+  if(!req.session.user){
+return res.status(404).json({
+      message:"User not found, please check and login/register if required."
+    })
+  }
   const { userId } = req.session.user;
 
   console.log("service id toggle:", serviceId);
@@ -779,10 +784,18 @@ const toggleSaveService = async (req, res) => {
 
 const checkSavedService = async (req, res) => {
   const { serviceId } = req.query; // This is a string
+  console.log("sesion user:", req.session)
+
+  if(!req.session.user){
+return res.status(404).json({
+      message:"User not found, please check and login/register if required."
+    })
+  }
   const { userId } = req.session.user;
 
+  
   console.log("service id check:", serviceId);
-
+ 
   try {
     const user = await User.findById(userId);
     if (!user) {
