@@ -48,7 +48,7 @@ const MyServiceDetails = () => {
       if (response.status === 200) {
         setModal2Open(false);
         setisServiceDeleting(false);
-        navigate("/accounts/my-services", { replace: true });
+        navigate("/accounts/my-service-menu/my-services", { replace: true });
       }
     } catch (error) {
       setisServiceDeleting(false);
@@ -164,7 +164,7 @@ const MyServiceDetails = () => {
               dark:border-gray-600 dark:hover:bg-gray-700 
               dark:hover:border-gray-600 dark:focus:ring-gray-700 
               hover:shadow-md"
-              onClick={() => navigate(`/edit-service/${service._id}`)}
+              onClick={() => navigate(`edit-single-service/${service._id}`)}
             >
               <Edit />
               Edit

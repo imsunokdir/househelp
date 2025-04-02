@@ -15,8 +15,11 @@ import numeral from "numeral";
 
 const MyServiceCard = ({ service }) => {
   const navigate = useNavigate();
+  // const handleClick = () => {
+  //   navigate(`/edit-service/${service._id}`);
+  // };
   const handleClick = () => {
-    navigate(`/edit-service/${service._id}`);
+    navigate(`edit-single-service/${service._id}`);
   };
   const items = [
     {
@@ -60,9 +63,7 @@ const MyServiceCard = ({ service }) => {
         </div>
         <div
           className="flex border p-1"
-          onClick={() =>
-            navigate(`/accounts/my-service/details/${service._id}`)
-          }
+          onClick={() => navigate(`details/${service._id}`)}
         >
           {/* first col */}
           <div className="w-1/3  flex justify-center">

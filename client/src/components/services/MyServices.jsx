@@ -3,10 +3,12 @@ import { getMyServices } from "../../services/service";
 import MyServiceSingle from "./MyServiceSingle";
 import Service from "../../pages/Service";
 import { Empty, Button, Typography } from "antd";
-import { useNavigate } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import { Fade } from "@mui/material";
 import LoadBalls from "../LoadingSkeleton/LoadBalls";
 import MyServiceCard from "./MyServiceCard";
+import MyServiceDetails from "./MyServiceDetails";
+import EditService from "../../components/services/EditService";
 
 const MyServices = () => {
   const [myServices, setMyServices] = useState(null);
@@ -72,6 +74,12 @@ const MyServices = () => {
           <Button onClick={handleAddService}>+ Add Service</Button>
         </div>
       </div>
+      {/* <Routes>
+        <Route
+          path="edit-single-service/:serviceId"
+          element={<EditService />}
+        />
+      </Routes> */}
     </div>
   );
 };
