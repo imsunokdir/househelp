@@ -49,6 +49,10 @@ const SavedServiceCard = ({ service, handleRemoveService }) => {
     console.log("Clicked cancel button");
     setOpen(false);
   };
+
+  const handleClick = () => {
+    window.open(`/show-service-details/${service._id}`);
+  };
   return (
     <Card
       sx={{
@@ -62,7 +66,7 @@ const SavedServiceCard = ({ service, handleRemoveService }) => {
         padding: "5px", // Remove extra padding
       }}
     >
-      <CardActionArea sx={{ flexGrow: 1 }}>
+      <CardActionArea sx={{ flexGrow: 1 }} onClick={handleClick}>
         {/* Reduced Image Size */}
         <CardMedia
           component="img"

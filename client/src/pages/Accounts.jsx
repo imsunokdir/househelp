@@ -27,7 +27,7 @@ const Accounts = () => {
   );
 
   return (
-    <div className="p-4">
+    <div className="p-0 m-0">
       <DynamicBreadCrumbs />
 
       {/* Conditionally render AcccSettingsMenu */}
