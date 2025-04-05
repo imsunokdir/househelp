@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Avatar, Divider, List, Skeleton, Rate } from "antd";
-import InfiniteScroll from "react-infinite-scroll-component";
-import { getServiceReviews } from "../../services/reviews"; // Make sure this fetches the data from your backend
-import "./service.css";
+import React from "react";
+import { Avatar, List, Skeleton, Rate } from "antd";
 import { StarFilled, StarOutlined } from "@ant-design/icons";
-const Reviews = ({ data }) => {
+import "./service.css";
+
+const Reviews = ({ data, loading }) => {
   return (
     <>
       <List
@@ -32,12 +31,21 @@ const Reviews = ({ data }) => {
               }
               description={item.comment}
             />
-            {/* <div>
-                <Rate value={item.rating} />
-              </div> */}
           </List.Item>
         )}
       />
+
+      {/* Proper loading skeleton wrapped inside a List to avoid stray dots */}
+      {loading && (
+        <List
+          dataSource={[1, 2]}
+          renderItem={(_, index) => (
+            <List.Item key={`skeleton-${index}`}>
+              <Skeleton avatar active paragraph={{ rows: 2 }} />
+            </List.Item>
+          )}
+        />
+      )}
     </>
   );
 };

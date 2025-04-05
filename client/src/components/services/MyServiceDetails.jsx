@@ -59,7 +59,7 @@ const MyServiceDetails = () => {
   return serviceLoading ? (
     <LoadBalls />
   ) : (
-    <div className="">
+    <div className="p-3">
       <div className="flex flex-col md:flex-row gap-2 w-full ">
         {/* Image Carousel */}
         <div className=" w-full lg:w-3/4 ">

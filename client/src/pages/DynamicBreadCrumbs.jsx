@@ -49,7 +49,7 @@ const DynamicBreadCrumbs = () => {
   });
 
   return (
-    <Breadcrumb>
+    <Breadcrumb className="p-3">
       {breadcrumbItems.map((item, index) => (
         <Breadcrumb.Item key={item.path}>
           {index !== breadcrumbItems.length - 1 ? (

@@ -33,17 +33,20 @@ const SavedServices = () => {
   return isSavedServicesLoading ? (
     <LoadBalls />
   ) : (
-    <div>
-      <h3>Saved Services</h3>
-      <div>
+    <div className="p-4">
+      <h3 className="text-xl font-semibold mb-4">Saved Services</h3>
+      <div className="p-3">
         {savedServices.length > 0 ? (
-          <motion.div className="flex flex-wrap gap-4 justify-start">
+          <motion.div
+            layout
+            className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 place-items-center"
+          >
             <AnimatePresence>
               {savedServices.map((service) => (
                 <motion.div
                   key={service._id}
-                  className="w-[200px]"
-                  layout //This enables smooth reordering animations.
+                  className="w-full max-w-xs"
+                  layout
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.8 }}
@@ -58,7 +61,7 @@ const SavedServices = () => {
             </AnimatePresence>
           </motion.div>
         ) : (
-          <div>No saved services.</div>
+          <div className="text-center text-gray-500">No saved services.</div>
         )}
       </div>
     </div>

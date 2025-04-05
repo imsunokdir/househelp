@@ -6,7 +6,7 @@ const AccountTabs = () => {
   const navigate = useNavigate();
   return (
     <Fade in timeout={500}>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-3">
         <div
           className="shadow-md p-2 rounded hover:shadow-lg cursor-pointer"
           onClick={() => navigate("/accounts/personal-info")}

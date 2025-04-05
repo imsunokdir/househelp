@@ -74,15 +74,15 @@ const ReviewsMain = ({ serviceId, averageRating }) => {
         }}
       >
         <div className="flex flex-col items-center">
-          <div>{averageRating} ✩</div>
+          <div>{averageRating.toFixed(1)} ✩</div>
           {rateDist && <RatingDistribution rateDist={rateDist} />}
         </div>
         <div className="h-full p-4">
           <h2>Reviews</h2>
-          <Reviews serviceId={serviceId} data={data} />
-          {loading && (
+          <Reviews serviceId={serviceId} data={data} loading={loading} />
+          {/* {loading && (
             <Skeleton avatar paragraph={{ rows: 1 }} active className="p-4" />
-          )}
+          )} */}
 
           {!loading && hasMore && (
             <button
@@ -92,7 +92,7 @@ const ReviewsMain = ({ serviceId, averageRating }) => {
               Load More Reviews
             </button>
           )}
-          {!hasMore && <Divider plain>That's All Folks 🤐</Divider>}
+          {!hasMore && <Divider plain>No more reviews available.</Divider>}
         </div>
       </div>
     </div>
