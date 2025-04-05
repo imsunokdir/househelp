@@ -142,7 +142,7 @@ const AddServiceForm = () => {
 
       const response = await updateService(formDataToSend);
       if (response.status === 200) {
-        navigate("/accounts/my-services");
+        navigate("/accounts/my-service-menu/my-services");
       }
     } catch (error) {
       console.log("error:", error);
