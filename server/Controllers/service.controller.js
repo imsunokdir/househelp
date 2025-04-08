@@ -246,6 +246,7 @@ const getServiceByCategory = async (req, res) => {
         data: [],
         message: "No categories were found",
         hasMore, // Include hasMore field in the response even if no services are found
+        page
       });
     }
   } catch (error) {
