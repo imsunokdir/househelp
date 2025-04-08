@@ -17,6 +17,7 @@ import { fetchServicesThunk } from "../reducers/thunks/serviceThunk";
 import { useCookies } from "react-cookie";
 import NoServiceAvl from "./NoServiceAvl";
 import ServiceCard2 from "../components/services/ServiceCard2";
+import { fetchServiceByCategoryThunk } from "../reducers/thunks/servicesThunk";
 
 const Services = () => {
   const dispatch = useDispatch();
@@ -51,6 +52,14 @@ const Services = () => {
   const debouncedFetch = debounce(() => {
     // setIsFetching(true);
     try {
+      dispatch(
+        fetchServiceByCategoryThunk({
+          categoryId,
+          page,
+          userLocation,
+          filterData,
+        })
+      );
       dispatch(fetchServicesThunk(categoryId, page, userLocation, filterData));
     } catch (error) {
       ConstructionOutlined.log(error);
@@ -93,6 +102,14 @@ const Services = () => {
       hasMore &&
       !servicesByCategoryId[categoryId]
     ) {
+      dispatch(
+        fetchServiceByCategoryThunk({
+          categoryId,
+          page,
+          userLocation,
+          filterData,
+        })
+      );
       dispatch(fetchServicesThunk(categoryId, page, userLocation, filterData));
     }
   }, [categoryId, userLocation]);

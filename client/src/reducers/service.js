@@ -1,4 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { fetchServiceByCategoryThunk } from "./thunks/servicesThunk";
+
+const updateServiceState = (state, categoryId, data) => {
+  const { page, hasMore, services } = data;
+  console.log("datat datata:", services);
+  // state.currentPage[categoryId]=page;
+  // state.hasMoreServicesByCategory[categoryId]=hasMore;
+  // if(!state.servicesByCategoryId[categoryId]){
+  //   state.servicesByCategoryId[categoryId]=[]
+  // }
+  // state.servicesByCategoryId[categoryId].push(...data.);
+};
 
 const serviceSlice = createSlice({
   name: "Service",
@@ -57,6 +69,23 @@ const serviceSlice = createSlice({
       state.hasMoreServicesByCategory = {};
       state.currentPage = {};
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchServiceByCategoryThunk.pending, (state) => {
+        console.log("services thunk:::::: Loading");
+      })
+      .addCase(fetchServiceByCategoryThunk.fulfilled, (state, action) => {
+        console.log("services thunk:::::: succeeded");
+        console.log("action.payload:", action.payload);
+        const { data, status, categoryId } = action.payload;
+        const { services, totalCount, hasMore } = data;
+
+        updateServiceState(state, categoryId, data);
+      })
+      .addCase(fetchServiceByCategoryThunk.rejected, (state) => {
+        console.log("services thunk:::::: failed");
+      });
   },
 });
 

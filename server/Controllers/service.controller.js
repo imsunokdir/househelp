@@ -678,6 +678,7 @@ const getNearbyServicesTest2 = async (req, res) => {
       services,
       totalCount: totalServices, // Include total count in the response
       hasMore, // Include hasMore flag
+      page
     });
   } catch (error) {
     console.log("Error in fetching nearby services:", error);
