@@ -239,6 +239,7 @@ const getServiceByCategory = async (req, res) => {
         success: true,
         data: services,
         hasMore, // Include hasMore field in the response
+        page
       });
     } else if (services.length === 0) {
       return res.status(200).json({
@@ -246,7 +247,7 @@ const getServiceByCategory = async (req, res) => {
         data: [],
         message: "No categories were found",
         hasMore, // Include hasMore field in the response even if no services are found
-        page
+
       });
     }
   } catch (error) {
