@@ -19,11 +19,12 @@ export const fetchServiceByCategoryThunk = createAsyncThunk(
         axios.CancelToken.source().token
       );
 
-      console.log("returned data for fetch thunk:", response.data);
+      //   console.log("returned data for fetch thunk:", response.data);
 
       return {
         data: response.data,
         status: response.status,
+        categoryId,
       };
     } catch (error) {}
   }

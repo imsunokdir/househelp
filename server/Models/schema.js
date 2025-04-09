@@ -39,6 +39,28 @@ const saveServiceField = async () => {
   }
 };
 
+const addPasswordResetFields = async (req, res) => {
+  try {
+    // Update all users by setting the fields if they don't already exist
+    const result = await User.updateMany(
+      {},
+      {
+        $set: {
+          resetPasswordToken: { type: String, default: null },
+          resetPasswordExpires: { type: Date, default: null },
+        },
+      }
+    );
+    console.log("result:", result);
+    res
+      .status(200)
+      .json({ message: "Fields added to all users successfully." });
+  } catch (error) {
+    console.error("Error updating users:", error);
+    res.status(500).json({ message: "Something went wrong." });
+  }
+};
+
 // const testDb = async () => {
 //   console.log("hello from test.");
 // };
@@ -47,4 +69,5 @@ module.exports = {
   schemaUpdate,
   serviceStatusUpdate,
   saveServiceField,
+  addPasswordResetFields,
 };

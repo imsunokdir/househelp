@@ -1,20 +1,38 @@
 import { createSlice } from "@reduxjs/toolkit";
 import categorySlice from "./category";
 
-const initialState = {
+export const defaultFilterValues = {
   priceRange: { minimum: 0, maximum: null },
   rating: null,
   experience: null,
+};
+
+const initialState = {
+  // priceRange: { minimum: 0, maximum: null },
+  // rating: null,
+  // experience: null,
   // availability: [],
+  ...defaultFilterValues,
   filterApplied: false,
   filterCount: 0,
   filterApplying: false,
+  isFilterCleared: false,
 };
 
 const filterSlice = createSlice({
   name: "filters",
   initialState,
   reducers: {
+    setAllFilters: (state, action) => {
+      const { priceRange, rating, experience } = action.payload;
+      state.priceRange = priceRange;
+      state.rating = rating;
+      state.experience = experience;
+
+      state.filterApplying = true;
+      updateFilterCount(state);
+    },
+
     setPriceRange: (state, action) => {
       state.priceRange = action.payload;
       // state.filterApplied = true;
@@ -69,6 +87,9 @@ const updateFilterCount = (state) => {
   // }
   state.filterCount = count; // Update the filter count
 };
+
+export const getFilterIsApplied = (state) => state.filter.filterApplied;
+export const getFilterCount = (state) => state.filter.filterCount;
 
 export const filterActions = filterSlice.actions;
 export default filterSlice;

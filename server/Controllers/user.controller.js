@@ -8,6 +8,8 @@ const {
   sendEmailVerificationMail,
   isEmailValidate,
   generateOTP,
+  generateJWTTokenForPasswordReset,
+  sendPasswordResetMail,
 } = require("../Utils/auth");
 const ShoutoutClient = require("shoutout-sdk");
 const { default: mongoose } = require("mongoose");
@@ -62,6 +64,71 @@ const registerUser = async (req, res) => {
   }
 };
 
+const sendResetPasswordLink = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (user) {
+      const verifiedToken = jwt.sign(
+        { id: user._id },
+        process.env.JWT_SECRET_KEY,
+        {
+          expiresIn: "1h",
+        }
+      );
+      user.resetPasswordToken = verifiedToken;
+      user.resetPasswordExpires = Date.now() + 3600000;
+      await user.save();
+      // const verifiedToken = generateJWTTokenForPasswordReset(email);
+      await sendPasswordResetMail({ email, verifiedToken });
+
+      return res.status(200).json({
+        success: true,
+        message:
+          "If an account with that email exists, a password reset link has been sent.",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong. Please try again later.",
+    });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      return res.status(400).json({ message: "Token and password required" });
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+
+    const userId = decoded.id;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found.",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(
+      newPassword,
+      Number(process.env.SALT)
+    );
+    user.password = hashedPassword;
+    await user.save();
+    return res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    console.error("Password reset error:", error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 const verifyUser = async (req, res) => {
   const { email, username } = jwt.verify(
     req.params.token,
@@ -81,6 +148,8 @@ const verifyUser = async (req, res) => {
     });
   }
 };
+
+const verifyPasswordReset = async (req, res) => {};
 
 const loginUser = async (req, res) => {
   //loginId: email || username
@@ -430,6 +499,8 @@ const activeSessions = async (req, res) => {
   }
 };
 
+const forgotPassword = async (req, res) => {};
+
 module.exports = {
   registerUser,
   verifyUser,
@@ -443,4 +514,8 @@ module.exports = {
   updateUserInfo,
   changePassword,
   activeSessions,
+  forgotPassword,
+  sendResetPasswordLink,
+  verifyPasswordReset,
+  resetPassword,
 };

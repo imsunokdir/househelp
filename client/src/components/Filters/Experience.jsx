@@ -1,43 +1,39 @@
 import { Slider } from "@mui/material";
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { filterActions } from "../../reducers/filter";
 
-const Experience = ({ currCategory }) => {
-  const dispatch = useDispatch();
-  const { experience } = useSelector((state) => state.filter);
+const Experience = ({ localFilters, setLocalFilters }) => {
+  const experience = localFilters?.experience ?? 0;
+  const maxExperience = 10; // Set your default max experience value (you can customize this)
+
   const handleExpChange = (e, value) => {
-    console.log("value:", value);
-    dispatch(filterActions.setExperience(value));
+    setLocalFilters((prev) => ({
+      ...prev,
+      experience: value,
+    }));
   };
+
   return (
     <div>
       <p className="m-0">Experience</p>
       <Slider
-        aria-label="Temperature"
+        aria-label="Experience"
         value={experience}
+        onChange={handleExpChange}
         valueLabelDisplay="auto"
         step={1}
         marks
         min={0}
-        max={currCategory.maxExp}
-        onChange={handleExpChange}
+        max={maxExperience}
         sx={{
-          color: "gray", // Sets the slider's active color to gray
-          "& .MuiSlider-thumb": {
-            backgroundColor: "gray", // Thumb (circular knob) color
-          },
-          "& .MuiSlider-rail": {
-            backgroundColor: "#d3d3d3", // Rail color (track behind the slider)
-          },
-          "& .MuiSlider-track": {
-            backgroundColor: "gray", // Active track color
-          },
+          color: "gray",
+          "& .MuiSlider-thumb": { backgroundColor: "gray" },
+          "& .MuiSlider-rail": { backgroundColor: "#d3d3d3" },
+          "& .MuiSlider-track": { backgroundColor: "gray" },
         }}
       />
       <div>
         <p className="m-0">
-          {experience} {experience > 1 ? "years" : "year"}
+          {experience} {experience === 1 ? "year" : "years"}
         </p>
       </div>
     </div>

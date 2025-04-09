@@ -67,3 +67,9 @@ export const getActiveSessions = async () =>
 
 export const logOutAll = async () =>
   await axiosInstance.post("/user/logout-out-from-all");
+
+export const sendResetPasswordLink = async ({ email }) =>
+  await axiosInstance.post("/user/forgot-password", { email });
+
+export const resetThePassword = async ({ token, newPassword }) =>
+  await axiosInstance.post("/user/reset-password", { token, newPassword });

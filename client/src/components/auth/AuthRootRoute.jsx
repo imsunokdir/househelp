@@ -4,6 +4,7 @@ import Register from "./Register";
 import LoginForm from "./LoginForm";
 import { Lock, LockKeyhole, Unlock } from "lucide-react";
 import EmailVrfSent from "./EmailVrfSent";
+import ForgotPassword from "./ForgotPassword";
 
 const AuthRootRoute = () => {
   return (
@@ -12,6 +13,7 @@ const AuthRootRoute = () => {
         <Routes>
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<LoginForm />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
         </Routes>
       </div>
     </div>
