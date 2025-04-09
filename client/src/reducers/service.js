@@ -20,11 +20,11 @@ const serviceSlice = createSlice({
     hasMoreServicesByCategory: {}, // Indicates if more services are available for each category
     serviceLoading: true,
     error: false,
-    status: "idle", //loading || succeeded || "failed"
+    status: "loading", //loading || succeeded || "failed"
   },
   reducers: {
     clearServices: (state) => {
-      state.status = "idle";
+      // state.status = "idle";
       state.servicesByCategoryId = {};
       state.hasMoreServicesByCategory = {};
       state.currentPage = {};

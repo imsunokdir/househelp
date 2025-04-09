@@ -18,18 +18,16 @@ import { AuthContext } from "../contexts/AuthProvider";
 import SkeletonCard2 from "../components/LoadingSkeleton/SkeletonCards2";
 import { useCookies } from "react-cookie";
 import NoServiceAvl from "./NoServiceAvl";
-// import ServiceCard2 from "../components/services/ServiceCard2";
 import { fetchServiceByCategoryThunk } from "../reducers/thunks/servicesThunk";
 
 const Services = () => {
   const dispatch = useDispatch();
   const [error, setError] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const numOfCards = new Array(10).fill(null);
   const { userLocation, setUserLocation } = useContext(AuthContext);
-
-  //cookies
   const [cookies, setCookies] = useCookies(["user_location"]);
-  // Redux state
+
   const { categoryId } = useSelector((store) => store.category);
   const filterData = useSelector((state) => state.filter);
   const page = useSelector((state) =>
@@ -54,6 +52,7 @@ const Services = () => {
 
   const debouncedFetch = debounce(() => {
     try {
+      setLoadingMore(true);
       dispatch(
         fetchServiceByCategoryThunk({
           categoryId,
@@ -61,13 +60,13 @@ const Services = () => {
           userLocation,
           filterData,
         })
-      );
+      ).finally(() => setLoadingMore(false));
     } catch (error) {
-      ConstructionOutlined.log(error);
+      console.error(error);
+      setLoadingMore(false);
     }
   }, 300);
 
-  // Observer for infinite scrolling
   const observer = useRef();
   const lastServiceElement = useCallback(
     (node) => {
@@ -77,7 +76,6 @@ const Services = () => {
       observer.current = new IntersectionObserver(
         (entries) => {
           if (entries[0].isIntersecting && hasMore) {
-            // setIsFetching(true);
             debouncedFetch();
           }
         },
@@ -118,47 +116,38 @@ const Services = () => {
   }, [cookies]);
 
   return (
-    <div>
-      <div className="p-4">
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mx-auto">
-          {services &&
-            services.map((service, i) => {
-              if (services.length === i + 1) {
-                return (
-                  <div
-                    ref={lastServiceElement}
-                    key={service._id}
-                    className="rounded h-[400px] "
-                  >
-                    <ServiceCard service={service} delay={100} index={i} />
-                    {/* <ServiceCard2 service={service} /> */}
-                  </div>
-                );
-              } else {
-                return (
-                  <div
-                    key={service._id}
-                    className="rounded h-[400px] "
-                    // style={{ borderRadius: "10%" }}
-                  >
-                    <ServiceCard service={service} delay={100} index={i} />
-                    {/* <ServiceCard2 service={service} /> */}
-                  </div>
-                );
-              }
+    <div className="p-4">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mx-auto">
+        {services && services.length > 0 ? (
+          <>
+            {services.map((service, i) => {
+              const isLast = services.length === i + 1;
+              return (
+                <div
+                  ref={isLast ? lastServiceElement : null}
+                  key={service._id}
+                  className="rounded h-[400px]"
+                >
+                  <ServiceCard service={service} delay={100} index={i} />
+                </div>
+              );
             })}
-
-          {/* Show loading skeletons if loading */}
-          {serviceStatus === "loading" &&
-            numOfCards.map((_, i) => (
-              <div key={i} className="rounded h-[400px] ">
-                <SkeletonCard2 delay={50} index={i} />
-              </div>
-            ))}
-        </div>
-
-        {/* no service available */}
-        {services && services.length === 0 && <NoServiceAvl />}
+            {loadingMore &&
+              numOfCards.map((_, i) => (
+                <div key={`skeleton-${i}`} className="rounded h-[400px]">
+                  <SkeletonCard2 delay={50} index={i} />
+                </div>
+              ))}
+          </>
+        ) : serviceStatus === "loading" ? (
+          numOfCards.map((_, i) => (
+            <div key={i} className="rounded h-[400px]">
+              <SkeletonCard2 delay={50} index={i} />
+            </div>
+          ))
+        ) : (
+          <NoServiceAvl />
+        )}
       </div>
     </div>
   );
