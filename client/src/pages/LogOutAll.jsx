@@ -48,7 +48,7 @@ const LogOutAll = () => {
   return isActiveSessionLoading ? (
     <LoadBalls />
   ) : (
-    <div>
+    <div className="p-4">
       <div className="shadow-md p-2">
         {activeSessions && activeSessions.length > 0 ? (
           <div>

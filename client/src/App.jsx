@@ -38,39 +38,8 @@ const App = () => {
           <Header />
           <div className="min-h-screen">
             <Routes>
+              {/* root route */}
               <Route path="/" element={<Home />} />
-              <Route
-                path="email-verification/:userId/:email"
-                element={<EmailVrfSent />}
-              />
-              <Route
-                path="reset-password/:verifiedToken"
-                element={<ResetPassword />}
-              />
-              <Route
-                path="/show-service-details/:serviceId"
-                element={<Service />}
-              />
-              {/* <Route path="/accounts/*" element={<Accounts />} /> */}
-
-              {/* <Route path="/register" element={<Register />} /> */}
-              <Route path="/user-auth/*" element={<AuthRootRoute />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route
-                path="/email-verification-done/:verifiedToken"
-                element={<EmailVerified />}
-              />
-
-              <Route path="/test" element={<Test />} />
-              <Route path="/test2" element={<Test2 />} />
-              <Route path="/test3" element={<Test3 />} />
-              <Route path="/test4/*" element={<Test4 />} />
-              <Route path="/test5/*" element={<MyServiceCard />} />
-              <Route path="/load" element={<LoadBalls />} />
-              <Route path="/error" element={<Error />} />
-              <Route path="/success" element={<Success />} />
-              <Route path="/test-login" element={<DummyLogin />} />
-
               {/* protected routes */}
               <Route element={<ProtectedRoutes />}>
                 <Route path="/accounts/*" element={<Accounts />} />
@@ -84,6 +53,41 @@ const App = () => {
                   element={<GiveReviewPage />}
                 />
               </Route>
+
+              {/* service routes */}
+              <Route
+                path="/show-service-details/:serviceId"
+                element={<Service />}
+              />
+
+              {/* token related routes */}
+              <Route
+                path="email-verification/:userId/:email"
+                element={<EmailVrfSent />}
+              />
+              <Route
+                path="reset-password/:verifiedToken"
+                element={<ResetPassword />}
+              />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route
+                path="/email-verification-done/:verifiedToken"
+                element={<EmailVerified />}
+              />
+
+              {/* user routes */}
+              <Route path="/user-auth/*" element={<AuthRootRoute />} />
+
+              {/* test routes */}
+              <Route path="/test" element={<Test />} />
+              <Route path="/test2" element={<Test2 />} />
+              <Route path="/test3" element={<Test3 />} />
+              <Route path="/test4/*" element={<Test4 />} />
+              <Route path="/test5/*" element={<MyServiceCard />} />
+              <Route path="/load" element={<LoadBalls />} />
+              <Route path="/error" element={<Error />} />
+              <Route path="/success" element={<Success />} />
+              <Route path="/test-login" element={<DummyLogin />} />
             </Routes>
           </div>
         </BrowserRouter>

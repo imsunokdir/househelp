@@ -5,7 +5,7 @@ import PasswordChange from "./PasswordChange";
 const AcccSettingsMenu = () => {
   const navigate = useNavigate();
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-4">
       <div
         className="shadow-md p-2 rounded hover:shadow-lg cursor-pointer"
         onClick={() => navigate("change-password")}

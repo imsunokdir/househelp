@@ -7,8 +7,6 @@ const ProtectedRoutes = () => {
   const { isAuth, authLoading } = useContext(AuthContext);
   const location = useLocation();
 
-  console.log("isAuth:", isAuth);
-
   // If loading, show the loading indicator
   if (authLoading) {
     return <LoadBalls />;

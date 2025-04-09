@@ -9,18 +9,17 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getCurrentPageByCategory,
   getHasMoreServicesByCategory,
+  getServicesByCategory,
   getServiceStatus,
 } from "../reducers/service";
 
 import ServiceCard from "../components/services/ServiceCard";
 import { AuthContext } from "../contexts/AuthProvider";
 import SkeletonCard2 from "../components/LoadingSkeleton/SkeletonCards2";
-// import { fetchServicesThunk } from "../reducers/thunks/serviceThunk";
 import { useCookies } from "react-cookie";
 import NoServiceAvl from "./NoServiceAvl";
 // import ServiceCard2 from "../components/services/ServiceCard2";
 import { fetchServiceByCategoryThunk } from "../reducers/thunks/servicesThunk";
-import { getFilterIsApplied } from "../reducers/filter";
 
 const Services = () => {
   const dispatch = useDispatch();
@@ -32,20 +31,18 @@ const Services = () => {
   const [cookies, setCookies] = useCookies(["user_location"]);
   // Redux state
   const { categoryId } = useSelector((store) => store.category);
-  const { servicesByCategoryId } = useSelector((state) => state.service);
   const filterData = useSelector((state) => state.filter);
   const page = useSelector((state) =>
     getCurrentPageByCategory(state, categoryId)
   );
-  // const hasMore = hasMoreServicesByCategory[categoryId] ?? true;
   const hasMore = useSelector((state) =>
     getHasMoreServicesByCategory(state, categoryId)
   );
 
   const serviceStatus = useSelector(getServiceStatus);
-  // const [isFetching, setIsFetching] = useState(false);
-
-  // const [prevPage, setPrevPage] = useState(0);
+  const services = useSelector((state) =>
+    getServicesByCategory(state, categoryId)
+  );
 
   const debounce = (func, delay) => {
     let timer;
@@ -56,8 +53,6 @@ const Services = () => {
   };
 
   const debouncedFetch = debounce(() => {
-    // setIsFetching(true);
-    console.log("reached the end&*&*&*&*&&*::", page + 1);
     try {
       dispatch(
         fetchServiceByCategoryThunk({
@@ -67,7 +62,6 @@ const Services = () => {
           filterData,
         })
       );
-      // dispatch(fetchServicesThunk(categoryId, page, userLocation, filterData));
     } catch (error) {
       ConstructionOutlined.log(error);
     }
@@ -77,11 +71,7 @@ const Services = () => {
   const observer = useRef();
   const lastServiceElement = useCallback(
     (node) => {
-      console.log("visible");
-      console.log("hasMore filter:", hasMore);
-      console.log("service status filter:", serviceStatus);
       if (!hasMore) return;
-      console.log("%$%$%");
       if (observer.current) observer.current.disconnect();
 
       observer.current = new IntersectionObserver(
@@ -102,18 +92,8 @@ const Services = () => {
     [hasMore, categoryId, page, userLocation, dispatch, filterData]
   );
 
-  const services = useSelector((state) => {
-    if (!categoryId) return null;
-    return state.service.servicesByCategoryId[categoryId];
-  });
-  const isFilterApplied = useSelector(getFilterIsApplied);
   useEffect(() => {
-    if (
-      categoryId &&
-      userLocation.coordinates[0] &&
-      hasMore &&
-      !servicesByCategoryId[categoryId]
-    ) {
+    if (categoryId && userLocation.coordinates[0] && hasMore && !services) {
       dispatch(
         fetchServiceByCategoryThunk({
           categoryId,
@@ -122,16 +102,8 @@ const Services = () => {
           filterData,
         })
       );
-      // dispatch(fetchServicesThunk(categoryId, page, userLocation, filterData));
     }
   }, [categoryId, userLocation]);
-
-  // useEffect(() => {
-  //   console.log(
-  //     "service status service status::%%%%%%%%%%%%%::::",
-  //     serviceStatus
-  //   );
-  // }, [serviceStatus]);
 
   useEffect(() => {
     if (cookies?.user_location?.coordinates) {
@@ -145,9 +117,6 @@ const Services = () => {
     }
   }, [cookies]);
 
-  // useEffect(() => {
-  //   console.log("isFIlterApplied::", isFilterApplied);
-  // }, [isFilterApplied]);
   return (
     <div>
       <div className="p-4">
@@ -189,8 +158,7 @@ const Services = () => {
         </div>
 
         {/* no service available */}
-        {servicesByCategoryId[categoryId] &&
-          servicesByCategoryId[categoryId].length === 0 && <NoServiceAvl />}
+        {services && services.length === 0 && <NoServiceAvl />}
       </div>
     </div>
   );

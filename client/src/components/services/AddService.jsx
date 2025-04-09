@@ -3,20 +3,23 @@ import { getUserDetails } from "../../services/user";
 import LoadBalls from "../LoadingSkeleton/LoadBalls";
 import AddServiceForm from "./AddServiceForm";
 import { Link } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const AddService = () => {
   const [userLoading, setUserLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   const fetchUser = async () => {
     setUserLoading(true);
     try {
       const response = await getUserDetails();
-      console.log("res res", response);
       const user = response.data.user;
       setUser(user);
       if (user.isProfileCompleted) {
-        navigate("/accounts/add-service-form");
+        navigate("/accounts/my-service-menu/add-service-form", {
+          replace: true,
+        });
       }
     } catch (error) {
       console.log("error", error);

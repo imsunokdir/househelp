@@ -60,11 +60,10 @@ const LocationModal = () => {
   const handleGetLocation = async () => {
     getLocation()
       .then((data) => {
-        console.log("data:", data);
         handleClose();
       })
       .catch((err) => {
-        console.log("Err", err);
+        console.log("Error", err);
         if (err.code === 1) {
           setSnackbar(open);
         }
@@ -72,10 +71,6 @@ const LocationModal = () => {
   };
 
   const [locationDetails, setLocationDetails] = useState();
-
-  useEffect(() => {
-    console.log("cookie location:", cookies);
-  }, [cookies]);
 
   return (
     <div className="mt-[10px]">
