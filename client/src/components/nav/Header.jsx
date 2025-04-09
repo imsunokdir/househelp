@@ -26,7 +26,6 @@ const Header = () => {
               style={{ width: "50px", height: "50px" }}
             >
               <img src={hlp_logo} className="m-0" onLoad={handleImageLoad} />
-              <p>hello</p>
             </div>
           </Fade>
         </Link>

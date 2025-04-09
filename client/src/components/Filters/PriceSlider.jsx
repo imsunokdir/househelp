@@ -1,51 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { Slider } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import { filterActions } from "../../reducers/filter";
 
-const PriceSlider = ({ currCategory }) => {
-  const dispatch = useDispatch();
-  const { priceRange } = useSelector((state) => state.filter);
+const PriceSlider = ({ localFilters, setLocalFilters }) => {
+  const defaultMin = 0;
+  const defaultMax = 10000;
 
   const [price, setPrice] = useState({
-    minimum: 0,
-    maximum: currCategory.maxPrice,
+    minimum: defaultMin,
+    maximum: defaultMax,
   });
 
-  // useEffect(()=>{
-  //   setPrice(pri)
-  // },[priceRange])
-
+  // Sync local `price` state with incoming `localFilters.priceRange`
   useEffect(() => {
-    console.log("okokokokokokokkokokokook");
-    setPrice({ minimum: 0, maximum: currCategory.maxPrice });
-  }, []);
+    const minimum = localFilters?.priceRange?.minimum ?? defaultMin;
+    const maximum = localFilters?.priceRange?.maximum ?? defaultMax;
+    setPrice({ minimum, maximum });
+  }, [localFilters?.priceRange]);
 
-  useEffect(() => {
-    if (priceRange.maximum) {
-      console.log("hola");
-      setPrice(priceRange);
-    }
-  }, [priceRange, currCategory]);
-
-  useEffect(() => {
-    console.log("curr cat:", currCategory);
-  }, [currCategory]);
-
-  useEffect(() => {
-    console.log("price:", price);
-  }, [price]);
-
-  //   const [value, setValue] = useState([priceRange.minimum, priceRange.maximum]);
   const handleChange = (e, newValue) => {
-    console.log("newValue:", newValue);
-    dispatch(
-      filterActions.setPriceRange({
-        minimum: newValue[0],
-        maximum: newValue[1],
-      })
-    );
+    const [min, max] = newValue;
+    setPrice({ minimum: min, maximum: max });
+    setLocalFilters((prev) => ({
+      ...prev,
+      priceRange: { minimum: min, maximum: max },
+    }));
   };
+
   return (
     <div>
       <p className="m-0">Price</p>
@@ -55,19 +35,13 @@ const PriceSlider = ({ currCategory }) => {
         onChange={handleChange}
         valueLabelDisplay="auto"
         step={500}
-        min={0}
-        max={currCategory.maxPrice}
+        min={defaultMin}
+        max={defaultMax}
         sx={{
-          color: "gray", // Sets the slider's active color to gray
-          "& .MuiSlider-thumb": {
-            backgroundColor: "gray", // Thumb (circular knob) color
-          },
-          "& .MuiSlider-rail": {
-            backgroundColor: "#d3d3d3", // Rail color (track behind the slider)
-          },
-          "& .MuiSlider-track": {
-            backgroundColor: "gray", // Active track color
-          },
+          color: "gray",
+          "& .MuiSlider-thumb": { backgroundColor: "gray" },
+          "& .MuiSlider-rail": { backgroundColor: "#d3d3d3" },
+          "& .MuiSlider-track": { backgroundColor: "gray" },
         }}
       />
       <div className="flex justify-between">

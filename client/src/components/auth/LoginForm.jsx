@@ -186,7 +186,7 @@ const LoginForm = () => {
             </p>
 
             <p className="m-0">
-              <Lk>Forgot Password</Lk>
+              <Lk href="user-auth/forgot-password">Forgot Password</Lk>
             </p>
           </div>
         </Box>

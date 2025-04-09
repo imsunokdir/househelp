@@ -27,6 +27,8 @@ import DummyLogin from "./Test5/DummyLogin";
 import ProtectedRoutes from "./components/Routes/ProtectedRoutes";
 import Test5 from "./Test5";
 import MyServiceCard from "./components/services/MyServiceCard";
+import ForgotPassword from "./components/auth/ForgotPassword";
+import ResetPassword from "./components/auth/ResetPassword";
 
 const App = () => {
   return (
@@ -42,6 +44,10 @@ const App = () => {
                 element={<EmailVrfSent />}
               />
               <Route
+                path="reset-password/:verifiedToken"
+                element={<ResetPassword />}
+              />
+              <Route
                 path="/show-service-details/:serviceId"
                 element={<Service />}
               />
@@ -49,6 +55,7 @@ const App = () => {
 
               {/* <Route path="/register" element={<Register />} /> */}
               <Route path="/user-auth/*" element={<AuthRootRoute />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route
                 path="/email-verification-done/:verifiedToken"
                 element={<EmailVerified />}
