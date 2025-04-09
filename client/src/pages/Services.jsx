@@ -146,7 +146,9 @@ const Services = () => {
             </div>
           ))
         ) : (
-          <NoServiceAvl />
+          <div className="flex justify-center items-center w-full col-span-full h-[60vh]">
+            <NoServiceAvl />
+          </div>
         )}
       </div>
     </div>
