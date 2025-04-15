@@ -877,6 +877,191 @@ const deleteSingleSavedService = async(req, res)=>{
   }
 }
 
+const uploadServiceImage = async(req, res)=>{
+  console.log("image uploading")
+  try{
+    const file = req.file;
+  //   const {uploadedBy} = req.body;
+  //   if (!uploadedBy) {
+  //   return res.status(400).json({ error: "Missing user ID" });
+  // }
+  
+    const temp = req.body.temp === "true";
+    if(!file){
+      return res.status(400).json({ error: "No file uploaded." });
+    }
+
+    const base64Image = `data:${file.mimetype};base64,${file.buffer.toString(
+      "base64"
+    )}`;
+
+    const result = await cloudinary.uploader.upload(base64Image,{
+      folder:"services"
+    })
+    return res.status(200).json({
+      message: "Image uploaded successfully",
+      secure_url: result.secure_url,
+      public_id: result.public_id,
+    });
+  }catch(error){
+console.error("Cloudinary upload error:", err);
+    return res.status(500).json({ error: "Image upload failed." });
+  }
+}
+
+const deleteServiceImage = async(req, res)=>{
+  console.log("deleting images")
+  try{
+    const {public_id} = req.body;
+    if(!public_id){
+      return res.status(400).json({ error: "Public ID is required." });
+    }
+
+    const result = await cloudinary.uploader.destroy(public_id);
+    if (result.result === "ok") {
+      return res.status(200).json({
+        message: "Image deleted successfully",
+        public_id: public_id,
+      });
+    } else {
+      return res.status(400).json({ error: "Failed to delete image." });
+    }
+  }catch(err){
+    console.error("Cloudinary delete error:", err);
+    return res.status(500).json({ error: "Image deletion failed." });
+  }
+}
+
+
+const createService = async (req, res) => {
+  try {
+    const {
+      serviceName,
+      description,
+      experience,
+      skills,
+      priceRange,
+      availability,
+      category,
+      location,
+      status,
+      images,
+    } = req.body;
+
+    // Ensure the user is authenticated
+    if (!req.session?.user?.userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized. Please login to register a service.",
+      });
+    }
+
+    // Validate required fields
+    const requiredFields = [
+      "serviceName",
+      "description",
+      "experience",
+      "skills",
+      "priceRange",
+      "availability",
+      "category",
+    ];
+
+    const missingFields = requiredFields.filter((field) => !req.body[field]);
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+        missingFields,
+      });
+    }
+
+    // Validate the service data (optional but good practice)
+    const validationResult = validateServiceData({
+      serviceName,
+      description,
+      experience,
+      skills,
+      priceRange,
+      availability,
+      category,
+      status,
+    });
+
+    if (!validationResult.isValid) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid input data",
+        errors: validationResult.errors,
+      });
+    }
+
+    const serviceObj = new Service({
+      serviceName: serviceName.trim(),
+      description: description.trim(),
+      experience: Number(experience),
+      skills: Array.isArray(skills)
+        ? skills.map((skill) => skill.trim())
+        : [skills.trim()],
+      priceRange: {
+        minimum: Number(priceRange.minimum),
+        maximum: Number(priceRange.maximum),
+      },
+      availability: Array.isArray(availability) ? availability : [availability],
+      category: category.trim(),
+      createdBy: req.session.user.userId,
+      location,
+      status,
+images: Array.isArray(images)
+  ? images
+      .filter((img) => img?.url && img?.public_id)
+      .map((img) => ({
+        url: String(img.url),
+        public_id: String(img.public_id),
+      }))
+  : [],      createdAt: new Date(),
+    });
+
+    const newService = await serviceObj.save();
+
+    // Update Category max values
+    const categoryDoc = await Category.findById(category.trim());
+    if (categoryDoc) {
+      let isUpdated = false;
+      if (priceRange.maximum > categoryDoc.maxPrice) {
+        categoryDoc.maxPrice = priceRange.maximum;
+        isUpdated = true;
+      }
+      if (experience > categoryDoc.maxExp) {
+        categoryDoc.maxExp = experience;
+        isUpdated = true;
+      }
+      if (isUpdated) {
+        await categoryDoc.save();
+      }
+    }
+
+    return res.status(201).json({
+      success: true,
+      message: "Service registered successfully",
+      data: {
+        serviceId: newService._id,
+        serviceName: newService.serviceName,
+        category: newService.category,
+        createdAt: newService.createdAt,
+      },
+    });
+  } catch (error) {
+    console.error("Service registration error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to register service. Please try again later.",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
+  }
+};
+
 module.exports = {
   registerService,
   getAllServices,
@@ -893,5 +1078,8 @@ module.exports = {
   toggleSaveService,
   checkSavedService,
   getSavedServices,
-  deleteSingleSavedService
+  deleteSingleSavedService,
+  uploadServiceImage,
+  deleteServiceImage,
+  createService
 };

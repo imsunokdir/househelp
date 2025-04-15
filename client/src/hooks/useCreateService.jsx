@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllCategories } from "../services/category";
 import validateServiceData from "../utils/validateForm";
-import { createService } from "../services/service";
+import { createService, createService2 } from "../services/service";
 
-const useCreateService = (formData, setFormData) => {
+const useCreateService = (formData, setFormData, initialFormData) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false); // State to show loading indicator
   const [isCreating, setIsCreating] = useState(false);
@@ -12,6 +12,7 @@ const useCreateService = (formData, setFormData) => {
   const navigate = useNavigate();
   const [isLocationLoading, setIsLocationLoading] = useState(false);
   const [fileList, setFileList] = useState([]);
+  const [isServiceSuccess, setIsServiceSuccess] = useState(false);
 
   const [functions, setFunctions] = useState({});
 
@@ -161,7 +162,7 @@ const useCreateService = (formData, setFormData) => {
     const formDataToSend = new FormData();
 
     fileList.forEach((file) => {
-      console.log("Appending file:", file.originFileObj);
+      // console.log("Appending file:", file.originFileObj);
       formDataToSend.append("serviceImages", file.originFileObj);
     });
 
@@ -177,8 +178,8 @@ const useCreateService = (formData, setFormData) => {
     ); // Serialize array
     formDataToSend.append("category", formData.category);
     formDataToSend.append("location", JSON.stringify(formData.location));
-    console.log("fileList:", fileList);
-    console.log("formDatta tot senbd", formData);
+    // console.log("fileList:", fileList);
+    // console.log("formDatta tot senbd", formData);
 
     try {
       const response = await createService(formDataToSend);
@@ -186,6 +187,39 @@ const useCreateService = (formData, setFormData) => {
         // console.log("response:", response);
         functions.success("Service created.");
         // navigate(-1);
+      }
+    } catch (error) {
+      console.log("error:", error);
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleSubmit2 = async (e) => {
+    setIsServiceSuccess(false);
+    setErrors(null);
+    e.preventDefault();
+    setIsCreating(true);
+
+    const isError = validateServiceData(formData);
+    if (!isError.isValid) {
+      setErrors(isError.errors);
+      setIsCreating(false);
+      return;
+    }
+
+    try {
+      const response = await createService2(formData);
+      console.log("Response:", response);
+      const serviceId = response.data.data.serviceId;
+      if (response.status === 201) {
+        functions.success("Service created");
+        // setFormData(initialFormData);
+        // setFileList([]);
+        // setErrors(null);
+        setIsServiceSuccess(true);
+        navigate(`/service-creation-success/${serviceId}`);
+        console.log("resoponse succ data:", response);
       }
     } catch (error) {
       console.log("error:", error);
@@ -255,6 +289,8 @@ const useCreateService = (formData, setFormData) => {
     handleCategory,
     handleLocationFetch,
     timeOptions,
+    handleSubmit2,
+    isServiceSuccess,
   };
 };
 

@@ -66,7 +66,8 @@ const Register = () => {
     <div className="">
       <Message onMessage={setFunctions} />
       <h2>
-        <Lk href="/email-verification">ok</Lk>
+        {/* <Lk href="/email-verification">ok</Lk> */}
+        Register
       </h2>
       <ThemeProvider theme={theme}>
         {/* <Container component="main" maxWidth="xs"></Container> */}
@@ -183,7 +184,7 @@ const Register = () => {
             </p>
 
             <p className="m-0">
-              <Lk>Forgot Password</Lk>
+              <Lk href="/user-auth/forgot-password">Forgot Password</Lk>
             </p>
           </div>
         </Box>

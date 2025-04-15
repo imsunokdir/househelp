@@ -31,6 +31,8 @@ const UploadImagesByLen = (params) => {
     console.log("File list:", fileList);
   }, [fileList]);
 
+  const customRequest = async (file) => {};
+
   const uploadButton = (
     <button
       style={{
@@ -64,6 +66,7 @@ const UploadImagesByLen = (params) => {
           fileList={fileList}
           onPreview={handlePreview}
           onChange={handleChange}
+          customRequest={customRequest}
           beforeUpload={() => false}
         >
           {avlSlots >= 8 ? null : uploadButton}

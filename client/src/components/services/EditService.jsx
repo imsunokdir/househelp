@@ -27,6 +27,7 @@ import UploadImagesByLen from "./UploadImagesByLen";
 import { Delete } from "lucide-react";
 import { DeleteFilled } from "@ant-design/icons";
 import SetServiceStatus from "./SetServiceStatus";
+import ScrollToTop from "../../utils/ScrollToTop";
 
 const AddServiceForm = () => {
   const { serviceId } = useParams();
@@ -93,6 +94,10 @@ const AddServiceForm = () => {
     };
     fetchService();
   }, []);
+
+  useEffect(() => {
+    console.log("form-data:", formData);
+  }, [formData]);
 
   //update form / submit form
   const handleUpdate = async (e) => {
@@ -170,114 +175,124 @@ const AddServiceForm = () => {
   }, [formData]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <Message onMessage={setFunctions} />
-      <div
-        className={`max-w-2xl mx-auto bg-white rounded-lg shadow-md relative ${
-          isUpdating ? "opacity-50 pointer-events-none" : ""
-        }`}
-        // style={{ cursor: isUpdating ? "not-allowed" : "not-allowed" }}
-      >
-        <div className="p-6">
-          <h2 className="text-2xl font-bold mb-6">Update Service</h2>
-          {isServiceLoading ? (
-            <SkeletonLoad />
-          ) : (
-            <Fade in timeout={1000}>
-              <form onSubmit={handleUpdate} className="space-y-6">
-                {/* service name */}
+    <>
+      <ScrollToTop />
+      <div className="min-h-screen bg-gray-50 p-4">
+        <Message onMessage={setFunctions} />
+        <div
+          className={`max-w-2xl mx-auto bg-white rounded-lg shadow-md relative ${
+            isUpdating ? "opacity-50 pointer-events-none" : ""
+          }`}
+          // style={{ cursor: isUpdating ? "not-allowed" : "not-allowed" }}
+        >
+          <div className="p-6">
+            <h2 className="text-2xl font-bold mb-6">Update Service</h2>
+            {isServiceLoading ? (
+              <SkeletonLoad />
+            ) : (
+              <Fade in timeout={1000}>
+                <form onSubmit={handleUpdate} className="space-y-6">
+                  {/* service name */}
 
-                <SetServiceName
-                  formData={formData}
-                  handleInputChange={handleInputChange}
-                />
-                {/* {categories} */}
+                  <SetServiceName
+                    formData={formData}
+                    handleInputChange={handleInputChange}
+                  />
+                  {/* {categories} */}
 
-                <ServiceCategoryField
-                  categories={categories}
-                  handleCategory={handleCategory}
-                  loading={loading}
-                  formData={formData}
-                />
+                  <ServiceCategoryField
+                    categories={categories}
+                    handleCategory={handleCategory}
+                    loading={loading}
+                    formData={formData}
+                  />
 
-                {/* experience */}
-                <ServiceExperience
-                  formData={formData}
-                  handleInputChange={handleInputChange}
-                />
+                  {/* experience */}
+                  <ServiceExperience
+                    formData={formData}
+                    handleInputChange={handleInputChange}
+                  />
 
-                {/* Price Range */}
-                <ServicePriceField
-                  formData={formData}
-                  handlePriceRangeChange={handlePriceRangeChange}
-                />
+                  {/* Price Range */}
+                  <ServicePriceField
+                    formData={formData}
+                    handlePriceRangeChange={handlePriceRangeChange}
+                  />
 
-                {/* Availability */}
-                <ServiceAvailability
-                  formData={formData}
-                  updateAvailability={updateAvailability}
-                  daysOfWeek={daysOfWeek}
-                  timeOptions={timeOptions}
-                  removeAvailability={removeAvailability}
-                  addAvailability={addAvailability}
-                />
+                  {/* Availability */}
+                  <ServiceAvailability
+                    formData={formData}
+                    updateAvailability={updateAvailability}
+                    daysOfWeek={daysOfWeek}
+                    timeOptions={timeOptions}
+                    removeAvailability={removeAvailability}
+                    addAvailability={addAvailability}
+                  />
 
-                {/* Skills */}
-                <ServiceSkillsField
-                  formData={formData}
-                  updateSkill={updateSkill}
-                  removeSkill={removeSkill}
-                  addSkill={addSkill}
-                />
+                  {/* Skills */}
+                  <ServiceSkillsField
+                    formData={formData}
+                    updateSkill={updateSkill}
+                    removeSkill={removeSkill}
+                    addSkill={addSkill}
+                  />
 
-                {/* location */}
-                <SetLocationField
-                  formData={formData}
-                  setFormData={setFormData}
-                  handleLocationFetch={handleLocationFetch}
-                  isLocationLoading={isLocationLoading}
-                />
+                  {/* location */}
+                  <SetLocationField
+                    formData={formData}
+                    setFormData={setFormData}
+                    handleLocationFetch={handleLocationFetch}
+                    isLocationLoading={isLocationLoading}
+                  />
 
-                {/* current service images */}
-                <CurrentServiceImages
-                  formData={formData}
-                  currImages={currImages}
-                  setCurrImages={setCurrImages}
-                  imagesToBeDeleted={imagesToBeDeleted}
-                  setImagesToBeDeleted={setImagesToBeDeleted}
-                />
+                  {/* current service images */}
+                  <CurrentServiceImages
+                    formData={formData}
+                    currImages={currImages}
+                    setCurrImages={setCurrImages}
+                    imagesToBeDeleted={imagesToBeDeleted}
+                    setImagesToBeDeleted={setImagesToBeDeleted}
+                  />
 
-                {/* images */}
-                <UploadImagesByLen
-                  fileList={fileList}
-                  setFileList={setFileList}
-                  formData={formData}
-                  avlSlots={avlSlots}
-                  setAvlSlots={avlSlots}
-                />
-                <SetServiceStatus
-                  formData={formData}
-                  handleInputChange={handleInputChange}
-                />
+                  {/* images */}
+                  <UploadImagesByLen
+                    fileList={fileList}
+                    setFileList={setFileList}
+                    formData={formData}
+                    avlSlots={avlSlots}
+                    // setAvlSlots={avlSlots}
+                  />
+                  <UploadServiceImages
+                    fileList={fileList}
+                    setFileList={setFileList}
+                    formData={formData}
+                    avlSlots={avlSlots}
+                    // setAvlSlots={setAvlSlots}
+                  />
+                  <SetServiceStatus
+                    formData={formData}
+                    handleInputChange={handleInputChange}
+                  />
 
-                {/* Description */}
-                <SetServiceDescriptionField
-                  formData={formData}
-                  handleInputChange={handleInputChange}
-                />
+                  {/* Description */}
+                  <SetServiceDescriptionField
+                    formData={formData}
+                    handleInputChange={handleInputChange}
+                  />
 
-                {/* Error */}
-                <ServiceFormValiddationError errors={errors} />
+                  {/* Error */}
+                  <ServiceFormValiddationError errors={errors} />
 
-                {/* Submit Button */}
-                {/* <ServiceSubmitButton isCreating={isCreating} /> */}
-                <ServiceUpdateButton isUpdating={isUpdating} />
-              </form>
-            </Fade>
-          )}
+                  {/* Submit Button */}
+                  {/* <ServiceSubmitButton isCreating={isCreating} /> */}
+                  <ServiceUpdateButton isUpdating={isUpdating} />
+                </form>
+              </Fade>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

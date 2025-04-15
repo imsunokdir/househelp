@@ -129,6 +129,7 @@ const serviceSchema = new Schema(
     images: [
       {
         url: { type: String },
+        public_id:{type:String}
       },
     ],
     views: {

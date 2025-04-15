@@ -206,7 +206,7 @@ const AuthProvider = ({ children }) => {
         const response = await authCheck();
 
         if (response.status === 200 && response.data.success) {
-          console.log("resp.data.user:", response.data.user);
+          // console.log("resp.data.user:", response.data.user);
           setUser(response.data.user);
         } else {
           console.log("User not authenticated");

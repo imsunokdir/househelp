@@ -25,7 +25,7 @@ import UploadServiceImages from "./UploadServiceImages";
 import SetServiceStatus from "./SetServiceStatus";
 
 const AddServiceForm = () => {
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     serviceName: "",
     experience: "",
     category: "",
@@ -43,7 +43,9 @@ const AddServiceForm = () => {
       coordinates: [null, null],
     },
     status: "Active",
-  });
+    images: [],
+  };
+  const [formData, setFormData] = useState(initialFormData);
   const {
     // formData,
     // setFormData,
@@ -76,7 +78,9 @@ const AddServiceForm = () => {
     handleCategory,
     handleLocationFetch,
     timeOptions,
-  } = useCreateService(formData, setFormData);
+    handleSubmit2,
+    isServiceSuccess,
+  } = useCreateService(formData, setFormData, initialFormData);
 
   return (
     <Fade in timeout={500}>
@@ -86,7 +90,7 @@ const AddServiceForm = () => {
           <div className="p-6">
             <h2 className="text-2xl font-bold mb-6">Add Service</h2>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit2} className="space-y-6">
               {/* service name */}
               <SetServiceName
                 formData={formData}
@@ -143,6 +147,8 @@ const AddServiceForm = () => {
               <UploadServiceImages
                 fileList={fileList}
                 setFileList={setFileList}
+                formData={formData}
+                setFormData={setFormData}
               />
 
               {/* Description */}

@@ -35,7 +35,7 @@ const ForgotPassword = () => {
     }
   };
   return isEmailSent ? (
-    <div className="h-[400px] flex flex-col items-center justify-start pt-10 text-center">
+    <div className="h-[400px] flex flex-col items-center justify-start pt-10 text-center w-full">
       <img
         src={resetPasswordImage}
         className="w-32 h-32 mb-4"
@@ -48,7 +48,7 @@ const ForgotPassword = () => {
       </p>
     </div>
   ) : (
-    <div className="">
+    <div className="w-[400px]">
       <h2>Reset Password</h2>
       <ThemeProvider theme={theme}>
         {/* <Container component="main" maxWidth="xs"></Container> */}
@@ -106,10 +106,6 @@ const ForgotPassword = () => {
           <div className="w-full flex justify-between">
             <p className="m-0">
               Already a user? <Lk href="/user-auth/login">Sign in</Lk>
-            </p>
-
-            <p className="m-0">
-              <Lk>Forgot Password</Lk>
             </p>
           </div>
         </Box>

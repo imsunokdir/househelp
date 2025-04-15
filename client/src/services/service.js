@@ -83,3 +83,17 @@ export const deleteSavedService = async (serviceId) =>
   await axiosInstance.post("/service/delete-single-saved-service", {
     serviceId,
   });
+
+export const uploadServiceImage = async (formData, config = {}) =>
+  axiosInstance.post("/service/upload-service-image", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    ...config,
+  });
+
+export const deleteServiceImage = async (public_id) =>
+  axiosInstance.post("/service/delete-service-form-image", { public_id });
+
+export const createService2 = async (data) =>
+  axiosInstance.post("/service/create-service", data);

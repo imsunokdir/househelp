@@ -29,6 +29,7 @@ import Test5 from "./Test5";
 import MyServiceCard from "./components/services/MyServiceCard";
 import ForgotPassword from "./components/auth/ForgotPassword";
 import ResetPassword from "./components/auth/ResetPassword";
+import SuccessService from "./components/services/SuccessService";
 
 const App = () => {
   return (
@@ -43,6 +44,10 @@ const App = () => {
               {/* protected routes */}
               <Route element={<ProtectedRoutes />}>
                 <Route path="/accounts/*" element={<Accounts />} />
+                <Route
+                  path="/service-creation-success/:serviceId"
+                  element={<SuccessService />}
+                />
                 <Route path="/add-service" element={<AddServiceForm />} />
                 <Route
                   path="/edit-service/:serviceId"

@@ -9,7 +9,7 @@ import ForgotPassword from "./ForgotPassword";
 const AuthRootRoute = () => {
   return (
     <div className="flex flex-col justify-center items-center h-[80vh]">
-      <div className=" md:w-[500px] shadow-md p-3 rounded border">
+      <div className=" md:w-[500px] shadow-md p-3 rounded border m-3">
         <Routes>
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<LoginForm />} />
