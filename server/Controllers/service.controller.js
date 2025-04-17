@@ -1,4 +1,4 @@
-const mongoose  = require("mongoose");
+const mongoose = require("mongoose");
 const Rating = require("../Models/rating.schema");
 const Service = require("../Models/service.schema");
 const Category = require("../Models/category.schema");
@@ -239,7 +239,7 @@ const getServiceByCategory = async (req, res) => {
         success: true,
         data: services,
         hasMore, // Include hasMore field in the response
-        page
+        page,
       });
     } else if (services.length === 0) {
       return res.status(200).json({
@@ -247,7 +247,6 @@ const getServiceByCategory = async (req, res) => {
         data: [],
         message: "No categories were found",
         hasMore, // Include hasMore field in the response even if no services are found
-
       });
     }
   } catch (error) {
@@ -600,7 +599,7 @@ const getNearbyServicesTest2 = async (req, res) => {
 
   const query = {
     category: new mongoose.Types.ObjectId(categoryId),
-    status:"Active",
+    status: "Active",
     ...(minPrice && { "priceRange.minimum": { $gte: minPrice } }),
     ...(maxPrice && { "priceRange.maximum": { $lte: maxPrice } }),
     ...(servicerating && { averageRating: { $gte: servicerating } }),
@@ -678,7 +677,7 @@ const getNearbyServicesTest2 = async (req, res) => {
       services,
       totalCount: totalServices, // Include total count in the response
       hasMore, // Include hasMore flag
-      page
+      page,
     });
   } catch (error) {
     console.log("Error in fetching nearby services:", error);
@@ -746,10 +745,10 @@ const getFilteredServices = async (req, res) => {
 
 const toggleSaveService = async (req, res) => {
   const { serviceId } = req.body;
-  if(!req.session.user){
-return res.status(404).json({
-      message:"User not found, please check and login/register if required."
-    })
+  if (!req.session.user) {
+    return res.status(404).json({
+      message: "User not found, please check and login/register if required.",
+    });
   }
   const { userId } = req.session.user;
 
@@ -787,18 +786,17 @@ return res.status(404).json({
 
 const checkSavedService = async (req, res) => {
   const { serviceId } = req.query; // This is a string
-  console.log("sesion user:", req.session)
+  console.log("sesion user:", req.session);
 
-  if(!req.session.user){
-return res.status(404).json({
-      message:"User not found, please check and login/register if required."
-    })
+  if (!req.session.user) {
+    return res.status(404).json({
+      message: "User not found, please check and login/register if required.",
+    });
   }
   const { userId } = req.session.user;
 
-  
   console.log("service id check:", serviceId);
- 
+
   try {
     const user = await User.findById(userId);
     if (!user) {
@@ -821,73 +819,74 @@ return res.status(404).json({
   }
 };
 
-const getSavedServices = async(req, res)=>{
-  try{
-    const {userId} = req.session.user;
+const getSavedServices = async (req, res) => {
+  try {
+    const { userId } = req.session.user;
 
-  const user = await User.findById(userId).populate("savedServices").exec();
+    const user = await User.findById(userId).populate("savedServices").exec();
 
-  if(!user){
-    return res.status(404).json({message:"User not found"})
-  }
-
-  return res.status(200).json({
-    message:"Saved services fetched successfully",
-    savedServices:user.savedServices
-  })
-}catch(error){
-  console.error("Error fetching saved services:", error);
-  return res.status(500).json({
-    success:false,
-    message:"Internal server error",
-    error:error.message
-  })
-}
-
-}
-
-
-const deleteSingleSavedService = async(req, res)=>{
-  try{
-  const {serviceId} = req.body;
-  const {userId} = req.session.user;
-
-  if (!serviceId || !userId) {
-      return res.status(400).json({ message: "Service ID and User ID are required" });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
-  const updatedUser = await User.findByIdAndUpdate(
-    userId,
-    {$pull:{savedServices:serviceId}},
-    {new:true}
-    )
-
-  if(!updatedUser){
-    return res.status(404).json({
-      message:"User not found."
-    })
+    return res.status(200).json({
+      message: "Saved services fetched successfully",
+      savedServices: user.savedServices,
+    });
+  } catch (error) {
+    console.error("Error fetching saved services:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
   }
+};
 
-  res.status(200).json({
-    message: "Service removed successfully", updatedUser
-  })
-  }catch(error){
+const deleteSingleSavedService = async (req, res) => {
+  try {
+    const { serviceId } = req.body;
+    const { userId } = req.session.user;
+
+    if (!serviceId || !userId) {
+      return res
+        .status(400)
+        .json({ message: "Service ID and User ID are required" });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $pull: { savedServices: serviceId } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        message: "User not found.",
+      });
+    }
+
+    res.status(200).json({
+      message: "Service removed successfully",
+      updatedUser,
+    });
+  } catch (error) {
     console.error("Error deleting saved service:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
-}
+};
 
-const uploadServiceImage = async(req, res)=>{
-  console.log("image uploading")
-  try{
+const uploadServiceImage = async (req, res) => {
+  console.log("image uploading");
+  try {
     const file = req.file;
-  //   const {uploadedBy} = req.body;
-  //   if (!uploadedBy) {
-  //   return res.status(400).json({ error: "Missing user ID" });
-  // }
-  
+    //   const {uploadedBy} = req.body;
+    //   if (!uploadedBy) {
+    //   return res.status(400).json({ error: "Missing user ID" });
+    // }
+
     const temp = req.body.temp === "true";
-    if(!file){
+    if (!file) {
       return res.status(400).json({ error: "No file uploaded." });
     }
 
@@ -895,43 +894,49 @@ const uploadServiceImage = async(req, res)=>{
       "base64"
     )}`;
 
-    const result = await cloudinary.uploader.upload(base64Image,{
-      folder:"services"
-    })
+    const result = await cloudinary.uploader.upload(base64Image, {
+      folder: "services",
+    });
     return res.status(200).json({
       message: "Image uploaded successfully",
       secure_url: result.secure_url,
       public_id: result.public_id,
     });
-  }catch(error){
-console.error("Cloudinary upload error:", err);
+  } catch (error) {
+    console.error("Cloudinary upload error:", err);
     return res.status(500).json({ error: "Image upload failed." });
   }
-}
+};
 
-const deleteServiceImage = async(req, res)=>{
-  console.log("deleting images")
-  try{
-    const {public_id} = req.body;
-    if(!public_id){
+const deleteServiceImage = async (req, res) => {
+  console.log("💥 Incoming delete request");
+
+  try {
+    const { public_id } = req.body;
+    console.log("📩 Received public_id:", public_id || "[EMPTY OR MISSING]");
+
+    if (!public_id) {
+      console.log("❌ No public_id provided.");
       return res.status(400).json({ error: "Public ID is required." });
     }
 
     const result = await cloudinary.uploader.destroy(public_id);
+
     if (result.result === "ok") {
+      console.log("✅ Image deleted:", public_id);
       return res.status(200).json({
         message: "Image deleted successfully",
         public_id: public_id,
       });
     } else {
+      console.log("⚠️ Cloudinary deletion failed for:", public_id);
       return res.status(400).json({ error: "Failed to delete image." });
     }
-  }catch(err){
-    console.error("Cloudinary delete error:", err);
+  } catch (err) {
+    console.error("❗️ Cloudinary delete error:", err);
     return res.status(500).json({ error: "Image deletion failed." });
   }
-}
-
+};
 
 const createService = async (req, res) => {
   try {
@@ -1012,14 +1017,15 @@ const createService = async (req, res) => {
       createdBy: req.session.user.userId,
       location,
       status,
-images: Array.isArray(images)
-  ? images
-      .filter((img) => img?.url && img?.public_id)
-      .map((img) => ({
-        url: String(img.url),
-        public_id: String(img.public_id),
-      }))
-  : [],      createdAt: new Date(),
+      images: Array.isArray(images)
+        ? images
+            .filter((img) => img?.url && img?.public_id)
+            .map((img) => ({
+              url: String(img.url),
+              public_id: String(img.public_id),
+            }))
+        : [],
+      createdAt: new Date(),
     });
 
     const newService = await serviceObj.save();
@@ -1062,6 +1068,87 @@ images: Array.isArray(images)
   }
 };
 
+const updateService2 = async (req, res) => {
+  console.time("Total Time");
+  const { serviceId, imagesToBeDeleted, formData } = req.body;
+
+  try {
+    if (!serviceId) {
+      return res.status(400).json({ message: "Service ID is required." });
+    }
+
+    const currentService = await Service.findById(serviceId);
+    if (!currentService) {
+      return res.status(404).json({ message: "Service not found." });
+    }
+
+    const currentImageMap = new Map(
+      currentService.images.map((img) => [img._id.toString(), img.url])
+    );
+
+    const imagesToDeleteFromCloudinary = imagesToBeDeleted.filter((img) =>
+      currentImageMap.has(img._id)
+    );
+
+    // Delete from Cloudinary if they exist in the service
+    if (imagesToDeleteFromCloudinary.length > 0) {
+      await Promise.all(
+        imagesToDeleteFromCloudinary.map((img) => {
+          const publicId = img.url.split("/").pop().split(".")[0];
+          return cloudinary.uploader.destroy(`services/${publicId}`);
+        })
+      );
+    }
+
+    // Prepare the updated images (client sends final list)
+    const finalImages = (formData.images || []).filter(
+      (img) => !imagesToBeDeleted.find((delImg) => delImg._id === img._id)
+    );
+
+    // Build updated data object
+    const updatedData = {
+      ...(formData.serviceName && { serviceName: formData.serviceName.trim() }),
+      ...(formData.status && { status: formData.status.trim() }),
+      ...(formData.description && { description: formData.description.trim() }),
+      ...(formData.experience && { experience: Number(formData.experience) }),
+      ...(formData.skills?.length > 0 && {
+        skills: formData.skills.map((skill) => skill.trim()),
+      }),
+      ...(formData.priceRange?.minimum &&
+        formData.priceRange?.maximum && {
+          priceRange: {
+            minimum: Number(formData.priceRange.minimum),
+            maximum: Number(formData.priceRange.maximum),
+          },
+        }),
+      ...(formData.availability?.length > 0 && {
+        availability: formData.availability,
+      }),
+      ...(formData.category && { category: formData.category.trim() }),
+      ...(formData.location && { location: formData.location }),
+      images: finalImages,
+    };
+
+    const updatedService = await Service.findByIdAndUpdate(
+      serviceId,
+      { $set: updatedData },
+      { new: true, runValidators: true }
+    );
+
+    console.timeEnd("Total Time");
+    res.status(200).json({
+      message: "Service updated successfully.",
+      data: updatedService,
+    });
+  } catch (error) {
+    console.error("Error updating service:", error);
+    res.status(500).json({
+      message: "Internal server error.",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   registerService,
   getAllServices,
@@ -1081,5 +1168,6 @@ module.exports = {
   deleteSingleSavedService,
   uploadServiceImage,
   deleteServiceImage,
-  createService
+  createService,
+  updateService2,
 };

@@ -19,7 +19,10 @@ const MyServiceCard = ({ service }) => {
   //   navigate(`/edit-service/${service._id}`);
   // };
   const handleClick = () => {
-    navigate(`edit-single-service/${service._id}`);
+    console.log("%%$$%%$^%$%^^^^^^^^^^^^^^^^^^^^^");
+    navigate(
+      `/accounts/my-service-menu/my-services/details/edit-service/${service._id}`
+    );
   };
   const items = [
     {
@@ -63,7 +66,7 @@ const MyServiceCard = ({ service }) => {
         </div>
         <div
           className="flex border p-1"
-          onClick={() => navigate(`details/${service._id}`)}
+          onClick={() => navigate(`${service._id}`)}
         >
           {/* first col */}
           <div className="w-1/3  flex justify-center">

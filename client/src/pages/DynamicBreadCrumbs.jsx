@@ -1,65 +1,77 @@
-import React from "react";
-import { Breadcrumb } from "antd";
+import React, { useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
-
-const breadcrumbNameMap = {
-  "/accounts": "Accounts",
-  "/accounts/personal-info": "Personal Info",
-  "/accounts/my-service-menu": "My Service Menu",
-  "/accounts/my-service-menu/my-services": "My Services",
-  "/accounts/my-service-menu/my-services/details": "My Service",
-  "/accounts/my-service-menu/my-services/edit-single-service": "Edit Service",
-  "/accounts/my-service-menu/add-service-form": "Add Service",
-  "/accounts/profile-check": "Profile Check",
-  "/accounts/account-settings-menu": "Account Settings",
-  "/accounts/account-settings-menu/log-out-all": "Active Sessions",
-  "/accounts/account-settings-menu/delete-acc": "Delete Account",
-  "/accounts/change-password": "Change Password",
-  "/accounts/log-out-all": "Log Out All",
-  "/accounts/delete-acc": "Delete Account",
-  "/accounts/my-service-menu/saved-services": "Saved Services",
-};
+import { Breadcrumb } from "antd";
+import NavigationContext from "../contexts/NavigationContext";
+import { clearTempUploadedImages } from "../utils/clearTempUploadedImages";
 
 const DynamicBreadCrumbs = () => {
   const location = useLocation();
-  const pathSnippets = location.pathname
-    .split("/")
-    .filter((i) => i)
-    .slice(1);
 
-  let breadcrumbItems = [{ path: "/accounts", title: "Accounts" }];
+  const { isFormDirty } = useContext(NavigationContext);
 
-  pathSnippets.forEach((segment, index) => {
-    let url = `/accounts/${pathSnippets.slice(0, index + 1).join("/")}`;
+  const shouldApplyBlocker =
+    location.pathname.includes("edit-single-service") ||
+    location.pathname.includes("add-service-form") ||
+    location.pathname.includes("edit-service");
 
-    // Handle dynamic service ID
-    if (
-      url.startsWith("/accounts/my-service-menu/my-services/details/") ||
-      url.startsWith(
-        "/accounts/my-service-menu/my-services/edit-single-service/"
-      )
-    ) {
-      return; // Skip adding the ID as a breadcrumb
-    }
+  const pathSnippets = location.pathname.split("/").filter((i) => i);
 
-    breadcrumbItems.push({
+  const extraBreadcrumbItems = pathSnippets.map((snippet, index) => {
+    const url = `/${pathSnippets.slice(0, index + 1).join("/")}`;
+    const isServiceId = /^[0-9a-fA-F]{24}$/.test(snippet);
+    const isLastItem = index === pathSnippets.length - 1;
+    const isEditService = pathSnippets.includes("edit-service");
+
+    const name =
+      isServiceId && (isLastItem || isEditService)
+        ? "Details"
+        : snippet.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+
+    return {
+      key: url,
+      title: name,
       path: url,
-      title: breadcrumbNameMap[url] || segment,
-    });
+    };
   });
 
+  const breadcrumbItems = [
+    {
+      key: "/",
+      title: "Home",
+      path: "/",
+    },
+    ...extraBreadcrumbItems,
+  ];
+
+  const handleBreadcrumbClick = (e, path) => {
+    if (isFormDirty && shouldApplyBlocker) {
+      const confirmLeave = window.confirm(
+        "You have unsaved changes. Are you sure you want to leave this page?"
+      );
+      if (!confirmLeave) {
+        e.preventDefault();
+      } else {
+        clearTempUploadedImages();
+      }
+    }
+  };
+
   return (
-    <Breadcrumb className="p-3">
-      {breadcrumbItems.map((item, index) => (
-        <Breadcrumb.Item key={item.path}>
-          {index !== breadcrumbItems.length - 1 ? (
-            <Link to={item.path}>{item.title}</Link>
-          ) : (
-            item.title
-          )}
-        </Breadcrumb.Item>
-      ))}
-    </Breadcrumb>
+    <div className="bg-white p-4">
+      <Breadcrumb
+        items={breadcrumbItems.map((item) => ({
+          key: item.key,
+          title: (
+            <Link
+              to={item.path}
+              onClick={(e) => handleBreadcrumbClick(e, item.path)}
+            >
+              {item.title}
+            </Link>
+          ),
+        }))}
+      />
+    </div>
   );
 };
 

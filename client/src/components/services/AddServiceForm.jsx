@@ -23,29 +23,55 @@ import ServiceExperience from "./ServiceExperience";
 import useCreateService from "../../hooks/useCreateService";
 import UploadServiceImages from "./UploadServiceImages";
 import SetServiceStatus from "./SetServiceStatus";
+import NavigationContext from "../../contexts/NavigationContext";
+import { useBeforeUnload } from "../../hooks/useBeforeUnload";
+import useWarnOnUnsavedChanges from "../../hooks/useWarnOnUnsavedChangesBlocker";
 
+// const initialFormData = {
+//   serviceName: "test test test",
+//   experience: "5",
+//   category: "675288d8a078165157762178",
+//   priceRange: {
+//     minimum: 1500,
+//     maximum: 3500,
+//   },
+//   availability: [
+//     { day: "monday", startTime: "03:00", endTime: "06:00", enabled: true },
+//   ],
+//   skills: ["all"],
+//   description: "asd asd asd a sdasd",
+//   location: {
+//     type: "Point",
+//     coordinates: [94.644295, 26.672238],
+//   },
+//   status: "Active",
+//   images: [],
+// };
+
+const initialFormData = {
+  serviceName: "",
+  experience: "",
+  category: "",
+  priceRange: {
+    minimum: "",
+    maximum: "",
+  },
+  availability: [{ day: "monday", startTime: "", endTime: "", enabled: true }],
+  skills: [""],
+  description: "",
+  location: {
+    type: "Point",
+    coordinates: [null, null],
+  },
+  status: "Active",
+  images: [],
+};
 const AddServiceForm = () => {
-  const initialFormData = {
-    serviceName: "",
-    experience: "",
-    category: "",
-    priceRange: {
-      minimum: 0,
-      maximum: 0,
-    },
-    availability: [
-      { day: "monday", startTime: "", endTime: "", enabled: true },
-    ],
-    skills: [""],
-    description: "",
-    location: {
-      type: "Point",
-      coordinates: [null, null],
-    },
-    status: "Active",
-    images: [],
-  };
   const [formData, setFormData] = useState(initialFormData);
+  useEffect(() => {
+    console.log("formdata:", formData);
+  }, [formData]);
+
   const {
     // formData,
     // setFormData,
@@ -74,13 +100,103 @@ const AddServiceForm = () => {
     addAvailability,
     removeAvailability,
     updateAvailability,
-    handleSubmit,
+    // handleSubmit,
     handleCategory,
     handleLocationFetch,
     timeOptions,
     handleSubmit2,
     isServiceSuccess,
-  } = useCreateService(formData, setFormData, initialFormData);
+    useTempImageCleanup,
+  } = useCreateService(formData, setFormData);
+
+  const { isFormDirty, setIsFormDirty, setPendingNavigation } =
+    useContext(NavigationContext);
+
+  // useEffect(() => {
+  //   const savedFormData = sessionStorage.getItem("formData");
+  //   const savedFileList = sessionStorage.getItem("fileList");
+
+  //   if (savedFormData) {
+  //     setFormData(JSON.parse(savedFormData));
+  //   }
+  //   if (savedFileList) {
+  //     setFileList(JSON.parse(savedFileList));
+  //   }
+  // }, []);
+  // useEffect(() => {
+  //   if (formData && formData !== initialFormData) {
+  //     sessionStorage.setItem("formData", JSON.stringify(formData));
+  //   }
+  // }, [formData]);
+  // useEffect(() => {
+  //   if (
+  //     fileList &&
+  //     fileList.length > 0 &&
+  //     fileList.some((file) => file.response)
+  //   ) {
+  //     console.log("before before Saved to sessionStorage:", fileList);
+
+  //     const serializableList = fileList.map((file) => {
+  //       console.log("thumbUrl inside map:", file.thumbUrl);
+  //       return {
+  //         uid: file.uid,
+  //         name: file.name,
+  //         status: file.status,
+  //         url: file.response?.secure_url || file.url || "",
+  //         thumbUrl: file.thumbUrl || "", // <- You can even hardcode for testing here
+  //         response: file.response || null,
+  //         percent: file.percent || 0,
+  //       };
+  //     });
+  //     // console.log("before Saved to sessionStorage:", serializableList);
+  //     console.log("Saved to sessionStorage:", serializableList);
+  //     sessionStorage.setItem("fileList", JSON.stringify(serializableList));
+  //     // console.log("Saved to sessionStorage:", serializableList);
+  //   }
+  // }, [fileList]);
+
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     if (
+  //       fileList &&
+  //       fileList.length > 0 &&
+  //       fileList.some((file) => file.response)
+  //     ) {
+  //       const serializableList = fileList.map((file) => {
+  //         return {
+  //           uid: file.uid,
+  //           name: file.name,
+  //           status: file.status,
+  //           url: file.response?.secure_url || file.url || "",
+  //           thumbUrl: file.thumbUrl || "no-thumb", // force fallback
+  //           response: file.response || null,
+  //           percent: file.percent || 0,
+  //         };
+  //       });
+
+  //       sessionStorage.setItem("fileList", JSON.stringify(serializableList));
+  //     }
+  //   }, 100); // ← small delay
+
+  //   return () => clearTimeout(timer);
+  // }, [fileList]);
+
+  useEffect(() => {
+    if (formData && initialFormData) {
+      const currentFormDataStr = JSON.stringify(formData);
+      const initialFormDataStr = JSON.stringify(initialFormData);
+
+      // Compare the current form data with the initial form data
+      const hasChanges =
+        currentFormDataStr !== initialFormDataStr || fileList.length > 0;
+
+      setIsFormDirty(hasChanges); // Set the form dirty state
+    }
+  }, [formData, fileList, initialFormData, setIsFormDirty]);
+
+  useBeforeUnload(isFormDirty);
+  useTempImageCleanup(fileList);
+  useWarnOnUnsavedChanges({ isFormDirty, setIsFormDirty });
 
   return (
     <Fade in timeout={500}>
@@ -149,6 +265,7 @@ const AddServiceForm = () => {
                 setFileList={setFileList}
                 formData={formData}
                 setFormData={setFormData}
+                useTempImageCleanup={useTempImageCleanup}
               />
 
               {/* Description */}

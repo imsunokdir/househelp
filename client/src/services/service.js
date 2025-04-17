@@ -59,8 +59,10 @@ export const createService = async (formDataToSend) => {
   return await axiosInstance.post(`/service/register-service`, formDataToSend);
 };
 
-export const updateService = async (formDataToSend) =>
-  await axiosInstance.post(`/service/update-service`, formDataToSend);
+// export const updateService = async (formDataToSend) =>
+//   await axiosInstance.post(`/service/update-service`, formDataToSend);
+export const updateService2 = async (data) =>
+  await axiosInstance.post(`/service/update-service-2`, data);
 
 export const deleteService = async (serviceId) =>
   await axiosInstance.delete(`/service/delete-service/${serviceId}`);

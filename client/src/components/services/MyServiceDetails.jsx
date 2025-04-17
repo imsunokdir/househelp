@@ -164,7 +164,12 @@ const MyServiceDetails = () => {
               dark:border-gray-600 dark:hover:bg-gray-700 
               dark:hover:border-gray-600 dark:focus:ring-gray-700 
               hover:shadow-md"
-              onClick={() => navigate(`edit-single-service/${service._id}`)}
+              // onClick={() =>
+              //   navigate(
+              //     `/accounts/my-service-menu/my-services/details/edit-service/${service._id}`
+              //   )
+              // }
+              onClick={() => navigate(`edit-service`)}
             >
               <Edit />
               Edit

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import { Image, Upload, message } from "antd";
 import imageCompression from "browser-image-compression";
@@ -18,51 +18,16 @@ const UploadServiceImages = ({
   setFormData,
   fileList,
   setFileList,
+  useTempImageCleanup,
 }) => {
   // const [fileList, setFileList] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const { user } = useContext(AuthContext);
+  const hasUnloaded = useRef(false);
 
-  // 🟡 Show alert on refresh and delete Cloudinary images
-  useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      e.preventDefault();
-      e.returnValue = ""; // Chrome requires this line for the alert to work
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    // On component mount, delete leftover temp images if any
-    const tempImages = JSON.parse(
-      localStorage.getItem("temp_uploaded_images") || "[]"
-    );
-    if (tempImages.length > 0) {
-      Promise.all(
-        tempImages.map((img) =>
-          deleteServiceImage(img.public_id).catch((err) =>
-            console.warn("Failed to delete image:", img.public_id)
-          )
-        )
-      ).then(() => {
-        localStorage.removeItem("temp_uploaded_images");
-      });
-    }
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, []);
-
-  // 🔵 Update localStorage when formData.images changes
-  useEffect(() => {
-    if (formData.images) {
-      localStorage.setItem(
-        "temp_uploaded_images",
-        JSON.stringify(formData.images)
-      );
-    }
-  }, [formData.images]);
+  // Delete temporary images on unload (refresh or close)
+  useTempImageCleanup(fileList);
 
   const handlePreview = async (file) => {
     if (!file.url && !file.preview) {
@@ -80,26 +45,33 @@ const UploadServiceImages = ({
     const base64 = await getBase64(file);
     const uid = file.uid;
 
-    setFileList((prev) => {
-      const exists = prev.some((item) => item.uid === uid);
-      if (exists) return prev;
-      return [
-        ...prev,
-        {
-          uid,
-          name: file.name,
-          status: "uploading",
-          percent: 0,
-          thumbUrl: base64,
-        },
-      ];
-    });
+    // setFileList((prev) => {
+    //   const exists = prev.some((item) => item.uid === uid);
+    //   if (exists) return prev;
+    //   return [
+    //     ...prev,
+    //     {
+    //       uid,
+    //       name: file.name,
+    //       status: "uploading",
+    //       percent: 0,
+    //       thumbUrl: base64,
+    //     },
+    //   ];
+    // });
 
-    const formDataToSend = new FormData();
-    formDataToSend.append("image", file);
-    formDataToSend.append("uploadedBy", user.userId);
+    const options = {
+      maxSizeMB: 0.5,
+      maxWidthOrHeight: 1024,
+      useWebWorker: true,
+      fileType: "image/webp",
+    };
 
     try {
+      const compressedWebP = await imageCompression(file, options);
+      const formDataToSend = new FormData();
+      formDataToSend.append("image", compressedWebP);
+      formDataToSend.append("uploadedBy", user.userId);
       const res = await uploadServiceImage(formDataToSend, {
         onUploadProgress: (event) => {
           const percent = Math.round((event.loaded / event.total) * 100);
@@ -124,6 +96,7 @@ const UploadServiceImages = ({
         }));
 
         // Mark image as done
+        // console.log("base64", base64);
         setFileList((prev) =>
           prev.map((item) =>
             item.uid === uid
@@ -132,10 +105,12 @@ const UploadServiceImages = ({
                   status: "done",
                   url: secure_url,
                   response: res.data,
+                  thumbUrl: base64,
                 }
               : item
           )
         );
+        // sessionStorage.setItem("previewImage", file.url || file.preview);
 
         onSuccess(res.data);
       }

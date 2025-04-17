@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllCategories } from "../services/category";
 import validateServiceData from "../utils/validateForm";
@@ -19,7 +19,7 @@ const useCreateService = (formData, setFormData, initialFormData) => {
   useEffect(() => {
     const fetchCategories = async () => {
       setLoading(true); // Start loading
-      console.log("form-data:", formData);
+      // console.log("form-data:", formData);
       try {
         // Replace the URL with your API endpoint
         const response = await getAllCategories();
@@ -144,56 +144,56 @@ const useCreateService = (formData, setFormData, initialFormData) => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    setErrors(null);
-    e.preventDefault();
-    setIsCreating(true);
+  // const handleSubmit = async (e) => {
+  //   setErrors(null);
+  //   e.preventDefault();
+  //   setIsCreating(true);
 
-    //validate form data
-    const isError = validateServiceData(formData);
-    if (!isError.isValid) {
-      setErrors(isError.errors);
-      setIsCreating(false);
-      return;
-    }
+  //   //validate form data
+  //   const isError = validateServiceData(formData);
+  //   if (!isError.isValid) {
+  //     setErrors(isError.errors);
+  //     setIsCreating(false);
+  //     return;
+  //   }
 
-    //create formData object
+  //   //create formData object
 
-    const formDataToSend = new FormData();
+  //   const formDataToSend = new FormData();
 
-    fileList.forEach((file) => {
-      // console.log("Appending file:", file.originFileObj);
-      formDataToSend.append("serviceImages", file.originFileObj);
-    });
+  //   fileList.forEach((file) => {
+  //     // console.log("Appending file:", file.originFileObj);
+  //     formDataToSend.append("serviceImages", file.originFileObj);
+  //   });
 
-    formDataToSend.append("serviceName", formData.serviceName);
-    formDataToSend.append("description", formData.description);
-    formDataToSend.append("experience", formData.experience);
-    formDataToSend.append("status", formData.status);
-    formDataToSend.append("skills", JSON.stringify(formData.skills)); // Serialize array
-    formDataToSend.append("priceRange", JSON.stringify(formData.priceRange)); // Serialize object
-    formDataToSend.append(
-      "availability",
-      JSON.stringify(formData.availability)
-    ); // Serialize array
-    formDataToSend.append("category", formData.category);
-    formDataToSend.append("location", JSON.stringify(formData.location));
-    // console.log("fileList:", fileList);
-    // console.log("formDatta tot senbd", formData);
+  //   formDataToSend.append("serviceName", formData.serviceName);
+  //   formDataToSend.append("description", formData.description);
+  //   formDataToSend.append("experience", formData.experience);
+  //   formDataToSend.append("status", formData.status);
+  //   formDataToSend.append("skills", JSON.stringify(formData.skills)); // Serialize array
+  //   formDataToSend.append("priceRange", JSON.stringify(formData.priceRange)); // Serialize object
+  //   formDataToSend.append(
+  //     "availability",
+  //     JSON.stringify(formData.availability)
+  //   ); // Serialize array
+  //   formDataToSend.append("category", formData.category);
+  //   formDataToSend.append("location", JSON.stringify(formData.location));
+  //   // console.log("fileList:", fileList);
+  //   // console.log("formDatta tot senbd", formData);
 
-    try {
-      const response = await createService(formDataToSend);
-      if (response.status === 201) {
-        // console.log("response:", response);
-        functions.success("Service created.");
-        // navigate(-1);
-      }
-    } catch (error) {
-      console.log("error:", error);
-    } finally {
-      setIsCreating(false);
-    }
-  };
+  //   try {
+  //     const response = await createService(formDataToSend);
+  //     if (response.status === 201) {
+  //       // console.log("response:", response);
+  //       functions.success("Service created.");
+  //       // navigate(-1);
+  //     }
+  //   } catch (error) {
+  //     console.log("error:", error);
+  //   } finally {
+  //     setIsCreating(false);
+  //   }
+  // };
 
   const handleSubmit2 = async (e) => {
     setIsServiceSuccess(false);
@@ -213,13 +213,19 @@ const useCreateService = (formData, setFormData, initialFormData) => {
       console.log("Response:", response);
       const serviceId = response.data.data.serviceId;
       if (response.status === 201) {
+        localStorage.removeItem("temp_uploaded_images");
         functions.success("Service created");
+        sessionStorage.removeItem("formData");
+        sessionStorage.setItem("isServiceSuccess", "true");
+
         // setFormData(initialFormData);
         // setFileList([]);
         // setErrors(null);
         setIsServiceSuccess(true);
-        navigate(`/service-creation-success/${serviceId}`);
-        console.log("resoponse succ data:", response);
+        // navigate("/accounts/my-service-menu", { replace: true });
+        // navigate(`/service-creation-success/${serviceId}`, { replace: true });
+
+        navigate(`/service-creation-success/${serviceId}`, { replace: true });
       }
     } catch (error) {
       console.log("error:", error);
@@ -257,6 +263,64 @@ const useCreateService = (formData, setFormData, initialFormData) => {
     setIsLocationLoading(false);
   };
 
+  const useTempImageCleanup = (fileList = []) => {
+    const hasUnloaded = useRef(false);
+
+    // Save uploaded image public_ids to localStorage
+
+    useEffect(() => {
+      if (fileList.length > 0) {
+        const tempUploadedImages = fileList.map((file) => ({
+          public_id: file?.response?.public_id,
+        }));
+
+        localStorage.setItem(
+          "temp_uploaded_images",
+          JSON.stringify(tempUploadedImages)
+        );
+      }
+    }, [fileList]);
+
+    // Handle cleanup on page unload
+    // useEffect(() => {
+    //   const handleBeforeUnload = (e) => {
+    //     if (hasUnloaded.current) return;
+    //     hasUnloaded.current = true;
+
+    //     e.preventDefault();
+    //     e.returnValue = "";
+
+    //     const tempImages = JSON.parse(
+    //       localStorage.getItem("temp_uploaded_images") || "[]"
+    //     );
+
+    //     if (tempImages.length > 0) {
+    //       const url = `${
+    //         import.meta.env.VITE_API_ROUTE
+    //       }/service/delete-service-form-image`;
+
+    //       tempImages.forEach((img) => {
+    //         const blob = new Blob(
+    //           [JSON.stringify({ public_id: img.public_id })],
+    //           {
+    //             type: "application/json",
+    //           }
+    //         );
+    //         navigator.sendBeacon(url, blob);
+    //       });
+
+    //       localStorage.removeItem("temp_uploaded_images");
+    //     }
+    //   };
+
+    //   window.addEventListener("beforeunload", handleBeforeUnload);
+
+    //   return () => {
+    //     window.removeEventListener("beforeunload", handleBeforeUnload);
+    //   };
+    // }, []);
+  };
+
   return {
     formData,
     setFormData,
@@ -285,12 +349,13 @@ const useCreateService = (formData, setFormData, initialFormData) => {
     addAvailability,
     removeAvailability,
     updateAvailability,
-    handleSubmit,
+    // handleSubmit,
     handleCategory,
     handleLocationFetch,
     timeOptions,
     handleSubmit2,
     isServiceSuccess,
+    useTempImageCleanup,
   };
 };
 

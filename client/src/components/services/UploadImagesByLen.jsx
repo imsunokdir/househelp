@@ -1,19 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import { Image, Upload } from "antd";
-
-const getBase64 = (file) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
+import { deleteServiceImage, uploadServiceImage } from "../../services/service";
+import { AuthContext } from "../../contexts/AuthProvider";
+import imageCompression from "browser-image-compression";
 
 const UploadImagesByLen = (params) => {
-  const { fileList, setFileList, avlSlots } = params;
+  const { fileList, setFileList, avlSlots, setFormData } = params;
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
+
+  const { user } = useContext(AuthContext);
 
   const handlePreview = async (file) => {
     if (!file.url && !file.preview) {
@@ -31,7 +28,110 @@ const UploadImagesByLen = (params) => {
     console.log("File list:", fileList);
   }, [fileList]);
 
-  const customRequest = async (file) => {};
+  const getBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+
+  const customRequest = async ({ file, onSuccess, onError, onProgress }) => {
+    const base64 = await getBase64(file);
+    const uid = file.uid;
+
+    setFileList((prev) => {
+      const exists = prev.some((item) => item.uid === uid);
+      if (exists) return prev;
+      return [
+        ...prev,
+        {
+          uid,
+          name: file.name,
+          status: "uploading",
+          percent: 0,
+          thumbUrl: base64,
+        },
+      ];
+    });
+    const options = {
+      maxSizeMB: 0.5,
+      maxWidthOrHeight: 1024,
+      useWebWorker: true,
+      fileType: "image/webp",
+    };
+
+    try {
+      const compressedWebP = await imageCompression(file, options);
+      const formDataToSend = new FormData();
+      formDataToSend.append("image", compressedWebP);
+      formDataToSend.append("uploadedBy", user.userId);
+      const res = await uploadServiceImage(formDataToSend, {
+        onUploadProgress: (event) => {
+          const percent = Math.round((event.loaded / event.total) * 100);
+          setFileList((prev) =>
+            prev.map((item) =>
+              item.uid === uid
+                ? { ...item, percent, status: "uploading" }
+                : item
+            )
+          );
+          onProgress({ percent });
+        },
+      });
+
+      if (res.status === 200) {
+        const { secure_url, public_id } = res.data;
+
+        // Save image to formData
+        setFormData((prev) => ({
+          ...prev,
+          images: [...(prev.images || []), { url: secure_url, public_id }],
+        }));
+
+        // Mark image as done
+        setFileList((prev) =>
+          prev.map((item) =>
+            item.uid === uid
+              ? {
+                  ...item,
+                  status: "done",
+                  url: secure_url,
+                  response: res.data,
+                }
+              : item
+          )
+        );
+
+        onSuccess(res.data);
+      }
+    } catch (error) {
+      onError(error);
+      message.error("Upload failed");
+    }
+  };
+
+  const handleRemove = async (file) => {
+    try {
+      if (file.response && file.response.public_id) {
+        const public_id = file.response.public_id;
+        const res = await deleteServiceImage(public_id);
+        if (res.status === 200) {
+          setFormData((prev) => ({
+            ...prev,
+            images: (prev.images || []).filter(
+              (img) => img.public_id !== public_id
+            ),
+          }));
+          return true;
+        }
+      }
+      return false;
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      return false;
+    }
+  };
 
   const uploadButton = (
     <button
@@ -67,7 +167,8 @@ const UploadImagesByLen = (params) => {
           onPreview={handlePreview}
           onChange={handleChange}
           customRequest={customRequest}
-          beforeUpload={() => false}
+          onRemove={handleRemove}
+          beforeUpload={() => true}
         >
           {avlSlots >= 8 ? null : uploadButton}
         </Upload>

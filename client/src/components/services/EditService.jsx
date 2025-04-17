@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import validateServiceData from "../../utils/validateForm";
 import Message from "../Messages/WarningMessage";
 import {
   deleteService,
+  deleteServiceImage,
   fetchServiceById,
-  updateService,
+  updateService2,
 } from "../../services/service";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Fade } from "@mui/material";
-import { Button as ABtn, message } from "antd";
+import { Modal } from "antd";
 import SetLocationField from "./SetLocationField";
 import SetServiceDescriptionField from "./SetServiceDescriptionField";
 import ServiceFormValiddationError from "./ServiceFormValiddationError";
@@ -21,43 +22,43 @@ import ServiceExperience from "./ServiceExperience";
 import useCreateService from "../../hooks/useCreateService";
 import ServiceUpdateButton from "./ServiceUpdateButton";
 import SkeletonLoad from "../LoadingSkeleton/SkeletonLoad";
-import UploadServiceImages from "./UploadServiceImages";
-import CurrentServiceImages from "./CurrentServiceImages";
 import UploadImagesByLen from "./UploadImagesByLen";
-import { Delete } from "lucide-react";
-import { DeleteFilled } from "@ant-design/icons";
+import CurrentServiceImages from "./CurrentServiceImages";
 import SetServiceStatus from "./SetServiceStatus";
 import ScrollToTop from "../../utils/ScrollToTop";
+import ROUTES from "../../constants/routes";
+import NavigationContext from "../../contexts/NavigationContext";
+import { useBeforeUnload } from "../../hooks/useBeforeUnload";
+import useWarnOnUnsavedChanges from "../../hooks/useWarnOnUnsavedChangesBlocker";
 
 const AddServiceForm = () => {
   const { serviceId } = useParams();
+  const navigate = useNavigate();
+  const hasUnloaded = useRef(false);
 
   const [isServiceLoading, SetServiceLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
-
   const [formData, setFormData] = useState();
-
   const [fileList, setFileList] = useState([]);
   const [currImages, setCurrImages] = useState([]);
   const [imagesToBeDeleted, setImagesToBeDeleted] = useState([]);
   const [avlSlots, setAvlSlots] = useState(8);
+  const [initialFormData, setInitialFormData] = useState(null);
+
+  const { isFormDirty, setIsFormDirty, setPendingNavigation } =
+    useContext(NavigationContext);
+  const isIntentionallyNavigating = useRef(false);
 
   const {
-    // formData,
-    // setFormData,
     categories,
-    setCategories,
     loading,
     setLoading,
     isCreating,
     setIsCreating,
     errors,
     setErrors,
-    navigate,
     isLocationLoading,
-    setIsLocationLoading,
     functions,
-    setFunctions,
     daysOfWeek,
     getNextDay,
     handleInputChange,
@@ -68,22 +69,22 @@ const AddServiceForm = () => {
     addAvailability,
     removeAvailability,
     updateAvailability,
-    handleSubmit,
     handleCategory,
     handleLocationFetch,
     timeOptions,
+    useTempImageCleanup,
   } = useCreateService(formData, setFormData);
 
-  // fetch service details
   useEffect(() => {
     SetServiceLoading(true);
     const fetchService = async () => {
       try {
         const response = await fetchServiceById(serviceId);
         if (response.status === 200) {
-          setFormData(response.data.data);
-          setCurrImages(response.data.data.images);
-          console.log("res:", response.data.data);
+          const serviceData = response.data.data;
+          setFormData(serviceData);
+          setCurrImages(serviceData.images);
+          setInitialFormData(JSON.stringify(serviceData));
         }
       } catch (error) {
         console.log("error:", error);
@@ -93,24 +94,185 @@ const AddServiceForm = () => {
       }
     };
     fetchService();
+    setIsFormDirty(false);
+    return () => {
+      setIsFormDirty(false);
+    };
   }, []);
 
   useEffect(() => {
-    console.log("form-data:", formData);
-  }, [formData]);
+    if (formData && initialFormData) {
+      const currentFormDataStr = JSON.stringify(formData);
+      const hasChanges =
+        currentFormDataStr !== initialFormData ||
+        fileList.length > 0 ||
+        imagesToBeDeleted.length > 0;
+      setIsFormDirty(hasChanges);
+    }
+  }, [formData, fileList, imagesToBeDeleted, initialFormData]);
 
-  //update form / submit form
+  useEffect(() => {
+    const currLen = currImages.length;
+    const fileLen = fileList.length;
+    const imagesDelLen = imagesToBeDeleted.length;
+    setAvlSlots(currLen + fileLen - imagesDelLen);
+  }, [fileList, imagesToBeDeleted, currImages]);
+
+  // useEffect(() => {
+  //   const handleBeforeUnload = (event) => {
+  //     if (isFormDirty) {
+  //       event.preventDefault();
+  //       event.returnValue =
+  //         "You have unsaved changes. Are you sure you want to leave?";
+  //       return event.returnValue;
+  //     }
+  //   };
+
+  //   const handlePopState = (event) => {
+  //     if (isFormDirty) {
+  //       event.preventDefault();
+  //       Modal.confirm({
+  //         title: "Unsaved Changes",
+  //         content:
+  //           "You have unsaved changes. Are you sure you want to leave without saving?",
+  //         onOk: () => {
+  //           window.history.go(-1);
+  //         },
+  //       });
+  //     }
+  //   };
+
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
+  //   window.addEventListener("popstate", handlePopState);
+  //   return () => {
+  //     window.removeEventListener("beforeunload", handleBeforeUnload);
+  //     window.removeEventListener("popstate", handlePopState);
+  //   };
+  // }, [isFormDirty]);
+
+  // useEffect(() => {
+  //   // Push a dummy state when component mounts
+  //   if (!hasUnloaded.current) {
+  //     window.history.pushState(
+  //       { preventNavigation: true },
+  //       "",
+  //       window.location.pathname
+  //     );
+  //   }
+
+  //   const handlePopState = (event) => {
+  //     if (isFormDirty) {
+  //       // Push state again to prevent immediate navigation
+  //       window.history.pushState(
+  //         { preventNavigation: true },
+  //         "",
+  //         window.location.pathname
+  //       );
+
+  //       // Now show confirmation modal
+  //       Modal.confirm({
+  //         title: "Unsaved Changes",
+  //         content:
+  //           "You have unsaved changes. Are you sure you want to leave without saving?",
+  //         onOk: () => {
+  //           hasUnloaded.current = true;
+  //           window.history.back();
+  //         },
+  //       });
+  //     }
+  //   };
+
+  //   const handleBeforeUnload = (event) => {
+  //     if (isFormDirty) {
+  //       event.preventDefault();
+  //       event.returnValue =
+  //         "You have unsaved changes. Are you sure you want to leave?";
+  //       return event.returnValue;
+  //     }
+  //   };
+
+  //   window.addEventListener("popstate", handlePopState);
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
+
+  //   return () => {
+  //     window.removeEventListener("popstate", handlePopState);
+  //     window.removeEventListener("beforeunload", handleBeforeUnload);
+  //   };
+  // }, [isFormDirty]);
+
+  // In your AddServiceForm component
+
+  // Remove all the complex history manipulation code
+
+  // In your AddServiceForm component
+
+  useBeforeUnload(isFormDirty);
+  // useWarnOnUnsavedChanges({
+  //   isDirty: isFormDirty,
+  //   onConfirmLeave: () => {
+  //     setIsFormDirty(false);
+  //     navigate(-1);
+  //   },
+  // });
+
+  // useEffect(() => {
+  //   // Only set up when the form is dirty
+  //   if (!isFormDirty) return;
+
+  //   // Handle beforeunload for browser close/refresh
+  //   const handleBeforeUnload = (event) => {
+  //     event.preventDefault();
+  //     event.returnValue =
+  //       "You have unsaved changes. Are you sure you want to leave?";
+  //     return event.returnValue;
+  //   };
+
+  //   // Push a state entry to the history stack
+  //   // window.history.pushState(null, "", window.location.pathname);
+
+  //   // Handler for back/forward button clicks
+  //   const handlePopState = (event) => {
+  //     // Prevent the navigation
+  //     window.history.pushState(null, "", window.location.pathname);
+
+  //     // Show confirmation dialog
+  //     Modal.confirm({
+  //       title: "Unsaved Changes",
+  //       content:
+  //         "You have unsaved changes. Are you sure you want to leave without saving?",
+  //       onOk: () => {
+  //         // Clear dirty flag and navigate away
+  //         setIsFormDirty(false);
+  //         // Use setTimeout to ensure React state updates before navigation
+  //         setTimeout(() => {
+  //           navigate(-1);
+  //         }, 0);
+  //       },
+  //     });
+  //   };
+
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
+  //   window.addEventListener("popstate", handlePopState);
+
+  //   return () => {
+  //     window.removeEventListener("beforeunload", handleBeforeUnload);
+  //     window.removeEventListener("popstate", handlePopState);
+  //   };
+  // }, [isFormDirty, navigate, setIsFormDirty]);
+
+  // Add a simple React Router location listener to watch for navigation
+
   const handleUpdate = async (e) => {
     e.preventDefault();
     setErrors(null);
     setIsUpdating(true);
-    console.log("hola");
+
     if (avlSlots > 8) {
       const message = `Please remove ${avlSlots - 8} ${
         avlSlots - 8 === 1 ? "image" : "images"
       }`;
-      setErrors((prev) => [message]); // Set error message in an array
-      setIsUpdating(false); // Stop updating if there is an error
+      setErrors((prev) => [message]);
+      setIsUpdating(false);
       return;
     }
 
@@ -121,33 +283,16 @@ const AddServiceForm = () => {
         return;
       }
 
-      const formDataToSend = new FormData();
+      const updatedData = {
+        formData,
+        imagesToBeDeleted,
+        serviceId,
+      };
 
-      fileList.forEach((file) => {
-        formDataToSend.append("updatedImages", file.originFileObj);
-      });
-
-      formDataToSend.append("serviceName", formData.serviceName);
-      formDataToSend.append("description", formData.description);
-      formDataToSend.append("experience", formData.experience);
-      formDataToSend.append("skills", JSON.stringify(formData.skills)); // Serialize array
-      formDataToSend.append("priceRange", JSON.stringify(formData.priceRange)); // Serialize object
-      formDataToSend.append(
-        "availability",
-        JSON.stringify(formData.availability)
-      ); // Serialize array
-      formDataToSend.append("category", formData.category);
-      formDataToSend.append("status", formData.status);
-      formDataToSend.append("location", JSON.stringify(formData.location));
-      formDataToSend.append("serviceId", serviceId);
-      formDataToSend.append(
-        "imagesToBeDeleted",
-        JSON.stringify(imagesToBeDeleted)
-      );
-
-      const response = await updateService(formDataToSend);
+      const response = await updateService2(updatedData);
       if (response.status === 200) {
-        navigate("/accounts/my-service-menu/my-services");
+        setIsFormDirty(false);
+        navigate(`/show-service-details/${serviceId}`);
       }
     } catch (error) {
       console.log("error:", error);
@@ -157,33 +302,49 @@ const AddServiceForm = () => {
     }
   };
 
-  useEffect(() => {
-    let currLen = currImages.length;
-    let fileLen = fileList.length;
-    let imagesDelLen = imagesToBeDeleted.length;
-    console.log("currLen:", currLen);
-    console.log("fileLen:", fileLen);
-    console.log("imagesDelLen:", imagesDelLen);
+  useTempImageCleanup(fileList);
+  useWarnOnUnsavedChanges({ isFormDirty, setIsFormDirty });
 
-    setAvlSlots(currLen + fileLen - imagesDelLen);
+  // useEffect(() => {
+  //   if (!isFormDirty) return;
 
-    console.log("calculate:", currLen + fileLen - imagesDelLen);
-  }, [fileList, imagesToBeDeleted, currImages]);
+  //   const handlePopState = (event) => {
+  //     Modal.confirm({
+  //       title: "Unsaved Changes",
+  //       content:
+  //         "You have unsaved changes. Are you sure you want to leave without saving?",
+  //       onOk: () => {
+  //         setIsFormDirty(false);
+  //         // Allow back navigation
+  //         navigate(-1);
+  //       },
+  //       onCancel: () => {
+  //         // Push state back to stop the back nav (reverting browser nav)
+  //         window.history.pushState(null, "", window.location.pathname);
+  //       },
+  //     });
+  //   };
 
-  useEffect(() => {
-    console.log("formdata:", formData);
-  }, [formData]);
+  //   // Listen to back button navigation
+  //   window.addEventListener("popstate", handlePopState);
+
+  //   // Push a dummy state to prevent immediate back nav
+  //   window.history.pushState(null, "", window.location.pathname);
+
+  //   return () => {
+  //     window.removeEventListener("popstate", handlePopState);
+  //   };
+  // }, [isFormDirty, navigate]);
 
   return (
     <>
       <ScrollToTop />
       <div className="min-h-screen bg-gray-50 p-4">
-        <Message onMessage={setFunctions} />
+        <Message onMessage={functions.error} />
         <div
           className={`max-w-2xl mx-auto bg-white rounded-lg shadow-md relative ${
             isUpdating ? "opacity-50 pointer-events-none" : ""
           }`}
-          // style={{ cursor: isUpdating ? "not-allowed" : "not-allowed" }}
         >
           <div className="p-6">
             <h2 className="text-2xl font-bold mb-6">Update Service</h2>
@@ -192,34 +353,24 @@ const AddServiceForm = () => {
             ) : (
               <Fade in timeout={1000}>
                 <form onSubmit={handleUpdate} className="space-y-6">
-                  {/* service name */}
-
                   <SetServiceName
                     formData={formData}
                     handleInputChange={handleInputChange}
                   />
-                  {/* {categories} */}
-
                   <ServiceCategoryField
                     categories={categories}
                     handleCategory={handleCategory}
                     loading={loading}
                     formData={formData}
                   />
-
-                  {/* experience */}
                   <ServiceExperience
                     formData={formData}
                     handleInputChange={handleInputChange}
                   />
-
-                  {/* Price Range */}
                   <ServicePriceField
                     formData={formData}
                     handlePriceRangeChange={handlePriceRangeChange}
                   />
-
-                  {/* Availability */}
                   <ServiceAvailability
                     formData={formData}
                     updateAvailability={updateAvailability}
@@ -228,24 +379,18 @@ const AddServiceForm = () => {
                     removeAvailability={removeAvailability}
                     addAvailability={addAvailability}
                   />
-
-                  {/* Skills */}
                   <ServiceSkillsField
                     formData={formData}
                     updateSkill={updateSkill}
                     removeSkill={removeSkill}
                     addSkill={addSkill}
                   />
-
-                  {/* location */}
                   <SetLocationField
                     formData={formData}
                     setFormData={setFormData}
                     handleLocationFetch={handleLocationFetch}
                     isLocationLoading={isLocationLoading}
                   />
-
-                  {/* current service images */}
                   <CurrentServiceImages
                     formData={formData}
                     currImages={currImages}
@@ -253,38 +398,22 @@ const AddServiceForm = () => {
                     imagesToBeDeleted={imagesToBeDeleted}
                     setImagesToBeDeleted={setImagesToBeDeleted}
                   />
-
-                  {/* images */}
                   <UploadImagesByLen
                     fileList={fileList}
                     setFileList={setFileList}
                     formData={formData}
+                    setFormData={setFormData}
                     avlSlots={avlSlots}
-                    // setAvlSlots={avlSlots}
-                  />
-                  <UploadServiceImages
-                    fileList={fileList}
-                    setFileList={setFileList}
-                    formData={formData}
-                    avlSlots={avlSlots}
-                    // setAvlSlots={setAvlSlots}
                   />
                   <SetServiceStatus
                     formData={formData}
                     handleInputChange={handleInputChange}
                   />
-
-                  {/* Description */}
                   <SetServiceDescriptionField
                     formData={formData}
                     handleInputChange={handleInputChange}
                   />
-
-                  {/* Error */}
                   <ServiceFormValiddationError errors={errors} />
-
-                  {/* Submit Button */}
-                  {/* <ServiceSubmitButton isCreating={isCreating} /> */}
                   <ServiceUpdateButton isUpdating={isUpdating} />
                 </form>
               </Fade>

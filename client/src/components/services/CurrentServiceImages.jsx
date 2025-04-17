@@ -20,6 +20,7 @@ const CurrentServiceImages = (params) => {
   } = params;
 
   const handleCheckboxChange = (image) => {
+    console.log("image check:", image);
     const imageId = image._id;
 
     if (imagesToBeDeleted.some((img) => img._id === imageId)) {
@@ -35,11 +36,6 @@ const CurrentServiceImages = (params) => {
       ]);
     }
   };
-
-  useEffect(() => {
-    console.log("Current Images:", currImages);
-    console.log("Images to be Deleted:", imagesToBeDeleted);
-  }, [imagesToBeDeleted]);
 
   return (
     <div className="space-y-2">

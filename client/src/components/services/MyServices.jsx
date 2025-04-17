@@ -13,7 +13,7 @@ const MyServices = () => {
   const navigate = useNavigate();
 
   const handleAddService = () => {
-    navigate("add-service-form"); // match the exact route from MyServiceMenu
+    navigate("/accounts/add-service-form"); // match the exact route from MyServiceMenu
   };
 
   useEffect(() => {

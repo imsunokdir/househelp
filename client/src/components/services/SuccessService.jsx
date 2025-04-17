@@ -1,5 +1,5 @@
-import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useEffect } from "react";
+import { replace, useNavigate, useParams } from "react-router-dom";
 import ScrollToTop from "../../utils/ScrollToTop";
 
 const SuccessService = () => {
@@ -13,6 +13,30 @@ const SuccessService = () => {
   const handleEditService = () => {
     navigate(`/edit-service/${serviceId}`);
   };
+
+  useEffect(() => {
+    // Check if the service creation was successful
+    const isServiceSuccess = sessionStorage.getItem("isServiceSuccess");
+
+    // if (!isServiceSuccess) {
+    //   sessionStorage.removeItem("isServiceSuccess");
+    //   // Redirect to the accounts page if the service wasn't created or the user tried to visit the page directly
+    //   navigate(-1);
+    // }
+    sessionStorage.removeItem("isServiceSuccess"); // Remove success flag after redirect
+
+    const handlePopState = () => {
+      // Go back 2 steps instead of 1
+      navigate("/accounts/my-service-menu", { replace: true });
+      // navigate(-3);
+    };
+    window.addEventListener("popstate", handlePopState);
+
+    // Clean up and prevent going back to the success page
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [navigate]);
 
   return (
     <>
