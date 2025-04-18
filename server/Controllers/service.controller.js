@@ -47,10 +47,10 @@ const registerService = async (req, res) => {
   try {
     // Destructure and sanitize input
     // console.log("req.files", req.files);
-    console.log("req.body:", req.body);
+    // console.log("req.body:", req.body);
 
     const { serviceName, description, experience, category, status } = req.body;
-    console.log("status:", status);
+    // console.log("status:", status);
 
     const skills = JSON.parse(req.body.skills);
     const priceRange = JSON.parse(req.body.priceRange);
@@ -554,7 +554,7 @@ const getNearbyServicesTest = async (req, res) => {
       hasMore, // Include hasMore flag
     });
   } catch (error) {
-    console.log("Error in fetching nearby services:", error);
+    // console.log("Error in fetching nearby services:", error);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -567,6 +567,7 @@ const getNearbyServicesTest2 = async (req, res) => {
   // console.log("nearby");
   const { categoryId } = req.params;
   const { page = 1, limit = 5, longitude, latitude, filterData } = req.body; // Add page and limit
+  console.log("Page:", page);
   const lon = parseFloat(longitude);
   const lat = parseFloat(latitude);
 
@@ -680,7 +681,7 @@ const getNearbyServicesTest2 = async (req, res) => {
       page,
     });
   } catch (error) {
-    console.log("Error in fetching nearby services:", error);
+    // console.log("Error in fetching nearby services:", error);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -718,7 +719,7 @@ const deleteService = async (req, res) => {
 // Increment the views for a service
 const updateServiceViews = async (req, res) => {
   const { serviceId } = req.body;
-  console.log("serciveId views:", serviceId);
+  // console.log("serciveId views:", serviceId);
 
   try {
     // Increment the views field by 1
@@ -752,7 +753,7 @@ const toggleSaveService = async (req, res) => {
   }
   const { userId } = req.session.user;
 
-  console.log("service id toggle:", serviceId);
+  // console.log("service id toggle:", serviceId);
 
   try {
     const user = await User.findById(userId);
@@ -786,7 +787,7 @@ const toggleSaveService = async (req, res) => {
 
 const checkSavedService = async (req, res) => {
   const { serviceId } = req.query; // This is a string
-  console.log("sesion user:", req.session);
+  // console.log("sesion user:", req.session);
 
   if (!req.session.user) {
     return res.status(404).json({
@@ -795,7 +796,7 @@ const checkSavedService = async (req, res) => {
   }
   const { userId } = req.session.user;
 
-  console.log("service id check:", serviceId);
+  // console.log("service id check:", serviceId);
 
   try {
     const user = await User.findById(userId);
@@ -877,7 +878,7 @@ const deleteSingleSavedService = async (req, res) => {
 };
 
 const uploadServiceImage = async (req, res) => {
-  console.log("image uploading");
+  // console.log("image uploading");
   try {
     const file = req.file;
     //   const {uploadedBy} = req.body;

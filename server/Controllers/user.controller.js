@@ -51,7 +51,7 @@ const registerUser = async (req, res) => {
     const userDb = await userObj.save();
     const verifiedToken = generateJWTToken(email, username);
     sendEmailVerificationMail({ email, verifiedToken });
-    console.log("userDB:", userDb);
+    // console.log("userDB:", userDb);
     return res.status(200).json({
       message: "Email verification sent, verify email and login",
       user: userDb,
@@ -134,7 +134,7 @@ const verifyUser = async (req, res) => {
     req.params.token,
     process.env.JWT_SECRET_KEY
   );
-  console.log("verified token:", email, username);
+  // console.log("verified token:", email, username);
 
   try {
     await User.findOneAndUpdate({ email }, { isEmailVerified: true });
@@ -194,7 +194,7 @@ const loginUser = async (req, res) => {
 
   let ua = uap(req.headers["user-agent"]);
 
-  console.log("user agebt:", ua);
+  // console.log("user agebt:", ua);
 
   req.session.isAuth = true;
   req.session.userAgent = ua;
@@ -270,7 +270,7 @@ const logoutFromAllDevice = async (req, res) => {
     const deleteDb = await Session.deleteMany({
       "session.user.userId": userId,
     });
-    console.log("deletedDB: ", deleteDb);
+    // console.log("deletedDB: ", deleteDb);
     res.clearCookie("connect.sid", {
       path: "/", // Ensure the path matches the one used in session config
     });
@@ -443,7 +443,7 @@ const changePassword = async (req, res) => {
       return res.status(404).json({ message: "User not found." });
     }
 
-    console.log("user:", user);
+    // console.log("user:", user);
 
     // verify current password
     const isPasswordCorrect = await bcrypt.compare(currPassword, user.password);
@@ -462,7 +462,7 @@ const changePassword = async (req, res) => {
     await user.save();
     return res.status(200).json({ message: "Password changed successfully." });
   } catch (error) {
-    console.log("pass error:", error);
+    // console.log("pass error:", error);
     return res
       .status(500)
       .json({ message: "Internal server error. Please try again later." });

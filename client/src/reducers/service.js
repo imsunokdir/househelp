@@ -20,7 +20,9 @@ const serviceSlice = createSlice({
     hasMoreServicesByCategory: {}, // Indicates if more services are available for each category
     serviceLoading: true,
     error: false,
+    batchesLoadedByCategory: {},
     status: "loading", //loading || succeeded || "failed"
+    MAX_AUTO_LOAD: 2,
   },
   reducers: {
     clearServices: (state) => {
@@ -31,6 +33,22 @@ const serviceSlice = createSlice({
 
       state.serviceLoading = true;
       state.error = false;
+    },
+    incrementBatchLoaded: (state, action) => {
+      const categoryId = action.payload;
+      if (!state.batchesLoadedByCategory) {
+        state.batchesLoadedByCategory = {};
+      }
+      if (!state.batchesLoadedByCategory[categoryId]) {
+        state.batchesLoadedByCategory[categoryId] = 0;
+      }
+      state.batchesLoadedByCategory[categoryId]++;
+    },
+    resetBatchLoaded: (state, action) => {
+      const categoryId = action.payload;
+      if (state.batchesLoadedByCategory?.[categoryId]) {
+        state.batchesLoadedByCategory[categoryId] = 0;
+      }
     },
   },
   extraReducers: (builder) => {
@@ -43,6 +61,15 @@ const serviceSlice = createSlice({
         const { data, status, categoryId } = action.payload;
 
         updateServiceState(state, categoryId, data);
+        if (!state.batchesLoadedByCategory[categoryId]) {
+          state.batchesLoadedByCategory[categoryId] = 0;
+        }
+        state.batchesLoadedByCategory[categoryId]++;
+        // ✅ Reset to 0 if it reaches MAX_AUTO_LOAD
+
+        // if (state.batchesLoadedByCategory[categoryId] >= state.MAX_AUTO_LOAD) {
+        //   state.batchesLoadedByCategory[categoryId] = 0;
+        // }
       })
       .addCase(fetchServiceByCategoryThunk.rejected, (state) => {
         state.status = "failed";
@@ -59,6 +86,9 @@ export const getHasMoreServicesByCategory = (state, categoryId) =>
 
 export const getServicesByCategory = (state, categoryId) =>
   categoryId ? state.service.servicesByCategoryId[categoryId] : null;
+
+export const getBatchesLoadedByCategory = (state, categoryId) =>
+  state.service.batchesLoadedByCategory[categoryId] || 0;
 
 export const serviceActions = serviceSlice.actions;
 export default serviceSlice;

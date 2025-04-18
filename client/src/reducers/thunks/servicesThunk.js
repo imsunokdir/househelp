@@ -12,7 +12,7 @@ export const fetchServiceByCategoryThunk = createAsyncThunk(
       const response = await fetchServiceByCategory(
         categoryId,
         page,
-        5,
+        10,
         longitude,
         latitude,
         filterData,
