@@ -14,7 +14,7 @@ import {
   getServiceStatus,
   serviceActions,
 } from "../reducers/service";
-import { motion } from "framer-motion";
+import { delay, motion } from "framer-motion";
 
 import ServiceCard from "../components/services/ServiceCard";
 import { AuthContext } from "../contexts/AuthProvider";
@@ -30,6 +30,8 @@ const Services2 = () => {
   const numOfCards = new Array(4).fill(null); // Skeleton loader count
   const { userLocation, setUserLocation } = useContext(AuthContext);
   const [cookies, setCookies] = useCookies(["user_location"]);
+
+  const [delay, setDelay] = useState(50);
 
   const BATCH_SIZE = 10; // 4 services per batch
   const MAX_AUTO_BATCH = 2; // Only allow 2 batches before showing "Load More"
@@ -143,7 +145,7 @@ const Services2 = () => {
     // where batchesLoaded<MAX_AUTO_BATCH will laod more services
   };
 
-  const renderSkeletonCards = (delay = 50) => {
+  const renderSkeletonCards = () => {
     return new Array(BATCH_SIZE).fill(null).map((_, i) => (
       <motion.div
         key={`skeleton-${i}`}
@@ -163,25 +165,15 @@ const Services2 = () => {
         {services && services.length > 0 ? (
           <>
             {services.map((service, i) => {
-              console.log(
-                `services.length:${services.length} === i + 1:${i + 1}`,
-                services.length === i + 1
-              );
-              console.log(
-                `batchesLoaded:${batchesLoaded} < MAX_AUTO_BATCH:${MAX_AUTO_BATCH}`,
-                batchesLoaded < MAX_AUTO_BATCH
-              );
               const isLast =
                 services.length === i + 1 && batchesLoaded < MAX_AUTO_BATCH;
-              console.log("isLast:", isLast);
-              console.log("*******************************************");
               return (
                 <div
                   ref={isLast ? lastServiceElement : null}
                   key={service._id}
-                  className="rounded h-[400px]"
+                  className=" h-[400px]"
                 >
-                  <ServiceCard service={service} delay={70} index={i} />
+                  <ServiceCard service={service} delay={delay} index={i} />
                 </div>
               );
             })}
@@ -189,7 +181,10 @@ const Services2 = () => {
             {/* Show "Load More" button after 2 batches */}
             {batchesLoaded >= MAX_AUTO_BATCH && hasMore && (
               <div className="col-span-full flex justify-center">
-                <button className="bg-red-500 p-2" onClick={handleLoadMore}>
+                <button
+                  className="bg-blue-500 text-white py-2 px-5 text-lg rounded-full hover:bg-blue-600 transition-colors duration-200"
+                  onClick={handleLoadMore}
+                >
                   Load more
                 </button>
               </div>
@@ -199,7 +194,7 @@ const Services2 = () => {
         ) : serviceStatus === "loading" ? (
           new Array(BATCH_SIZE).fill(null).map((_, i) => (
             <div key={i} className="rounded h-[400px]">
-              <SkeletonCard2 delay={0} index={i} />
+              <SkeletonCard2 delay={delay} index={i} />
             </div>
           ))
         ) : (

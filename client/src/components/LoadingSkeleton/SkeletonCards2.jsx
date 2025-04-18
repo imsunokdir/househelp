@@ -12,7 +12,7 @@ const SkeletonCard2 = ({ index, delay }) => {
 
   return (
     <Card
-      className="cursor-pointer flex flex-col h-full"
+      className="cursor-pointer flex flex-col h-full shadow-none border-none"
       style={{ borderRadius: "10%" }}
     >
       {/* Card Header with image placeholder */}
