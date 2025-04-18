@@ -181,7 +181,7 @@ const Services2 = () => {
                   key={service._id}
                   className="rounded h-[400px]"
                 >
-                  <ServiceCard service={service} delay={100} index={i} />
+                  <ServiceCard service={service} delay={70} index={i} />
                 </div>
               );
             })}
@@ -199,7 +199,7 @@ const Services2 = () => {
         ) : serviceStatus === "loading" ? (
           new Array(BATCH_SIZE).fill(null).map((_, i) => (
             <div key={i} className="rounded h-[400px]">
-              <SkeletonCard2 delay={50} index={i} />
+              <SkeletonCard2 delay={0} index={i} />
             </div>
           ))
         ) : (

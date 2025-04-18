@@ -30,6 +30,7 @@ import MyServiceCard from "./components/services/MyServiceCard";
 import ForgotPassword from "./components/auth/ForgotPassword";
 import ResetPassword from "./components/auth/ResetPassword";
 import SuccessService from "./components/services/SuccessService";
+import SkeletonCard2 from "./components/LoadingSkeleton/SkeletonCards2";
 
 const App = () => {
   return (
@@ -93,6 +94,7 @@ const App = () => {
               <Route path="/error" element={<Error />} />
               <Route path="/success" element={<Success />} />
               <Route path="/test-login" element={<DummyLogin />} />
+              <Route path="/test-skeleton" element={<SkeletonCard2 />} />
             </Routes>
           </div>
         </BrowserRouter>

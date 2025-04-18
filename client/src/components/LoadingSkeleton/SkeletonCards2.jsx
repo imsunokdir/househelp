@@ -3,66 +3,129 @@ import {
   CardHeader,
   CardBody,
   CardFooter,
-  Typography,
 } from "@material-tailwind/react";
 import { Fade } from "@mui/material";
 import { Skeleton } from "antd";
 
 const SkeletonCard2 = ({ index, delay }) => {
-  // Calculate whether to fade out based on the delay and index
   const fadeOut = (index + 1) * delay;
 
   return (
     <Card
-      className="cursor-pointer h-[400px] flex flex-col"
+      className="cursor-pointer flex flex-col h-full"
       style={{ borderRadius: "10%" }}
     >
-      <Fade in={true} timeout={{ enter: 0, exit: fadeOut }}>
-        <CardHeader
-          shadow={false}
-          floated={false}
-          className="h-42 flex justify-center"
-        >
-          <Skeleton.Node
-            active
+      {/* Card Header with image placeholder */}
+      <CardHeader
+        shadow={false}
+        floated={false}
+        className="h-42 flex justify-center"
+      >
+        <Fade in={true} timeout={{ enter: 0, exit: fadeOut }}>
+          <div
             style={{
               height: "180px",
-              borderRadius: "50% !important",
+              width: "100%",
+              borderRadius: "10%",
+              backgroundColor: "#f0f0f0",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              overflow: "hidden",
             }}
-            className="!w-full rounded"
-          />
-        </CardHeader>
-      </Fade>
-      <CardBody>
-        <div className="flex items-center justify-between">
-          <div>
-            <Skeleton.Input active={true} size="small" />
-          </div>
-          <div>
-            <Skeleton.Button
-              active={true}
-              size="small"
+          >
+            <Skeleton.Avatar
+              active
+              size={120}
               shape="square"
-              block={true}
+              style={{
+                borderRadius: "8px",
+                backgroundColor: "#e0e0e0",
+                width: "80%",
+                height: "80%",
+              }}
+            />
+          </div>
+        </Fade>
+      </CardHeader>
+
+      {/* Card Body */}
+      <CardBody className="flex-grow py-2 overflow-hidden">
+        <div className="flex items-center justify-between mb-3 gap-2">
+          <div
+            className="mt-[2px] flex-grow"
+            style={{
+              overflow: "hidden",
+              width: "60%",
+            }}
+          >
+            <Skeleton.Input
+              active
+              size="default"
+              style={{
+                width: "100%",
+                height: "20px",
+                maxWidth: "100%",
+              }}
+            />
+          </div>
+
+          <div
+            className="mt-[2px]"
+            style={{
+              width: "30%",
+              overflow: "hidden",
+            }}
+          >
+            <Skeleton.Input
+              active
+              size="default"
+              style={{
+                width: "100%",
+                height: "20px",
+                maxWidth: "100%",
+              }}
             />
           </div>
         </div>
-        <div className="mt-4">
-          <Skeleton
-            active={true}
-            paragraph={{
-              rows: 0,
+
+        {/* Description line */}
+        <div style={{ width: "90%", overflow: "hidden" }}>
+          <Skeleton.Input
+            active
+            size="small"
+            style={{
+              width: "100%",
+              maxWidth: "100%",
             }}
           />
         </div>
       </CardBody>
-      <CardFooter className="p-1 m-0 flex justify-between">
-        <div className=" p-[2px] rounded">
-          <Skeleton.Input active={true} size="small" />
+
+      {/* Card Footer */}
+      <CardFooter className=" m-0 overflow-hidden">
+        <div className="flex flex-col justify-between w-full gap-2">
+          <div style={{ width: "50%", overflow: "hidden" }}>
+            <Skeleton.Input
+              active
+              size="small"
+              style={{
+                width: "100%",
+                maxWidth: "100%",
+              }}
+            />
+          </div>
+          <div style={{ width: "25%", overflow: "hidden" }}>
+            <Skeleton.Input
+              active
+              size="small"
+              style={{
+                width: "100%",
+                maxWidth: "100%",
+              }}
+            />
+          </div>
         </div>
-        {/* <div>
-          <Skeleton.Input active={true} size="small" />
-        </div> */}
       </CardFooter>
     </Card>
   );
