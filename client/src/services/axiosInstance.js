@@ -5,7 +5,6 @@ const api = import.meta.env.VITE_API_ROUTE;
 const axiosInstance = axios.create({
   baseURL: api,
   withCredentials: true,
-  "Access-Control-Allow-Origin": import.meta.env.VITE_HOME_ROUTE,
 });
 
 // Add an interceptor to handle errors

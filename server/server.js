@@ -34,7 +34,7 @@ app.set("view engine", "ejs");
 // CORS Middleware
 app.use(
   cors({
-    origin: process.env.REDIRECT_LINK,
+    origin: [process.env.REDIRECT_LINK],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "Accept"],
