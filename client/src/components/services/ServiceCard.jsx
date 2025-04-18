@@ -6,15 +6,19 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import carpenter from "../../assets/carpenter.jpg";
-import { Fade } from "@mui/material";
+import { Fade, Grow } from "@mui/material";
 import { useState, useEffect } from "react";
 import { Skeleton } from "antd";
 import SkeletonCard2 from "../LoadingSkeleton/SkeletonCards2";
+import { motion } from "framer-motion";
 
-const ServiceCard = ({ service, index, delay }) => {
+const ServiceCard = ({ service, index, delay, BATCH_SIZE }) => {
   const [visible, setVisible] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [showContent, setShowContent] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  const textFade = 100;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -36,6 +40,24 @@ const ServiceCard = ({ service, index, delay }) => {
 
   const handleImageLoad = () => {
     setImageLoaded(true);
+  };
+
+  const handleImageError = () => {
+    setImageError(true); // If the image fails to load, set the error state to true
+  };
+
+  const renderSkeletonCards = () => {
+    return new Array(BATCH_SIZE).fill(null).map((_, i) => (
+      <motion.div
+        key={`skeleton-${i}`}
+        className="h-[400px] w-full"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: (i * delay) / 1000 }}
+      >
+        <SkeletonCard2 index={i} delay={delay} />
+      </motion.div>
+    ));
   };
 
   // const renderSkeletonContent = () => (
@@ -156,34 +178,36 @@ const ServiceCard = ({ service, index, delay }) => {
   const renderActualContent = () => (
     <>
       <Fade in={showContent} timeout={500}>
-        <div>
-          <CardHeader
-            shadow={false}
-            floated={false}
-            className="h-42 flex justify-center items-center"
-          >
-            <img
-              src={
-                service.images?.length > 0
-                  ? `${service.images[0].url.replace(
-                      "/upload/",
-                      "/upload/f_auto,q_auto,w_720/"
-                    )}`
-                  : `${carpenter}?f_webp`
-              }
-              alt="card-image"
-              className="h-full w-full object-cover rounded"
-              style={{
-                height: "180px",
-                borderRadius: "10%",
-                backgroundColor: "#d6d6d6",
-              }}
-              loading="lazy"
-              onLoad={handleImageLoad}
-              {...(!showContent && { style: { display: "none" } })}
-            />
-          </CardHeader>
+        <CardHeader
+          shadow={false}
+          floated={false}
+          className="h-42 flex justify-center items-center rounded"
+        >
+          <img
+            src={
+              imageError || !service.images?.length
+                ? carpenter
+                : `${service.images[0].url.replace(
+                    "/upload/",
+                    "/upload/f_auto,q_auto,w_720/"
+                  )}`
+            }
+            alt="card-image"
+            className="h-full w-full object-cover rounded"
+            style={{
+              height: "180px",
+              borderRadius: "10%",
+              backgroundColor: "#d6d6d6",
+            }}
+            loading="lazy"
+            onLoad={handleImageLoad}
+            {...(!showContent && { style: { display: "none" } })}
+          />
+        </CardHeader>
+      </Fade>
 
+      <Fade in={showContent} timeout={500}>
+        <div>
           <CardBody className="flex-grow py-2">
             <div className="flex items-center justify-between mb-3 gap-2">
               <Typography color="blue-gray" className="font-medium flex-grow">
@@ -231,7 +255,7 @@ const ServiceCard = ({ service, index, delay }) => {
 
   return (
     <Card
-      className="cursor-pointer flex flex-col h-full shadow-none border-none"
+      className="cursor-pointer flex flex-col h-full shadow-none"
       onClick={handleClick}
       // style={{ borderRadius: "10%" }}
     >
@@ -251,6 +275,7 @@ const ServiceCard = ({ service, index, delay }) => {
             : `${carpenter}?f_webp`
         }
         onLoad={handleImageLoad}
+        onError={handleImageError}
         style={{ display: "none" }}
         alt=""
       />

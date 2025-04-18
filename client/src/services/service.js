@@ -2,6 +2,75 @@ import axios from "axios";
 // const api = import.meta.env.VITE_API_ROUTE;
 import axiosInstance from "./axiosInstance";
 
+// export const fetchServiceByCategory = async (
+//   categoryId,
+//   page,
+//   limit,
+//   longitude,
+//   latitude,
+//   filterData,
+//   cancelToken
+// ) => {
+//   try {
+//     const response = await axiosInstance.post(
+//       `/service/get-nearby-services/${categoryId}`,
+//       {
+//         page,
+//         limit,
+//         longitude,
+//         latitude,
+//         filterData,
+//       },
+//       {
+//         cancelToken: cancelToken, // Pass the cancelToken in the request options
+//       }
+//     );
+//     return response; // Return the response if request is successful
+//   } catch (error) {
+//     // Handle cancellation or other errors
+//     if (axios.isCancel(error)) {
+//       console.log("Request canceled:", error.message);
+//     } else {
+//       throw error; // Rethrow the error to handle it outside (e.g., in the component)
+//     }
+//   }
+// };
+
+// export const fetchServiceByCategory = async (
+//   categoryId,
+//   page,
+//   limit,
+//   longitude,
+//   latitude,
+//   filterData,
+//   cancelToken
+// ) => {
+//   try {
+//     const response = await axiosInstance.post(
+//       `/service/get-nearby-services/${categoryId}`,
+//       {
+//         page,
+//         limit,
+//         longitude,
+//         latitude,
+//         filterData,
+//       },
+//       {
+//         cancelToken: cancelToken, // Pass the cancelToken in the request options
+//       }
+//     );
+//     return response; // Return the response if request is successful
+//   } catch (error) {
+//     // Handle cancellation or other errors
+//     if (axios.isCancel(error)) {
+//       console.log("Request canceled:", error.message);
+//       throw error; // Rethrow canceled requests too so the thunk can handle them properly
+//     } else {
+//       throw error; // Rethrow other errors
+//     }
+//   }
+// };
+
 export const fetchServiceByCategory = async (
   categoryId,
   page,
@@ -9,7 +78,7 @@ export const fetchServiceByCategory = async (
   longitude,
   latitude,
   filterData,
-  cancelToken
+  signal
 ) => {
   try {
     const response = await axiosInstance.post(
@@ -22,16 +91,23 @@ export const fetchServiceByCategory = async (
         filterData,
       },
       {
-        cancelToken: cancelToken, // Pass the cancelToken in the request options
+        signal,
       }
     );
-    return response; // Return the response if request is successful
+    return response;
   } catch (error) {
-    // Handle cancellation or other errors
-    if (axios.isCancel(error)) {
-      console.log("Request canceled:", error.message);
+    // More comprehensive abort error detection
+    if (
+      error.name === "AbortError" ||
+      error.name === "CanceledError" ||
+      error.code === "ERR_CANCELED"
+    ) {
+      console.warn("🛑 Axios request aborted:", error.message);
+      error.isCanceled = true; // Flag for external handling
+      throw error;
     } else {
-      throw error; // Rethrow the error to handle it outside (e.g., in the component)
+      console.error("❌ Error in fetchServiceByCategory:", error);
+      throw error;
     }
   }
 };

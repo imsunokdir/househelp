@@ -12,21 +12,20 @@ const SkeletonCard2 = ({ index, delay }) => {
 
   return (
     <Card
-      className="cursor-pointer flex flex-col h-full shadow-none border-none"
+      className="cursor-pointer flex flex-col h-full shadow-none"
       style={{ borderRadius: "10%" }}
     >
       {/* Card Header with image placeholder */}
       <CardHeader
         shadow={false}
         floated={false}
-        className="h-42 flex justify-center"
+        className="h-42 flex justify-center rounded"
       >
         <Fade in={true} timeout={{ enter: 0, exit: fadeOut }}>
           <div
             style={{
               height: "180px",
               width: "100%",
-              borderRadius: "10%",
               backgroundColor: "#f0f0f0",
               display: "flex",
               justifyContent: "center",
@@ -39,7 +38,7 @@ const SkeletonCard2 = ({ index, delay }) => {
               size={120}
               shape="square"
               style={{
-                borderRadius: "8px",
+                borderRadius: "10%",
                 backgroundColor: "#e0e0e0",
                 width: "80%",
                 height: "80%",

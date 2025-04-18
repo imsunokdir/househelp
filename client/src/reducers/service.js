@@ -73,6 +73,7 @@ const serviceSlice = createSlice({
       })
       .addCase(fetchServiceByCategoryThunk.rejected, (state) => {
         state.status = "failed";
+        console.log("rejected");
       });
   },
 });

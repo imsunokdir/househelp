@@ -14,7 +14,7 @@ import {
   getServiceStatus,
   serviceActions,
 } from "../reducers/service";
-import { delay, motion } from "framer-motion";
+import { motion } from "framer-motion";
 
 import ServiceCard from "../components/services/ServiceCard";
 import { AuthContext } from "../contexts/AuthProvider";
@@ -22,7 +22,9 @@ import SkeletonCard2 from "../components/LoadingSkeleton/SkeletonCards2";
 import { useCookies } from "react-cookie";
 import NoServiceAvl from "./NoServiceAvl";
 import { fetchServiceByCategoryThunk } from "../reducers/thunks/servicesThunk";
-import { InsertRowAboveOutlined } from "@ant-design/icons";
+import ScrollToTop from "../utils/ScrollToTop";
+import axios from "axios";
+import { CategoryContext } from "../contexts/CategoryProvider";
 
 const Services2 = () => {
   const dispatch = useDispatch();
@@ -31,7 +33,10 @@ const Services2 = () => {
   const { userLocation, setUserLocation } = useContext(AuthContext);
   const [cookies, setCookies] = useCookies(["user_location"]);
 
-  const [delay, setDelay] = useState(50);
+  const { categories } = useContext(CategoryContext);
+
+  const [delay, setDelay] = useState(100);
+  const abortController = useRef(null);
 
   const BATCH_SIZE = 10; // 4 services per batch
   const MAX_AUTO_BATCH = 2; // Only allow 2 batches before showing "Load More"
@@ -54,8 +59,22 @@ const Services2 = () => {
     getBatchesLoadedByCategory(state, categoryId)
   );
 
+  // Memoize the cancelPreviousRequest function using useCallback
+  const cancelPreviousRequest = useCallback(() => {
+    if (abortController.current) {
+      abortController.current.abort();
+      console.log("Previous request canceled due to category change.");
+      console.log("✅ Canceling request for previous category:", categoryId);
+    }
+    abortController.current = new AbortController();
+    return abortController.current.signal;
+  }, [categoryId]);
+  // Empty dependency array ensures this function is stable and doesn't change on re-renders
+
   // Manual load function
   const loadMoreServices = () => {
+    const signal = cancelPreviousRequest();
+    // cancelPreviousRequest();
     setLoadingMore(true);
     dispatch(
       fetchServiceByCategoryThunk({
@@ -63,31 +82,23 @@ const Services2 = () => {
         page: page + 1,
         userLocation,
         filterData,
+        signal,
       })
     );
-    // .finally(() => {
-    //   dispatch(serviceActions.incrementBatchLoaded(categoryId));
-    //   setLoadingMore(false);
-    // });
   };
 
-  // useEffect(() => {
-  //   console.log("batchesLoaded:", batchesLoaded);
-  // }, [batchesLoaded]);
-  // Effect to fetch services when component mounts or location/category changes
   useEffect(() => {
     if (categoryId && userLocation.coordinates[0] && hasMore && !services) {
+      const signal = cancelPreviousRequest();
       dispatch(
         fetchServiceByCategoryThunk({
           categoryId,
           page,
           userLocation,
           filterData,
+          signal,
         })
       );
-      // .finally(() => {
-      //   dispatch(serviceActions.incrementBatchLoaded(categoryId));
-      // });
     }
   }, [categoryId, userLocation]);
 
@@ -103,26 +114,23 @@ const Services2 = () => {
     }
   }, [cookies]);
 
+  // useEffect(() => {
+  //   const matchedCategory = categories.find((cat) => cat._id === categoryId);
+  //   console.log(`batchesLoaded for ${matchedCategory?.name}:`, batchesLoaded);
+  // }, [batchesLoaded, categoryId]);
+
   // Observer for infinite scroll (not needed here since we handle Load More manually)
   const observer = useRef();
   const lastServiceElement = useCallback(
     (node) => {
-      console.log("hasMore:", hasMore);
-      console.log("batches loaded in observer:", batchesLoaded);
       if (!hasMore) return;
       if (batchesLoaded >= MAX_AUTO_BATCH) return;
-      console.log(`_________________________________________________________`);
 
       if (observer.current) observer.current.disconnect();
 
       observer.current = new IntersectionObserver(
         (entries) => {
-          if (
-            entries[0].isIntersecting &&
-            hasMore
-            // &&
-            // batchesLoaded < MAX_AUTO_BATCH
-          ) {
+          if (entries[0].isIntersecting && hasMore) {
             loadMoreServices(); // Trigger loading more services
           }
         },
@@ -134,33 +142,49 @@ const Services2 = () => {
 
       if (node) observer.current.observe(node);
     },
-    [hasMore, batchesLoaded]
+    [hasMore, batchesLoaded, cancelPreviousRequest, categoryId] // Make sure cancelPreviousRequest is included in dependencies
   );
 
   const handleLoadMore = () => {
     dispatch(serviceActions.resetBatchLoaded(categoryId));
-    // no need to call loadMoreServices function here
-    // because reseting the batchesLoaded by dispatching as done above
-    // will load the services..in useCallback check is done to
-    // where batchesLoaded<MAX_AUTO_BATCH will laod more services
   };
 
   const renderSkeletonCards = () => {
+    const skDelay = 50;
     return new Array(BATCH_SIZE).fill(null).map((_, i) => (
       <motion.div
         key={`skeleton-${i}`}
-        className="rounded h-[400px] w-full"
+        className="h-[400px] w-full"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: (i * delay) / 1000 }}
+        transition={{
+          duration: 0.2, // Reduced duration to make the animation faster
+          delay: (i * skDelay) / 1000,
+        }}
       >
         <SkeletonCard2 index={i} delay={delay} />
       </motion.div>
     ));
   };
 
+  useEffect(() => {
+    const matchedC = categories.find((cat) => cat._id === categoryId);
+    console.log("curr cat:", matchedC?.name);
+  }, [categoryId, categories]);
+
+  // useEffect(() => {
+  //   const matchedCategory = categories.find((cat) => cat._id === categoryId);
+  //   console.log(`batchesLoaded for ${matchedCategory?.name}:`);
+  // }, [categoryId]);
+
+  // useEffect(() => {
+  //   console.log("serviceStatus:", serviceStatus);
+  //   console.log("hasMore:", hasMore);
+  // }, [serviceStatus, hasMore]);
+
   return (
     <div className="p-4">
+      <ScrollToTop />
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mx-auto">
         {services && services.length > 0 ? (
           <>
@@ -173,7 +197,12 @@ const Services2 = () => {
                   key={service._id}
                   className=" h-[400px]"
                 >
-                  <ServiceCard service={service} delay={delay} index={i} />
+                  <ServiceCard
+                    service={service}
+                    delay={delay}
+                    index={i}
+                    renderSkeletonCards={renderSkeletonCards}
+                  />
                 </div>
               );
             })}
@@ -198,11 +227,6 @@ const Services2 = () => {
             </div>
           ))
         ) : (
-          // numOfCards.map((_, i) => (
-          //   <div key={i} className="rounded h-[400px]">
-          //     <SkeletonCard2 delay={50} index={i} />
-          //   </div>
-          // ))
           <div className="flex justify-center items-center w-full col-span-full h-[60vh]">
             <NoServiceAvl />
           </div>

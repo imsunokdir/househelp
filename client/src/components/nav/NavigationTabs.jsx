@@ -18,8 +18,8 @@ const numberOfNavTabs = new Array(10).fill(null);
 const { TabPane } = Tabs;
 
 const NavigationTabs = () => {
-  const [value, setValue] = useState(0);
-  const { categories, loading } = useContext(CategoryContext);
+  // const [value, setValue] = useState(0);
+  const { categories, loading, value, setValue } = useContext(CategoryContext);
   // const [categories, setCategories] = useState([]);
   // const [loading, setLoading] = useState(true);
   // const [functions, setFunctions] = useState({});
@@ -30,7 +30,13 @@ const NavigationTabs = () => {
     const categoryId = event.target.getAttribute("data-id");
     setValue(newValue);
     dispatch(categoryActions.changeCategory(categoryId));
+    sessionStorage.setItem("selectedCategoryId", categoryId);
+    sessionStorage.setItem("selectedTabIndex", newValue);
   };
+
+  useEffect(() => {
+    console.log("value:", value);
+  }, [value]);
 
   // useEffect(() => {
   //   setLoading(true);
