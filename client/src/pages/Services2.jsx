@@ -195,7 +195,7 @@ const Services2 = () => {
                 <div
                   ref={isLast ? lastServiceElement : null}
                   key={service._id}
-                  className=" h-[400px]"
+                  className=" h-[300px]"
                 >
                   <ServiceCard
                     service={service}
@@ -222,7 +222,7 @@ const Services2 = () => {
           </>
         ) : serviceStatus === "loading" ? (
           new Array(BATCH_SIZE).fill(null).map((_, i) => (
-            <div key={i} className="rounded h-[400px]">
+            <div key={i} className="rounded h-[300px]">
               <SkeletonCard2 delay={delay} index={i} />
             </div>
           ))
