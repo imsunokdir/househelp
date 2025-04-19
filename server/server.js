@@ -42,7 +42,14 @@ app.use(
 );
 
 // Add this to handle preflight requests explicitly
-app.options("*", cors());
+// app.options("*", cors());
+app.options(
+  "*",
+  cors({
+    origin: [process.env.REDIRECT_LINK],
+    credentials: true,
+  })
+);
 
 // Handle preflight requests explicitly
 
