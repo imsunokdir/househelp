@@ -1,28 +1,20 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import "./nav.css";
-import { Link, useNavigate } from "react-router-dom";
-import { getAllCategories } from "../../services/category";
-import { Category } from "@mui/icons-material";
-import { categoryActions } from "../../reducers/category";
+import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
 import { Skeleton } from "antd";
-import Message from "../Messages/WarningMessage";
 import { Fade } from "@mui/material";
+import { categoryActions } from "../../reducers/category";
 import { CategoryContext } from "../../contexts/CategoryProvider";
 
 const numberOfNavTabs = new Array(10).fill(null);
-const { TabPane } = Tabs;
 
 const NavigationTabs = () => {
-  // const [value, setValue] = useState(0);
-  const { categories, loading, value, setValue } = useContext(CategoryContext);
-  // const [categories, setCategories] = useState([]);
-  // const [loading, setLoading] = useState(true);
-  // const [functions, setFunctions] = useState({});
+  const { categories, catLoading, value, setValue } =
+    useContext(CategoryContext);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -34,43 +26,30 @@ const NavigationTabs = () => {
     sessionStorage.setItem("selectedTabIndex", newValue);
   };
 
-  useEffect(() => {
-    console.log("value:", value);
-  }, [value]);
-
-  // useEffect(() => {
-  //   setLoading(true);
-  //   const fetchCategories = async () => {
-  //     try {
-  //       const response = await getAllCategories();
-  //       if (response.status === 200) {
-  //         const fetchedCategories = response.data.data;
-  //         if (fetchedCategories.length > 0) {
-  //           setCategories(fetchedCategories);
-  //           setLoading(false);
-  //           // Set initial value and categoryId to the first category
-  //           dispatch(categoryActions.changeCategory(fetchedCategories[0]._id));
-  //         } else {
-  //           functions.warning("No categories found..!!");
-  //         }
-  //       }
-  //     } catch (err) {
-  //       console.log("Error:", err);
-  //     }
-  //   };
-  //   fetchCategories();
-  // }, []);
-
   return (
     <div className="w-10/12">
-      {/* <Message onMessage={setFunctions} /> */}
       <Fade in timeout={1000}>
-        <Box sx={{ width: "99%", bgcolor: "background.paper" }}>
-          {loading ? (
+        <Box
+          sx={{
+            width: "100%",
+            bgcolor: "background.paper",
+            "& .MuiTabs-scroller": {
+              paddingLeft: "0px !important",
+              marginLeft: "0px !important",
+            },
+            "& .MuiTabs-flexContainer": {
+              marginLeft: "0px !important",
+            },
+            "& .MuiTab-root:first-of-type": {
+              marginLeft: "0px !important",
+            },
+          }}
+        >
+          {catLoading ? (
             <Tabs
-              value={false} // Prevents value mismatch during loading
+              value={false}
               variant="scrollable"
-              scrollButtons="auto"
+              scrollButtons={false}
               allowScrollButtonsMobile
               aria-label="scrollable auto tabs example"
             >
@@ -84,16 +63,36 @@ const NavigationTabs = () => {
                 value={value}
                 onChange={handleChange}
                 variant="scrollable"
-                scrollButtons="auto"
+                scrollButtons={false}
                 allowScrollButtonsMobile
                 aria-label="scrollable auto tabs example"
+                textColor="primary"
+                indicatorColor="primary"
+                // TabIndicatorProps={{
+                //   style: { backgroundColor: "orange" },
+                // }}
               >
-                {categories.map((category, index) => (
+                {categories.map((category) => (
                   <Tab
                     label={category.name}
                     data-id={category._id}
                     key={category._id}
                     onClick={() => navigate("/")}
+                    sx={{
+                      minWidth: "auto",
+                      paddingX: { xs: 1, sm: 2 },
+                      fontSize: { xs: "12px", sm: "14px" },
+                      marginX: { xs: 0.5, sm: 1 },
+                      "&.Mui-selected": {
+                        color: "#1976d2",
+                        borderBottom: "2px solid rgba(25, 118, 210, 1)",
+                        cursor: "default",
+                      },
+                      "&:hover:not(.Mui-selected)": {
+                        color: "rgba(25, 118, 210, 0.6)",
+                        borderBottom: "2px solid rgba(25, 118, 210, 0.6)",
+                      },
+                    }}
                   />
                 ))}
               </Tabs>

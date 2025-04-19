@@ -22,6 +22,7 @@ import { AuthContext } from "../../contexts/AuthProvider";
 import { filterActions, defaultFilterValues } from "../../reducers/filter";
 import { serviceActions } from "../../reducers/service";
 import { fetchServiceByCategoryThunk } from "../../reducers/thunks/servicesThunk";
+import { CategoryContext } from "../../contexts/CategoryProvider";
 
 // Transition for dialog
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -32,6 +33,7 @@ const Filter = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const dispatch = useDispatch();
+  const { catLoading } = useContext(CategoryContext);
 
   // Global state
   const { categoryId } = useSelector((state) => state.category);
@@ -104,11 +106,12 @@ const Filter = () => {
     <div className="w-3/12 flex justify-center">
       <Badge size="small" count={filterApplied ? filterCount : 0}>
         <button
-          onClick={handleClickOpen}
+          onClick={catLoading ? undefined : handleClickOpen}
           type="button"
           className="flex gap-2 border p-2 rounded shadow-sm"
+          disabled={catLoading}
         >
-          <SlidersHorizontal />
+          <SlidersHorizontal color={catLoading ? "#A0A0A0" : "black"} />{" "}
         </button>
       </Badge>
 
