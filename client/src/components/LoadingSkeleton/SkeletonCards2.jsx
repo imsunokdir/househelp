@@ -132,89 +132,94 @@ import { Skeleton } from "antd";
 
 // export default SkeletonCard2;
 
-const SkeletonCard2 = () => (
-  <Card className="cursor-pointer flex flex-col h-full shadow-none">
-    <div className="flex flex-col h-full">
-      <CardHeader
-        shadow={false}
-        floated={false}
-        className="h-44 rounded-xl overflow-hidden"
-      >
-        <div
-          style={{
-            width: "100%", // Make it fill the width of the container
-            height: "100%", // Make it fill the height of the container
-            backgroundColor: "#e0e0e0", // Background color to simulate skeleton
-            borderRadius: "12px", // Same border-radius as the CardHeader
-          }}
-        />
-      </CardHeader>
+const SkeletonCard2 = ({ index, delay }) => {
+  const fadeOut = (index + 1) * delay;
+  return (
+    <Card className="cursor-pointer flex flex-col h-full shadow-none">
+      <div className="flex flex-col h-full">
+        <CardHeader
+          shadow={false}
+          floated={false}
+          className="h-44 rounded-xl overflow-hidden"
+        >
+          <Fade in={true} timeout={{ enter: 0, exit: fadeOut }}>
+            <div
+              style={{
+                width: "100%", // Make it fill the width of the container
+                height: "100%", // Make it fill the height of the container
+                backgroundColor: "#e0e0e0", // Background color to simulate skeleton
+                borderRadius: "12px", // Same border-radius as the CardHeader
+              }}
+            />
+          </Fade>
+        </CardHeader>
 
-      <CardBody className="pt-2 pb-1 px-4 ">
-        <div className="flex justify-between items-center">
-          <Skeleton
-            active
-            paragraph={false} // Disables multiple lines, making it a single line
-            style={{
-              width: "40%", // Adjust the width to match the previous Typography width
-              height: "20px", // Adjust the height to look like a single line
-              // backgroundColor: "#e0e0e0", // Optional background color for visibility
-            }}
-            className="m-0 p-0"
-          />
+        <CardBody className="pt-2 pb-1 px-4 ">
+          <div className="flex justify-between items-center">
+            <Skeleton
+              active
+              paragraph={false} // Disables multiple lines, making it a single line
+              style={{
+                width: "40%", // Adjust the width to match the previous Typography width
+                height: "20px", // Adjust the height to look like a single line
+                // backgroundColor: "#e0e0e0", // Optional background color for visibility
+              }}
+              className="m-0 p-0"
+            />
+
+            <Skeleton
+              active
+              paragraph={false} // Disables multiple lines, making it a single line
+              style={{
+                width: "10%", // Adjust the width to match the previous Typography width
+                height: "20px", // Adjust the height to look like a single line
+                // backgroundColor: "#e0e0e0", // Optional background color for visibility
+              }}
+              className="m-0 p-0"
+            />
+          </div>
 
           <Skeleton
             active
-            paragraph={false} // Disables multiple lines, making it a single line
+            paragraph={false}
             style={{
-              width: "10%", // Adjust the width to match the previous Typography width
-              height: "20px", // Adjust the height to look like a single line
-              // backgroundColor: "#e0e0e0", // Optional background color for visibility
+              width: "60%",
+              height: "5px",
+              position: "relative",
+              top: "6px", // Adjust this value as needed
             }}
-            className="m-0 p-0"
+            className="m-0"
           />
-        </div>
-
-        <Skeleton
-          active
-          paragraph={false}
-          style={{
-            width: "60%",
-            height: "5px",
-            position: "relative",
-            top: "6px", // Adjust this value as needed
-          }}
-          className="m-0"
-        />
-      </CardBody>
-      <CardFooter className="flex flex-col py-0 mt-2">
-        <div className="flex justify-between text-sm">
-          {/* <span> */}
-          <Skeleton
-            active
-            paragraph={false} // Disables multiple lines, making it a single line
-            style={{
-              width: "40%", // Adjust the width to match the previous Typography width
-              height: "20px", // Adjust the height to look like a single line
-              // backgroundColor: "#e0e0e0", // Optional background color for visibility
-            }}
-          />
-          {/* </span> */}
-          {/* <span> */}
-          <Skeleton
-            active
-            paragraph={false} // Disables multiple lines, making it a single line
-            style={{
-              width: "10%", // Adjust the width to match the previous Typography width
-              height: "20px", // Adjust the height to look like a single line
-              // backgroundColor: "#e0e0e0", // Optional background color for visibility
-            }}
-          />
-          {/* </span> */}
-        </div>
-      </CardFooter>
-    </div>
-  </Card>
-);
+        </CardBody>
+        <CardFooter className="flex flex-col py-0 mt-2">
+          <div className="flex justify-between text-sm">
+            {/* <span> */}
+            <Skeleton
+              active
+              paragraph={false} // Disables multiple lines, making it a single line
+              style={{
+                width: "40%", // Adjust the width to match the previous Typography width
+                height: "20px", // Adjust the height to look like a single line
+                // backgroundColor: "#e0e0e0", // Optional background color for visibility
+              }}
+            />
+            {/* </span> */}
+            {/* <span> */}
+            <Skeleton
+              active
+              paragraph={false} // Disables multiple lines, making it a single line
+              style={{
+                width: "10%", // Adjust the width to match the previous Typography width
+                height: "20px", // Adjust the height to look like a single line
+                // backgroundColor: "#e0e0e0", // Optional background color for visibility
+              }}
+            />
+            {/* </span> */}
+          </div>
+        </CardFooter>
+      </div>
+    </Card>
+  );
+};
 
 export default SkeletonCard2;

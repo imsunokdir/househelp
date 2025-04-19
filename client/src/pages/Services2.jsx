@@ -150,11 +150,11 @@ const Services2 = () => {
   };
 
   const renderSkeletonCards = () => {
-    const skDelay = 50;
+    const skDelay = 10;
     return new Array(BATCH_SIZE).fill(null).map((_, i) => (
       <motion.div
         key={`skeleton-${i}`}
-        className="h-[400px] w-full"
+        className="h-[300px] w-full"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{
@@ -195,7 +195,7 @@ const Services2 = () => {
                 <div
                   ref={isLast ? lastServiceElement : null}
                   key={service._id}
-                  className=" h-[300px]"
+                  className="h-[300px]"
                 >
                   <ServiceCard
                     service={service}
