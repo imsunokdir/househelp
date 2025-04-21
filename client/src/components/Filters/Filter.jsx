@@ -25,6 +25,7 @@ import { fetchServiceByCategoryThunk } from "../../reducers/thunks/servicesThunk
 import { CategoryContext } from "../../contexts/CategoryProvider";
 import { getFilteredCount } from "../../services/service";
 import { getDefaultFilters } from "../../utils/filterUtils";
+import dualball from "../../assets/dualball.svg";
 // Transition for dialog
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -52,11 +53,6 @@ const Filter = () => {
   const [countLoading, setCountLoading] = useState(false);
   const [serviceCount, setServiceCount] = useState(0);
   const [localFilters, setLocalFilters] = useState(getDefaultFilters());
-  // const [localFilters, setLocalFilters] = useState({
-  //   priceRange: { ...filterData.priceRange },
-  //   rating: filterData.rating,
-  //   experience: filterData.experience,
-  // });
 
   useEffect(() => {
     const stored = sessionStorage.getItem("submittedFilters");
@@ -75,49 +71,53 @@ const Filter = () => {
     setCurrCategory(cat);
   }, [categoryId, allCategories]);
 
-  const resetFilters = React.useCallback(() => {
-    // if (filterCount > 0) {
-    setLocalFilters({
-      priceRange: { ...filterData.priceRange },
-      rating: filterData.rating,
-      experience: filterData.experience,
-    });
-    // }
-  }, [filterCount, localFilters]);
+  // const resetFilters = React.useCallback(() => {
+  //   console.log("reset Fil");
+  //   // if (filterCount > 0) {
+  //   setLocalFilters({
+  //     priceRange: { ...filterData.priceRange },
+  //     rating: filterData.rating,
+  //     experience: filterData.experience,
+  //   });
+  //   // }
+  // }, [localFilters, filterData]);
 
-  const handleClickOpen = () => {
-    resetFilters();
-    setOpen((prev) => !prev);
+  const resetFilters = () => {
+    const stored = sessionStorage.getItem("submittedFilters");
+    if (stored) {
+      setLocalFilters(JSON.parse(stored));
+    }
   };
-  // const handleClickOpen = React.useCallback(() => {
+
+  // const handleClickOpen = () => {
+  //   // resetFilters();
   //   setOpen((prev) => !prev);
-  // }, [open]);
+  // };
+  const handleClickOpen = React.useCallback(() => {
+    setOpen((prev) => !prev);
+  }, [open]);
 
-  const handleClose = () => {
-    // resetFilters();
+  const handleClose = React.useCallback(() => {
+    console.log("close");
+    resetFilters();
     setOpen(false);
-  };
-
+  }, [open]);
   // Clear filter
   const handleFilterClear = () => {
-    // const defaultFilters = {
-    //   priceRange: { ...defaultFilterValues.priceRange },
-    //   rating: defaultFilterValues.rating,
-    //   experience: defaultFilterValues.experience,
-    // };
     setLocalFilters(getDefaultFilters());
   };
 
   // Apply filter
   const handleFilterSubmit = () => {
     window.scrollTo({ top: 0, behavior: "instant" });
-    handleClose();
+    // handleClose();
     dispatch(serviceActions.clearServices());
     // sessionStorage.setItem("sessionFilters", JSON.stringify(localFilters));
     sessionStorage.setItem("submittedFilters", JSON.stringify(localFilters));
     dispatch(filterActions.setAllFilters(localFilters));
     dispatch(filterActions.setIsFilterApplied());
     // resetFilters();
+    handleClose();
 
     dispatch(
       fetchServiceByCategoryThunk({
@@ -139,34 +139,46 @@ const Filter = () => {
     return abortController.current.signal;
   }, []);
 
+  let cnt = 0;
+
+  const getCount = async () => {
+    console.log("fc");
+    setCountLoading(true);
+
+    const { coordinates } = userLocation || {};
+    const longitude = coordinates?.[0];
+    const latitude = coordinates?.[1];
+    const signal = cancelPreviousRequest();
+
+    try {
+      const res = await getFilteredCount({
+        categoryId,
+        longitude,
+        latitude,
+        filterData: localFilters,
+        signal,
+      });
+
+      if (res.status === 200) {
+        setServiceCount(res.data.count);
+      }
+    } catch (error) {
+      console.log("error count:", error);
+    } finally {
+      setCountLoading(false);
+    }
+  };
+
   useEffect(() => {
     // sessionStorage.setItem("localFilters", JSON.stringify(localFilters));
-    if (categoryId) {
-      setCountLoading(true);
-      const { coordinates } = userLocation || {};
-      const longitude = coordinates?.[0];
-      const latitude = coordinates?.[1];
-      const signal = cancelPreviousRequest();
 
-      const getCount = async () => {
-        try {
-          const res = await getFilteredCount({
-            categoryId,
-            longitude,
-            latitude,
-            filterData: localFilters,
-            signal,
-          });
-          if (res.status === 200) {
-            setServiceCount(res.data.count);
-          }
-        } catch (error) {
-          console.log("error countL:", error);
-        } finally {
-          setCountLoading(false);
-        }
-      };
-      getCount();
+    if (categoryId) {
+      // getCount();
+      setCountLoading(true);
+
+      setTimeout(() => {
+        getCount();
+      }, 5000);
     }
   }, [localFilters, categoryId]);
 
@@ -176,8 +188,9 @@ const Filter = () => {
 
       const handlePopState = (event) => {
         if (open) {
-          resetFilters();
-          setOpen(false); // Close the modal
+          // resetFilters();
+          // setOpen(false); // Close the modal
+          handleClose();
         }
       };
 
@@ -260,13 +273,25 @@ const Filter = () => {
             disabled={true}
           >
             Clear all
+            {/* <img
+              src={dualball}
+              style={{ height: "25px", backgroundColor: "red" }}
+            /> */}
           </p>
-          <Button variant="contained" onClick={handleFilterSubmit}>
-            {countLoading
-              ? "Loading..."
-              : serviceCount > 1000
-              ? `${Math.floor(serviceCount / 1000) * 1000}+ result`
-              : `${serviceCount} result`}
+          <Button
+            variant="contained"
+            onClick={handleFilterSubmit}
+            className="w-[150px]"
+          >
+            {countLoading ? (
+              <p className="p-0 m-0">
+                <img src={dualball} style={{ height: "25px" }} />
+              </p>
+            ) : serviceCount > 1000 ? (
+              `${Math.floor(serviceCount / 1000) * 1000}+ result`
+            ) : (
+              `${serviceCount} result`
+            )}
           </Button>
         </div>
       </Dialog>
