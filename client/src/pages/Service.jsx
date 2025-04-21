@@ -53,6 +53,24 @@ const Service = () => {
     setOpen(false);
   };
 
+  useEffect(() => {
+    if (open) {
+      window.history.pushState({ modal: true }, ""); // Push state when modal opens
+
+      const handlePopState = (event) => {
+        if (open) {
+          setOpen(false); // Close the modal
+        }
+      };
+
+      window.addEventListener("popstate", handlePopState);
+
+      return () => {
+        window.removeEventListener("popstate", handlePopState);
+      };
+    }
+  }, [open]);
+
   const loadRatingDistribution = async () => {
     try {
       const response = await getRatingDistribution(serviceId);

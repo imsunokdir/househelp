@@ -102,6 +102,24 @@ const Filter = () => {
     // );
   };
 
+  useEffect(() => {
+    if (open) {
+      window.history.pushState({ modal: true }, ""); // Push state when modal opens
+
+      const handlePopState = (event) => {
+        if (open) {
+          setOpen(false); // Close the modal
+        }
+      };
+
+      window.addEventListener("popstate", handlePopState);
+
+      return () => {
+        window.removeEventListener("popstate", handlePopState);
+      };
+    }
+  }, [open]);
+
   return (
     <div className="w-3/12 flex justify-center">
       <Badge size="small" count={filterApplied ? filterCount : 0}>
