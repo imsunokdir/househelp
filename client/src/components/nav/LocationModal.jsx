@@ -72,6 +72,24 @@ const LocationModal = () => {
 
   const [locationDetails, setLocationDetails] = useState();
 
+  useEffect(() => {
+    if (open) {
+      // window.history.pushState({ modal: true }, ""); // Push state when modal opens
+
+      const handlePopState = (event) => {
+        if (open) {
+          setOpen(false); // Close the modal
+        }
+      };
+
+      window.addEventListener("popstate", handlePopState);
+
+      return () => {
+        window.removeEventListener("popstate", handlePopState);
+      };
+    }
+  }, [open]);
+
   return (
     <div className="mt-[10px]">
       <React.Fragment>

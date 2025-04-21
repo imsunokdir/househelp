@@ -12,6 +12,7 @@ const initialState = {
   // rating: null,
   // experience: null,
   // availability: [],
+  // filterDatas: defaultFilterValues,
   ...defaultFilterValues,
   filterApplied: false,
   filterCount: 0,
@@ -26,8 +27,11 @@ const filterSlice = createSlice({
     setAllFilters: (state, action) => {
       const { priceRange, rating, experience } = action.payload;
       state.priceRange = priceRange;
+      // state.filterDatas.priceRange = priceRange;
       state.rating = rating;
+      // state.filterDatas.rating = rating;
       state.experience = experience;
+      // state.filterDatas.experience = experience;
 
       state.filterApplying = true;
       updateFilterCount(state);

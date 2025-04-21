@@ -21,6 +21,7 @@ const {
   deleteServiceImage,
   createService,
   updateService2,
+  getFilteredServiceCount,
 } = require("../Controllers/service.controller");
 const { isAuth } = require("../Middlewares/isAuth");
 const serviceRouter = express.Router();
@@ -61,4 +62,5 @@ serviceRouter.post(
 );
 serviceRouter.post("/delete-service-form-image", deleteServiceImage);
 serviceRouter.post("/create-service", createService);
+serviceRouter.post("/get-filtered-count/:categoryId", getFilteredServiceCount);
 module.exports = { serviceRouter };

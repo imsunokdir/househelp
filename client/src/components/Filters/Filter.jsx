@@ -23,7 +23,8 @@ import { filterActions, defaultFilterValues } from "../../reducers/filter";
 import { serviceActions } from "../../reducers/service";
 import { fetchServiceByCategoryThunk } from "../../reducers/thunks/servicesThunk";
 import { CategoryContext } from "../../contexts/CategoryProvider";
-
+import { getFilteredCount } from "../../services/service";
+import { getDefaultFilters } from "../../utils/filterUtils";
 // Transition for dialog
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -38,19 +39,34 @@ const Filter = () => {
   // Global state
   const { categoryId } = useSelector((state) => state.category);
   const filterData = useSelector((state) => state.filter);
-  const { filterCount, filterApplied } = filterData;
+  const { filterCount, filterApplied, filterDatas } = filterData;
 
   // Context
   const { allCategories, userLocation } = useContext(AuthContext);
+  const abortController = React.useRef(null);
 
   // Local state
   const [open, setOpen] = useState(false);
   const [currCategory, setCurrCategory] = useState(null);
-  const [localFilters, setLocalFilters] = useState({
-    priceRange: { ...filterData.priceRange },
-    rating: filterData.rating,
-    experience: filterData.experience,
-  });
+  const [sessionFilters, setSessionFilters] = useState(null);
+  const [countLoading, setCountLoading] = useState(false);
+  const [serviceCount, setServiceCount] = useState(0);
+  const [localFilters, setLocalFilters] = useState(getDefaultFilters());
+  // const [localFilters, setLocalFilters] = useState({
+  //   priceRange: { ...filterData.priceRange },
+  //   rating: filterData.rating,
+  //   experience: filterData.experience,
+  // });
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem("submittedFilters");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      setLocalFilters(parsed);
+      dispatch(filterActions.setAllFilters(parsed));
+      dispatch(filterActions.setIsFilterApplied());
+    }
+  }, []);
 
   const page = 1;
 
@@ -59,17 +75,49 @@ const Filter = () => {
     setCurrCategory(cat);
   }, [categoryId, allCategories]);
 
-  // Toggle modal
-  const handleClickOpen = () => setOpen((prev) => !prev);
-  const handleClose = () => setOpen(false);
+  const resetFilters = React.useCallback(() => {
+    // if (filterCount > 0) {
+    setLocalFilters({
+      priceRange: { ...filterData.priceRange },
+      rating: filterData.rating,
+      experience: filterData.experience,
+    });
+    // }
+  }, [filterCount, localFilters]);
+
+  const handleClickOpen = () => {
+    resetFilters();
+    setOpen((prev) => !prev);
+  };
+  // const handleClickOpen = React.useCallback(() => {
+  //   setOpen((prev) => !prev);
+  // }, [open]);
+
+  const handleClose = () => {
+    // resetFilters();
+    setOpen(false);
+  };
+
+  // Clear filter
+  const handleFilterClear = () => {
+    // const defaultFilters = {
+    //   priceRange: { ...defaultFilterValues.priceRange },
+    //   rating: defaultFilterValues.rating,
+    //   experience: defaultFilterValues.experience,
+    // };
+    setLocalFilters(getDefaultFilters());
+  };
 
   // Apply filter
   const handleFilterSubmit = () => {
     window.scrollTo({ top: 0, behavior: "instant" });
     handleClose();
     dispatch(serviceActions.clearServices());
+    // sessionStorage.setItem("sessionFilters", JSON.stringify(localFilters));
+    sessionStorage.setItem("submittedFilters", JSON.stringify(localFilters));
     dispatch(filterActions.setAllFilters(localFilters));
     dispatch(filterActions.setIsFilterApplied());
+    // resetFilters();
 
     dispatch(
       fetchServiceByCategoryThunk({
@@ -81,26 +129,46 @@ const Filter = () => {
     );
   };
 
-  // Clear filter
-  const handleFilterClear = () => {
-    const defaultFilters = {
-      priceRange: { ...defaultFilterValues.priceRange },
-      rating: defaultFilterValues.rating,
-      experience: defaultFilterValues.experience,
-    };
-    setLocalFilters(defaultFilters);
-    // dispatch(serviceActions.clearServices());
-    // dispatch(filterActions.clearFilters());
+  const cancelPreviousRequest = React.useCallback(() => {
+    if (abortController.current) {
+      abortController.current.abort();
+      // console.log("Previous request canceled due to category change.");
+      // console.log("✅ Canceling request for previous category:", categoryId);
+    }
+    abortController.current = new AbortController();
+    return abortController.current.signal;
+  }, []);
 
-    // dispatch(
-    //   fetchServiceByCategoryThunk({
-    //     categoryId,
-    //     page,
-    //     userLocation,
-    //     filterData: defaultFilters,
-    //   })
-    // );
-  };
+  useEffect(() => {
+    // sessionStorage.setItem("localFilters", JSON.stringify(localFilters));
+    if (categoryId) {
+      setCountLoading(true);
+      const { coordinates } = userLocation || {};
+      const longitude = coordinates?.[0];
+      const latitude = coordinates?.[1];
+      const signal = cancelPreviousRequest();
+
+      const getCount = async () => {
+        try {
+          const res = await getFilteredCount({
+            categoryId,
+            longitude,
+            latitude,
+            filterData: localFilters,
+            signal,
+          });
+          if (res.status === 200) {
+            setServiceCount(res.data.count);
+          }
+        } catch (error) {
+          console.log("error countL:", error);
+        } finally {
+          setCountLoading(false);
+        }
+      };
+      getCount();
+    }
+  }, [localFilters, categoryId]);
 
   useEffect(() => {
     if (open) {
@@ -108,6 +176,7 @@ const Filter = () => {
 
       const handlePopState = (event) => {
         if (open) {
+          resetFilters();
           setOpen(false); // Close the modal
         }
       };
@@ -188,11 +257,16 @@ const Filter = () => {
           <p
             className="m-0 p-1 hover:bg-gray-100 rounded cursor-pointer"
             onClick={handleFilterClear}
+            disabled={true}
           >
             Clear all
           </p>
           <Button variant="contained" onClick={handleFilterSubmit}>
-            Filter
+            {countLoading
+              ? "Loading..."
+              : serviceCount > 1000
+              ? `${Math.floor(serviceCount / 1000) * 1000}+ result`
+              : `${serviceCount} result`}
           </Button>
         </div>
       </Dialog>

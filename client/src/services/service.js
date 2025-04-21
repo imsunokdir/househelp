@@ -175,3 +175,39 @@ export const deleteServiceImage = async (public_id) =>
 
 export const createService2 = async (data) =>
   axiosInstance.post("/service/create-service", data);
+
+export const getFilteredCount = async ({
+  categoryId,
+  longitude,
+  latitude,
+  filterData,
+  signal,
+}) => {
+  try {
+    const response = await axiosInstance.post(
+      `/service/get-filtered-count/${categoryId}`, // Make sure this matches your backend route
+      {
+        longitude,
+        latitude,
+        filterData,
+      },
+      {
+        signal,
+      }
+    );
+    return response;
+  } catch (error) {
+    if (
+      error.name === "AbortError" ||
+      error.name === "CanceledError" ||
+      error.code === "ERR_CANCELED"
+    ) {
+      console.warn("🛑 Axios request aborted:", error.message);
+      error.isCanceled = true;
+      throw error;
+    } else {
+      console.error("❌ Error in getFilteredCount:", error);
+      throw error;
+    }
+  }
+};

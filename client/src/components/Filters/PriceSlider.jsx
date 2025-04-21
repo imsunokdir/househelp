@@ -1,25 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Slider } from "@mui/material";
 
 const PriceSlider = ({ localFilters, setLocalFilters }) => {
   const defaultMin = 0;
   const defaultMax = 10000;
 
-  const [price, setPrice] = useState({
-    minimum: defaultMin,
-    maximum: defaultMax,
-  });
+  // Set temporary slider value for live UI update
+  const [tempValue, setTempValue] = useState([
+    localFilters?.priceRange?.minimum ?? defaultMin,
+    localFilters?.priceRange?.maximum ?? defaultMax,
+  ]);
 
-  // Sync local `price` state with incoming `localFilters.priceRange`
+  // Keep tempValue in sync with props (in case parent updates filters externally)
   useEffect(() => {
-    const minimum = localFilters?.priceRange?.minimum ?? defaultMin;
-    const maximum = localFilters?.priceRange?.maximum ?? defaultMax;
-    setPrice({ minimum, maximum });
-  }, [localFilters?.priceRange]);
+    setTempValue([
+      localFilters?.priceRange?.minimum ?? defaultMin,
+      localFilters?.priceRange?.maximum ?? defaultMax,
+    ]);
+  }, [localFilters]);
 
   const handleChange = (e, newValue) => {
+    setTempValue(newValue); // live update
+  };
+
+  const handleChangeCommitted = (e, newValue) => {
     const [min, max] = newValue;
-    setPrice({ minimum: min, maximum: max });
     setLocalFilters((prev) => ({
       ...prev,
       priceRange: { minimum: min, maximum: max },
@@ -31,8 +36,9 @@ const PriceSlider = ({ localFilters, setLocalFilters }) => {
       <p className="m-0">Price</p>
       <Slider
         getAriaLabel={() => "Price Range"}
-        value={[price.minimum, price.maximum]}
+        value={tempValue}
         onChange={handleChange}
+        onChangeCommitted={handleChangeCommitted}
         valueLabelDisplay="auto"
         step={500}
         min={defaultMin}
@@ -45,8 +51,8 @@ const PriceSlider = ({ localFilters, setLocalFilters }) => {
         }}
       />
       <div className="flex justify-between">
-        <p>Min: ₹{price.minimum}</p>
-        <p>Max: ₹{price.maximum}</p>
+        <p>Min: ₹{tempValue[0]}</p>
+        <p>Max: ₹{tempValue[1]}</p>
       </div>
     </div>
   );

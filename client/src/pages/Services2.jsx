@@ -25,6 +25,7 @@ import { fetchServiceByCategoryThunk } from "../reducers/thunks/servicesThunk";
 import ScrollToTop from "../utils/ScrollToTop";
 import axios from "axios";
 import { CategoryContext } from "../contexts/CategoryProvider";
+import ScrollServiceToTop from "../utils/ScrollServiceToTop";
 
 const Services2 = () => {
   const dispatch = useDispatch();
@@ -184,7 +185,8 @@ const Services2 = () => {
 
   return (
     <div className="p-4">
-      <ScrollToTop />
+      {/* <ScrollToTop /> */}
+      <ScrollServiceToTop trigger={categoryId} />
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mx-auto">
         {services && services.length > 0 ? (
           <>

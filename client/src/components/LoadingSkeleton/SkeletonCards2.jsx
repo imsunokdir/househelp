@@ -6,6 +6,7 @@ import {
 } from "@material-tailwind/react";
 import { Fade } from "@mui/material";
 import { Skeleton } from "antd";
+import { useState } from "react";
 
 // const SkeletonCard2 = ({ index, delay }) => {
 //   const fadeOut = (index + 1) * delay;
@@ -134,6 +135,7 @@ import { Skeleton } from "antd";
 
 const SkeletonCard2 = ({ index, delay }) => {
   const fadeOut = (index + 1) * delay;
+  const [skltnBodyActive, setSkltnBodyActive] = useState(false);
   return (
     <Card className="cursor-pointer flex flex-col h-full shadow-none">
       <div className="flex flex-col h-full">
@@ -157,7 +159,7 @@ const SkeletonCard2 = ({ index, delay }) => {
         <CardBody className="pt-2 pb-1 px-4 ">
           <div className="flex justify-between items-center">
             <Skeleton
-              active
+              active={skltnBodyActive}
               paragraph={false} // Disables multiple lines, making it a single line
               style={{
                 width: "40%", // Adjust the width to match the previous Typography width
@@ -168,7 +170,7 @@ const SkeletonCard2 = ({ index, delay }) => {
             />
 
             <Skeleton
-              active
+              active={skltnBodyActive}
               paragraph={false} // Disables multiple lines, making it a single line
               style={{
                 width: "10%", // Adjust the width to match the previous Typography width
@@ -180,7 +182,7 @@ const SkeletonCard2 = ({ index, delay }) => {
           </div>
 
           <Skeleton
-            active
+            active={skltnBodyActive}
             paragraph={false}
             style={{
               width: "60%",
@@ -195,7 +197,7 @@ const SkeletonCard2 = ({ index, delay }) => {
           <div className="flex justify-between text-sm">
             {/* <span> */}
             <Skeleton
-              active
+              active={skltnBodyActive}
               paragraph={false} // Disables multiple lines, making it a single line
               style={{
                 width: "40%", // Adjust the width to match the previous Typography width
@@ -206,7 +208,7 @@ const SkeletonCard2 = ({ index, delay }) => {
             {/* </span> */}
             {/* <span> */}
             <Skeleton
-              active
+              active={skltnBodyActive}
               paragraph={false} // Disables multiple lines, making it a single line
               style={{
                 width: "10%", // Adjust the width to match the previous Typography width

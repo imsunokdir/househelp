@@ -1150,6 +1150,60 @@ const updateService2 = async (req, res) => {
   }
 };
 
+const getFilteredServiceCount = async (req, res) => {
+  console.log("getFilteredServiceCount");
+  const { categoryId } = req.params;
+  const { longitude, latitude, filterData } = req.body;
+
+  // console.log("cid:", categoryId);
+  // console.log("longi:", longitude);
+  // console.log("lati:", latitude);
+  // console.log("filterData:", filterData);
+
+  const lon = parseFloat(longitude);
+  const lat = parseFloat(latitude);
+
+  const { priceRange = {}, rating, experience } = filterData;
+
+  const minPrice = priceRange.minimum;
+  const maxPrice = priceRange.maximum || Infinity;
+  const exp = experience || 0;
+  const servicerating = rating || 0;
+
+  if (isNaN(lon) || isNaN(lat)) {
+    return res.status(400).json({
+      message: "Invalid location coordinates.",
+    });
+  }
+  console.log("priceRange:", priceRange);
+  console.log("rating:", rating);
+  console.log("exp:", experience);
+  const query = {
+    category: new mongoose.Types.ObjectId(categoryId),
+    status: "Active",
+    ...(minPrice && { "priceRange.minimum": { $gte: minPrice } }),
+    ...(maxPrice && { "priceRange.maximum": { $lte: maxPrice } }),
+    ...(servicerating && { averageRating: { $gte: servicerating } }),
+    ...(exp && { experience: { $gte: exp } }),
+  };
+
+  try {
+    const count = await Service.countDocuments(query);
+    console.log("count:", count);
+
+    return res.status(200).json({
+      message: "Filtered service count fetched successfully.",
+      count,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   registerService,
   getAllServices,
@@ -1171,4 +1225,5 @@ module.exports = {
   deleteServiceImage,
   createService,
   updateService2,
+  getFilteredServiceCount,
 };
