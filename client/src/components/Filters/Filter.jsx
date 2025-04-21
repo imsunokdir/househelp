@@ -139,6 +139,7 @@ const Filter = () => {
         TransitionComponent={Transition}
         fullScreen={isSmallScreen}
         maxWidth={false}
+        closeAfterTransition={false}
         sx={{
           "& .MuiDialog-paper": {
             width: isSmallScreen ? "100%" : "500px",

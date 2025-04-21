@@ -35,9 +35,7 @@ const ServiceAndUser = ({
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const { user } = useContext(AuthContext);
   const handleContactClick = () => {
-    console.log("hello");
     const whatsappNum = service.createdBy?.whatsapp;
-    console.log("whatsappnum:", whatsappNum);
     if (whatsappNum) {
       const whatsappUrl = `https://wa.me/${whatsappNum}`;
       window.open(whatsappUrl);
@@ -45,10 +43,8 @@ const ServiceAndUser = ({
   };
   const checkSavedServices = async () => {
     try {
-      console.log("ser id", service._id);
       const res = await checkSaveService(service._id);
       if (res.status == 200) {
-        console.log("**", res);
         setIsServiceSaved(res.data.isSaved);
       }
     } catch (error) {
@@ -63,12 +59,7 @@ const ServiceAndUser = ({
     }
   }, [user, service._id]);
 
-  useEffect(() => {
-    console.log("Ser:", service);
-  });
-
   const toggleSaveService = async () => {
-    console.log("user logged???::", user);
     try {
       setSaveLoading(true);
       const res = await toggleSave(service._id);

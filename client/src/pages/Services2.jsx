@@ -63,8 +63,8 @@ const Services2 = () => {
   const cancelPreviousRequest = useCallback(() => {
     if (abortController.current) {
       abortController.current.abort();
-      console.log("Previous request canceled due to category change.");
-      console.log("✅ Canceling request for previous category:", categoryId);
+      // console.log("Previous request canceled due to category change.");
+      // console.log("✅ Canceling request for previous category:", categoryId);
     }
     abortController.current = new AbortController();
     return abortController.current.signal;
@@ -167,10 +167,10 @@ const Services2 = () => {
     ));
   };
 
-  useEffect(() => {
-    const matchedC = categories.find((cat) => cat._id === categoryId);
-    console.log("curr cat:", matchedC?.name);
-  }, [categoryId, categories]);
+  // useEffect(() => {
+  //   const matchedC = categories.find((cat) => cat._id === categoryId);
+  //   console.log("curr cat:", matchedC?.name);
+  // }, [categoryId, categories]);
 
   // useEffect(() => {
   //   const matchedCategory = categories.find((cat) => cat._id === categoryId);

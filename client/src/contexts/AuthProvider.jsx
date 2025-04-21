@@ -208,9 +208,10 @@ const AuthProvider = ({ children }) => {
         if (response.status === 200 && response.data.success) {
           // console.log("resp.data.user:", response.data.user);
           setUser(response.data.user);
-        } else {
-          console.log("User not authenticated");
         }
+        // else {
+        //   console.log("User not authenticated");
+        // }
       } catch (error) {
         console.log("auth check error:", error);
       } finally {

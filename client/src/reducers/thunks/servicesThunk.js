@@ -12,12 +12,12 @@ export const fetchServiceByCategoryThunk = createAsyncThunk(
       const { coordinates } = userLocation || {};
       const longitude = coordinates?.[0];
       const latitude = coordinates?.[1];
-      console.log(
-        "🚀 Fetching services for category:",
-        categoryId,
-        "with page:",
-        page
-      );
+      // console.log(
+      //   "🚀 Fetching services for category:",
+      //   categoryId,
+      //   "with page:",
+      //   page
+      // );
 
       const response = await fetchServiceByCategory(
         categoryId,
@@ -36,7 +36,7 @@ export const fetchServiceByCategoryThunk = createAsyncThunk(
         page,
       };
     } catch (error) {
-      console.log("🔥 Entered catch block of thunk");
+      // console.log("🔥 Entered catch block of thunk");
       // Check for abort in a more comprehensive way
       if (
         error.name === "AbortError" ||
@@ -44,14 +44,14 @@ export const fetchServiceByCategoryThunk = createAsyncThunk(
         error.code === "ERR_CANCELED" ||
         error.isCanceled
       ) {
-        console.log("⚠️ Request canceled due to category change:", categoryId);
+        // console.log("⚠️ Request canceled due to category change:", categoryId);
         return rejectWithValue({
           message: "Request was canceled",
           categoryId,
           canceled: true,
         });
       } else {
-        console.error("❌ Failed to fetch services:", error);
+        // console.error("❌ Failed to fetch services:", error);
         return rejectWithValue({
           message:
             error?.response?.data?.message ||

@@ -39,11 +39,6 @@ const Service = () => {
 
   const { user, isAuth } = useContext(AuthContext);
 
-  useEffect(() => {
-    console.log("user:", user);
-    // if(user.isAuth)
-  }, [user]);
-
   //modal states
   const [open, setOpen] = useState(false);
   const handleClickOpen = () => {
@@ -90,8 +85,6 @@ const Service = () => {
         if (response.status === 200) {
           setService(response.data.data);
           // console.log("Service:", service);
-
-          console.log("service:", response.data.data);
         }
       } catch (error) {
         console.log("error", error);
