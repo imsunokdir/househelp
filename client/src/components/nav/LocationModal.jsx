@@ -154,7 +154,13 @@ const LocationModal = () => {
                   {cookies.user_location?.address}
                 </p>
                 <p className="text-xs text-gray-500">
-                  {`${cookies.user_location?._normalized_city}, ${cookies.user_location?.country}`}
+                  {`${
+                    cookies?.user_location?._normalized_city ||
+                    cookies?.user_location?.district ||
+                    cookies?.user_location?.road ||
+                    cookies?.user_location?.county ||
+                    "Unknown location"
+                  }, ${cookies?.user_location?.country || ""}`}
                 </p>
               </div>
             </div>

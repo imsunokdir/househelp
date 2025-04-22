@@ -37,7 +37,7 @@ const Header = () => {
             </Fade>
           </Link>
 
-          <div className="bg-red mt-2">
+          <div className="bg-red">
             {" "}
             <LocationModal />
           </div>
