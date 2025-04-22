@@ -44,7 +44,7 @@ const CategoryProvider = ({ children }) => {
     const storedCategoryId = sessionStorage.getItem("selectedCategoryId");
     const selectedTabIndex = sessionStorage.getItem("selectedTabIndex");
 
-    if (storedCategories && storedCategoryId && selectedTabIndex) {
+    if (storedCategories && storedCategoryId) {
       const parsedCategories = JSON.parse(storedCategories);
       setValue(Number(selectedTabIndex));
       setCategories(parsedCategories);

@@ -57,7 +57,7 @@ const DynamicBreadCrumbs = () => {
   };
 
   return (
-    <div className="bg-white p-4">
+    <div className="hidden sm:block bg-white p-4">
       <Breadcrumb
         items={breadcrumbItems.map((item) => ({
           key: item.key,

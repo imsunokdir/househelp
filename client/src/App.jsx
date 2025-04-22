@@ -38,7 +38,7 @@ const App = () => {
       <AppProvider>
         <BrowserRouter>
           <Header />
-          <div className="min-h-screen">
+          <div className="min-h-screen pb-16 sm:pb-0">
             <Routes>
               {/* root route */}
               <Route path="/" element={<Home />} />

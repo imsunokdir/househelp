@@ -566,8 +566,8 @@ const getNearbyServicesTest = async (req, res) => {
 const getNearbyServicesTest2 = async (req, res) => {
   // console.log("nearby");
   const { categoryId } = req.params;
-  const { page = 1, limit = 5, longitude, latitude, filterData } = req.body; // Add page and limit
-  console.log("Page:", page);
+  const { page = 1, limit = 10, longitude, latitude, filterData } = req.body; // Add page and limit
+  // console.log("Page:", page);
   const lon = parseFloat(longitude);
   const lat = parseFloat(latitude);
 
@@ -910,31 +910,31 @@ const uploadServiceImage = async (req, res) => {
 };
 
 const deleteServiceImage = async (req, res) => {
-  console.log("💥 Incoming delete request");
+  // console.log("💥 Incoming delete request");
 
   try {
     const { public_id } = req.body;
-    console.log("📩 Received public_id:", public_id || "[EMPTY OR MISSING]");
+    // console.log("📩 Received public_id:", public_id || "[EMPTY OR MISSING]");
 
     if (!public_id) {
-      console.log("❌ No public_id provided.");
+      // console.log("❌ No public_id provided.");
       return res.status(400).json({ error: "Public ID is required." });
     }
 
     const result = await cloudinary.uploader.destroy(public_id);
 
     if (result.result === "ok") {
-      console.log("✅ Image deleted:", public_id);
+      // console.log("✅ Image deleted:", public_id);
       return res.status(200).json({
         message: "Image deleted successfully",
         public_id: public_id,
       });
     } else {
-      console.log("⚠️ Cloudinary deletion failed for:", public_id);
+      // console.log("⚠️ Cloudinary deletion failed for:", public_id);
       return res.status(400).json({ error: "Failed to delete image." });
     }
   } catch (err) {
-    console.error("❗️ Cloudinary delete error:", err);
+    // console.error("❗️ Cloudinary delete error:", err);
     return res.status(500).json({ error: "Image deletion failed." });
   }
 };
@@ -1155,10 +1155,10 @@ const getFilteredServiceCount = async (req, res) => {
   const { categoryId } = req.params;
   const { longitude, latitude, filterData } = req.body;
 
-  // console.log("cid:", categoryId);
-  // console.log("longi:", longitude);
-  // console.log("lati:", latitude);
-  // console.log("filterData:", filterData);
+  console.log("cid:", categoryId);
+  console.log("longi:", longitude);
+  console.log("lati:", latitude);
+  console.log("filterData:", filterData);
 
   const lon = parseFloat(longitude);
   const lat = parseFloat(latitude);

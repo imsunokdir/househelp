@@ -41,15 +41,15 @@ const Filter = () => {
   // Global state
   const { categoryId } = useSelector((state) => state.category);
   const filterData = useSelector((state) => state.filter);
-  const { filterCount, filterApplied, filterDatas } = filterData;
+  const { filterCount, filterApplied } = filterData;
 
   // Context
-  const { allCategories, userLocation } = useContext(AuthContext);
+  const { userLocation } = useContext(AuthContext);
   const abortController = React.useRef(null);
 
   // Local state
   const [open, setOpen] = useState(false);
-  const [currCategory, setCurrCategory] = useState(null);
+  // const [currCategory, setCurrCategory] = useState(null);
   const [sessionFilters, setSessionFilters] = useState(null);
   const [countLoading, setCountLoading] = useState(false);
   const [serviceCount, setServiceCount] = useState(0);
@@ -67,10 +67,10 @@ const Filter = () => {
 
   const page = 1;
 
-  useEffect(() => {
-    const cat = allCategories.find((category) => category._id === categoryId);
-    setCurrCategory(cat);
-  }, [categoryId, allCategories]);
+  // useEffect(() => {
+  //   const cat = allCategories.find((category) => category._id === categoryId);
+  //   setCurrCategory(cat);
+  // }, [categoryId, allCategories]);
 
   // const resetFilters = React.useCallback(() => {
   //   console.log("reset Fil");
@@ -143,12 +143,16 @@ const Filter = () => {
   let cnt = 0;
 
   const getCount = async () => {
-    console.log("fc");
     setCountLoading(true);
 
     const { coordinates } = userLocation || {};
     const longitude = coordinates?.[0];
     const latitude = coordinates?.[1];
+
+    if (!longitude || !latitude) {
+      setCountLoading(false);
+      return;
+    }
     const signal = cancelPreviousRequest();
 
     try {
@@ -172,14 +176,14 @@ const Filter = () => {
 
   useEffect(() => {
     // sessionStorage.setItem("localFilters", JSON.stringify(localFilters));
-
-    if (categoryId) {
+    const { coordinates } = userLocation || {};
+    if (categoryId && coordinates) {
       // getCount();
       setCountLoading(true);
 
       getCount();
     }
-  }, [localFilters, categoryId]);
+  }, [localFilters, categoryId, userLocation]);
 
   useEffect(() => {
     if (open) {
@@ -253,7 +257,6 @@ const Filter = () => {
           />
           <Divider />
           <RatingStar
-            currCategory={currCategory}
             localFilters={localFilters}
             setLocalFilters={setLocalFilters}
           />

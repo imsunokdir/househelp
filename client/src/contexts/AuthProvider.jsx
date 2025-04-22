@@ -13,28 +13,28 @@ const AuthProvider = ({ children }) => {
   const mapApi = import.meta.env.VITE_MAP_API;
   const [user, setUser] = useState(null);
   const [messageApi, contextHolder] = message.useMessage();
-  const [isLocationLoading, setLocationLoading] = useState(false);
+  const [isLocationLoading, setLocationLoading] = useState(true);
   const [isUserUpdated, setUserUpdated] = useState(false);
   const [cookies, setCookies] = useCookies(["user_location"]);
   const [serviceLoading, setServiceLoading] = useState(true);
   const [authLoading, setAuthLoading] = useState(true);
 
   //get all the categories
-  const [allCategories, setAllCategories] = useState([]);
+  // const [allCategories, setAllCategories] = useState([]);
 
-  const fetchAllCategories = async () => {
-    {
-      try {
-        const response = await getAllCategories();
-        if (response.status === 200) {
-          const fetchedCategories = response.data.data;
-          setAllCategories(fetchedCategories);
-        }
-      } catch (error) {
-        console.log("category fetch error:", error);
-      }
-    }
-  };
+  // const fetchAllCategories = async () => {
+  //   {
+  //     try {
+  //       const response = await getAllCategories();
+  //       if (response.status === 200) {
+  //         const fetchedCategories = response.data.data;
+  //         setAllCategories(fetchedCategories);
+  //       }
+  //     } catch (error) {
+  //       console.log("category fetch error:", error);
+  //     }
+  //   }
+  // };
 
   const [userLocation, setUserLocation] = useState({
     address: null,
@@ -196,6 +196,10 @@ const AuthProvider = ({ children }) => {
           }
         });
     } else {
+      localStorage.setItem(
+        "aprx_user_location",
+        JSON.stringify(cookies?.user_location)
+      );
       setLocationLoading(false);
     }
   };
@@ -220,7 +224,7 @@ const AuthProvider = ({ children }) => {
     };
     checkAuth();
     getLoc();
-    fetchAllCategories();
+    // fetchAllCategories();
   }, []);
   return (
     <AuthContext.Provider
@@ -240,7 +244,7 @@ const AuthProvider = ({ children }) => {
         setUserUpdated,
         serviceLoading,
         setServiceLoading,
-        allCategories,
+        // allCategories,
         authLoading,
       }}
     >
