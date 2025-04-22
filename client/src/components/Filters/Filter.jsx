@@ -175,10 +175,7 @@ const Filter = () => {
     if (categoryId) {
       // getCount();
       setCountLoading(true);
-
-      setTimeout(() => {
-        getCount();
-      }, 5000);
+      getCount();
     }
   }, [localFilters, categoryId]);
 
