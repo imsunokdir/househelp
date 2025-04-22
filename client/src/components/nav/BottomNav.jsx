@@ -26,12 +26,11 @@ const BottomNav = () => {
           <span>Home</span>
         </NavLink>
 
-        <button
-          onClick={() => console.log("Add action")}
-          className="bg-orange-400 text-white rounded-full w-12 h-12 -mt-8 flex items-center justify-center shadow-lg border-2 border-blue-500"
-        >
-          <FontAwesomeIcon icon={faPlus} size="xl" />
-        </button>
+        <Link to="/add-service">
+          <button className="bg-orange-400 text-white rounded-full w-12 h-12 -mt-8 flex items-center justify-center shadow-lg border-2 border-blue-500">
+            <FontAwesomeIcon icon={faPlus} size="xl" />
+          </button>
+        </Link>
         <NavLink
           to="/accounts"
           className={({ isActive }) =>
