@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { SlidersHorizontal } from "lucide-react";
-import { Badge, Divider } from "antd";
+import { Badge, Divider, Spin } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 
 import PriceSlider from "./PriceSlider";
@@ -26,6 +26,7 @@ import { CategoryContext } from "../../contexts/CategoryProvider";
 import { getFilteredCount } from "../../services/service";
 import { getDefaultFilters } from "../../utils/filterUtils";
 import dualball from "../../assets/dualball.svg";
+import { LoadingOutlined } from "@ant-design/icons";
 // Transition for dialog
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -175,6 +176,7 @@ const Filter = () => {
     if (categoryId) {
       // getCount();
       setCountLoading(true);
+
       getCount();
     }
   }, [localFilters, categoryId]);
@@ -279,10 +281,18 @@ const Filter = () => {
             variant="contained"
             onClick={handleFilterSubmit}
             className="w-[150px]"
+            disabled={countLoading}
           >
             {countLoading ? (
               <p className="p-0 m-0">
-                <img src={dualball} style={{ height: "25px" }} />
+                <Spin
+                  indicator={
+                    <LoadingOutlined
+                      style={{ fontSize: 24, color: "blue" }}
+                      spin
+                    />
+                  }
+                />
               </p>
             ) : serviceCount > 1000 ? (
               `${Math.floor(serviceCount / 1000) * 1000}+ result`
