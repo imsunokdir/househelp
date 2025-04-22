@@ -266,17 +266,16 @@ const Filter = () => {
 
         {/* Footer */}
         <div className="absolute bottom-0 left-0 w-full p-4 border-t flex items-center justify-between bg-white">
-          <p
+          <button
             className="m-0 p-1 hover:bg-gray-100 rounded cursor-pointer"
             onClick={handleFilterClear}
-            disabled={true}
           >
             Clear all
             {/* <img
               src={dualball}
               style={{ height: "25px", backgroundColor: "red" }}
             /> */}
-          </p>
+          </button>
           <Button
             variant="contained"
             onClick={handleFilterSubmit}
@@ -284,16 +283,14 @@ const Filter = () => {
             disabled={countLoading}
           >
             {countLoading ? (
-              <p className="p-0 m-0">
-                <Spin
-                  indicator={
-                    <LoadingOutlined
-                      style={{ fontSize: 24, color: "blue" }}
-                      spin
-                    />
-                  }
-                />
-              </p>
+              <Spin
+                indicator={
+                  <LoadingOutlined
+                    style={{ fontSize: 24, color: "blue" }}
+                    spin
+                  />
+                }
+              />
             ) : serviceCount > 1000 ? (
               `${Math.floor(serviceCount / 1000) * 1000}+ result`
             ) : (
