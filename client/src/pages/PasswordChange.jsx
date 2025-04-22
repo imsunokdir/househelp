@@ -76,7 +76,7 @@ const PasswordChange = () => {
     }
   };
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center p-4 px-3">
       <div className="w-full h-[320px] sm:w-[500px] md:w-[600px] lg:w-[800px] p-2 shadow-md">
         {!isPassChangeSuccess ? (
           <ThemeProvider theme={theme}>

@@ -43,8 +43,6 @@ const LocationModal = () => {
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  console.log("gl:", cookies);
-
   const handleGetLocation = async () => {
     try {
       await getLocation();
