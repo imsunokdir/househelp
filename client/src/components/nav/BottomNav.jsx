@@ -34,7 +34,33 @@ const BottomNav = () => {
             <FontAwesomeIcon icon={faPlus} size="xl" />
           </button>
         </Link>
-        <NavLink
+
+        {user ? (
+          <NavLink
+            to="/accounts"
+            className={({ isActive }) =>
+              `flex flex-col items-center text-sm font-medium no-underline ${
+                isActive ? "text-[#565edb]" : "text-gray-700"
+              }`
+            }
+          >
+            <FontAwesomeIcon icon={faUser} size="xl" />
+            <span>Accounts</span>
+          </NavLink>
+        ) : (
+          <NavLink
+            to="/user-auth/login"
+            className={({ isActive }) =>
+              `flex flex-col items-center text-sm font-medium no-underline ${
+                isActive ? "text-[#565edb]" : "text-gray-700"
+              }`
+            }
+          >
+            <FontAwesomeIcon icon={faUser} size="xl" />
+            <span>Login</span>
+          </NavLink>
+        )}
+        {/* <NavLink
           to="/accounts"
           className={({ isActive }) =>
             `flex flex-col items-center text-sm font-medium no-underline ${
@@ -44,7 +70,7 @@ const BottomNav = () => {
         >
           <FontAwesomeIcon icon={faUser} size="xl" />
           <span>{user ? "Accounts" : "Login"}</span>
-        </NavLink>
+        </NavLink> */}
       </div>
     </div>
   );
