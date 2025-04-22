@@ -68,20 +68,27 @@ const AuthProvider = ({ children }) => {
             );
             if (response.ok) {
               const data = await response.json();
+              console.log("data:", data);
 
               if (data.results && data.results[0]) {
                 const address = data.results[0].formatted;
                 const _normalized_city =
                   data.results[0].components._normalized_city;
                 const country = data.results[0].components.country;
+                const county = data.results[0].components.county;
+                const road = data.results[0].components.road;
+                const district = data.results[0].components.state_district;
 
                 // Set the location data
                 setUserLocation((prev) => ({
                   ...prev,
                   address,
                   _normalized_city,
+                  county,
+                  road,
                   coordinates: [longitude, latitude],
                   country,
+                  district,
                 }));
 
                 const user_location = {
@@ -89,6 +96,9 @@ const AuthProvider = ({ children }) => {
                   _normalized_city,
                   coordinates: [longitude, latitude],
                   country,
+                  county,
+                  road,
+                  district,
                 };
                 // Set location in local storage
 
@@ -105,6 +115,9 @@ const AuthProvider = ({ children }) => {
                     coordinates: [longitude, latitude],
                     _normalized_city,
                     country,
+                    road,
+                    county,
+                    district,
                   }),
                   {
                     path: "/",

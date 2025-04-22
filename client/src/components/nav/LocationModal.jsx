@@ -43,6 +43,8 @@ const LocationModal = () => {
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  console.log("gl:", cookies);
+
   const handleGetLocation = async () => {
     try {
       await getLocation();
@@ -77,9 +79,23 @@ const LocationModal = () => {
               <CircularProgress size={14} className="ml-1" />
             </span>
           ) : hasLocation ? (
-            <span>
-              {`${cookies?.user_location?._normalized_city}`}
-              {`, ${cookies?.user_location?.country}`}
+            <span
+              className="text-sm md:text-base max-w-[140px] block overflow-hidden text-ellipsis whitespace-nowrap"
+              style={{ fontSize: "clamp(12px, 3vw, 16px)" }}
+              title={
+                cookies?.user_location?._normalized_city ||
+                cookies?.user_location?.district ||
+                cookies?.user_location?.road ||
+                cookies?.user_location?.county
+              }
+            >
+              {(cookies?.user_location?._normalized_city ||
+                cookies?.user_location?.district ||
+                cookies?.user_location?.road ||
+                cookies?.user_location?.county) +
+                (cookies?.user_location?.country
+                  ? `, ${cookies.user_location.country}`
+                  : "")}
             </span>
           ) : (
             <span className="text-xs">Set Location</span>
