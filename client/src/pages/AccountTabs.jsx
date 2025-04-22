@@ -51,7 +51,9 @@ const AccountTabs = () => {
         </div>
 
         {/* Logout button for smaller screens */}
-        <Divider />
+        <Divider style={{ borderColor: "#d9d9d9" }} />
+        {/* <Divider /> */}
+
         {/* <FooterDivider /> */}
         <div className="sm:hidden col-span-full">
           <button
