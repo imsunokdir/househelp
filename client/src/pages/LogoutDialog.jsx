@@ -47,9 +47,17 @@ export default function LogoutDialog({
       const response = await logoutUser();
       if (response.status === 200) {
         setIsLoading(false); // Set loading to false when logout is complete
-        setUser(null);
-        message.success("Logged out successfully!"); // Show success message
-        navigate("/"); // Navigate to home or login page
+        // setUser(null);
+        // message.success("Logged out successfully!"); // Show success message
+        handleLogoutClickClose();
+        navigate("/", { replace: true });
+        setTimeout(() => {
+          // Then update auth state
+          setUser(null);
+          setIsLoading(false);
+          message.success("Logged out successfully!");
+        }, 50);
+        // Navigate to home or login page
       }
     } catch (error) {
       console.log("logouterror:", error);

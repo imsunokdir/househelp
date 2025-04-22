@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHouse, faUser } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { AuthContext } from "../../contexts/AuthProvider";
 
 const BottomNav = () => {
   const [isRegular, setIsRegular] = useState(false);
+
+  const { user } = useContext(AuthContext);
 
   const handleUserIconClick = () => {
     setIsRegular(!isRegular);
@@ -40,7 +43,7 @@ const BottomNav = () => {
           }
         >
           <FontAwesomeIcon icon={faUser} size="xl" />
-          <span>Accounts</span>
+          <span>{user ? "Accounts" : "Login"}</span>
         </NavLink>
       </div>
     </div>
