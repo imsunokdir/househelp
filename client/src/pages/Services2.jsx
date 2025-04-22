@@ -29,7 +29,7 @@ import ScrollServiceToTop from "../utils/ScrollServiceToTop";
 
 const Services2 = () => {
   const dispatch = useDispatch();
-  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(true);
   const numOfCards = new Array(4).fill(null); // Skeleton loader count
   const { userLocation, setUserLocation } = useContext(AuthContext);
   const [cookies, setCookies] = useCookies(["user_location"]);
@@ -86,10 +86,12 @@ const Services2 = () => {
         signal,
       })
     );
+    setLoadingMore(false);
   };
 
   useEffect(() => {
     if (categoryId && userLocation.coordinates[0] && hasMore && !services) {
+      setLoadingMore(true);
       const signal = cancelPreviousRequest();
       dispatch(
         fetchServiceByCategoryThunk({
@@ -100,6 +102,7 @@ const Services2 = () => {
           signal,
         })
       );
+      setLoadingMore(false);
     }
   }, [categoryId, userLocation]);
 
