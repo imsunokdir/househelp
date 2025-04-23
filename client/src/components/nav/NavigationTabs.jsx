@@ -21,6 +21,7 @@ const NavigationTabs = () => {
   const handleChange = (event, newValue) => {
     const categoryId = event.target.getAttribute("data-id");
     setValue(newValue);
+
     dispatch(categoryActions.changeCategory(categoryId));
     sessionStorage.setItem("selectedCategoryId", categoryId);
     sessionStorage.setItem("selectedTabIndex", newValue);

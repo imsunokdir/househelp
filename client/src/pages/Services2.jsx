@@ -29,18 +29,16 @@ import ScrollServiceToTop from "../utils/ScrollServiceToTop";
 
 const Services2 = () => {
   const dispatch = useDispatch();
-  const [loadingMore, setLoadingMore] = useState(true);
-  const numOfCards = new Array(4).fill(null); // Skeleton loader count
   const { userLocation, setUserLocation } = useContext(AuthContext);
-  const [cookies, setCookies] = useCookies(["user_location"]);
-
-  const { categories } = useContext(CategoryContext);
-
-  const [delay, setDelay] = useState(100);
   const abortController = useRef(null);
 
-  const BATCH_SIZE = 10; // 4 services per batch
-  const MAX_AUTO_BATCH = 2; // Only allow 2 batches before showing "Load More"
+  const [cookies, setCookies] = useCookies(["user_location"]);
+  const { categories } = useContext(CategoryContext);
+
+  const [loadingMore, setLoadingMore] = useState(true);
+  const numOfCards = new Array(4).fill(null); // Skeleton loader count
+
+  const [delay, setDelay] = useState(100);
 
   const { categoryId } = useSelector((store) => store.category);
   const filterData = useSelector((state) => state.filter);
@@ -59,6 +57,9 @@ const Services2 = () => {
   const batchesLoaded = useSelector((state) =>
     getBatchesLoadedByCategory(state, categoryId)
   );
+
+  const BATCH_SIZE = 10; // 10 services per batch
+  const MAX_AUTO_BATCH = 2; // Only allow 2 batches before showing "Load More"
 
   // Memoize the cancelPreviousRequest function using useCallback
   const cancelPreviousRequest = useCallback(() => {
@@ -91,6 +92,9 @@ const Services2 = () => {
 
   useEffect(() => {
     if (categoryId && userLocation.coordinates[0] && hasMore && !services) {
+      console.log("first use effect@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+      // console.log("categoryId:", categoryId);
+      // console.log("userLocation:", userLocation);
       setLoadingMore(true);
       const signal = cancelPreviousRequest();
       dispatch(
@@ -101,21 +105,25 @@ const Services2 = () => {
           filterData,
           signal,
         })
-      );
-      setLoadingMore(false);
+      ).finally(() => setLoadingMore(false));
+      // setLoadingMore(false);
     }
   }, [categoryId, userLocation]);
 
+  // useEffect(() => {
+  //   if (cookies?.user_location?.coordinates) {
+  //     setUserLocation((prev) => ({
+  //       ...prev,
+  //       coordinates: [
+  //         cookies.user_location.coordinates[0],
+  //         cookies.user_location.coordinates[1],
+  //       ],
+  //     }));
+  //   }
+  // }, [cookies]);
+
   useEffect(() => {
-    if (cookies?.user_location?.coordinates) {
-      setUserLocation((prev) => ({
-        ...prev,
-        coordinates: [
-          cookies.user_location.coordinates[0],
-          cookies.user_location.coordinates[1],
-        ],
-      }));
-    }
+    console.log("cookies:", cookies);
   }, [cookies]);
 
   // useEffect(() => {
@@ -135,6 +143,7 @@ const Services2 = () => {
       observer.current = new IntersectionObserver(
         (entries) => {
           if (entries[0].isIntersecting && hasMore) {
+            console.log("observer*********************");
             loadMoreServices(); // Trigger loading more services
           }
         },
@@ -185,6 +194,14 @@ const Services2 = () => {
   //   console.log("serviceStatus:", serviceStatus);
   //   console.log("hasMore:", hasMore);
   // }, [serviceStatus, hasMore]);
+
+  // useEffect(() => {
+  //   console.log("loadingMore:", loadingMore);
+  //   console.log("serviceStatus:", serviceStatus);
+  //   console.log("services len:", services?.length);
+  //   console.log("hasMore:", hasMore);
+  //   console.log("______________________________________");
+  // }, [loadingMore, serviceStatus, services, hasMore]);
 
   return (
     <div className="p-4">

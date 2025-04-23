@@ -5,6 +5,12 @@ import serviceSlice from "./service";
 import filterSlice from "./filter";
 import { thunk } from "redux-thunk";
 
+const loggerMiddleware = (storeAPI) => (next) => (action) => {
+  console.log("%cDispatching:", "color: green", action.type);
+  console.trace("Action source:");
+  return next(action);
+};
+
 const rootReducer = configureStore({
   reducer: {
     category: categorySlice.reducer,

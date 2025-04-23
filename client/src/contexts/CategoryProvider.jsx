@@ -25,6 +25,7 @@ const CategoryProvider = ({ children }) => {
           );
           setCatLoading(false);
           // Set initial value and categoryId to the first category
+
           dispatch(categoryActions.changeCategory(fetchedCategories[0]._id));
           sessionStorage.setItem(
             "selectedCategoryId",
@@ -48,7 +49,6 @@ const CategoryProvider = ({ children }) => {
       const parsedCategories = JSON.parse(storedCategories);
       setValue(Number(selectedTabIndex));
       setCategories(parsedCategories);
-
       dispatch(categoryActions.changeCategory(storedCategoryId));
 
       setCatLoading(false);

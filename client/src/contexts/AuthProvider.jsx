@@ -71,7 +71,6 @@ const AuthProvider = ({ children }) => {
             );
             if (response.ok) {
               const data = await response.json();
-              console.log("data:", data);
 
               if (data.results && data.results[0]) {
                 const address = data.results[0].formatted;
@@ -103,6 +102,8 @@ const AuthProvider = ({ children }) => {
                   road,
                   district,
                 };
+
+                // console.log("user_location:", user_location);
                 // Set location in local storage
 
                 localStorage.setItem(
@@ -194,34 +195,53 @@ const AuthProvider = ({ children }) => {
             maxAge: 1800,
           }
         );
+        // setLocationLoading(false);
       }
     } catch (error) {
       console.log("country error:", error);
+    } finally {
+      setLocationLoading(false);
     }
   };
 
   const getLoc = async () => {
-    const localLocation = JSON.parse(localStorage.getItem("user_location"));
+    setLocationLoading(true);
 
-    if (!cookies?.user_location?.address) {
-      getLocation()
-        .then(() => {})
-        .catch((error) => {
-          if (error.code === 1) {
-            fetchCountry();
-          }
-        });
-    } else {
+    // If we already have user_location in cookies
+    if (cookies?.user_location?.address) {
+      // Save to localStorage if needed
       localStorage.setItem(
         "aprx_user_location",
-        JSON.stringify(cookies?.user_location)
+        JSON.stringify(cookies.user_location)
       );
+
+      // Set location in state from cookie
+      setUserLocation((prev) => ({
+        ...prev,
+        ...cookies.user_location,
+      }));
+
       setLocationLoading(false);
+      return;
+    }
+
+    // If no cookie, try geolocation
+    try {
+      await getLocation(); // This already sets loading false on success/fail
+    } catch (error) {
+      if (error.code === 1) {
+        // User denied location — fallback to IP-based
+        await fetchCountry(); // Don't forget to set loading false here too
+      } else {
+        console.log("Other location error:", error);
+        setLocationLoading(false);
+      }
     }
   };
 
   useEffect(() => {
     const checkAuth = async () => {
+      setAuthLoading(true);
       try {
         const response = await authCheck();
 
