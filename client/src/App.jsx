@@ -33,6 +33,7 @@ import SuccessService from "./components/services/SuccessService";
 import SkeletonCard2 from "./components/LoadingSkeleton/SkeletonCards2";
 import AddService from "./components/services/AddService";
 import TrackUserActivity from "./middlewares/TrackUserActivity";
+import AddService2 from "./components/services/AddService2";
 
 const App = () => {
   return (
@@ -52,7 +53,7 @@ const App = () => {
                   path="/service-creation-success/:serviceId"
                   element={<SuccessService />}
                 />
-                <Route path="/add-service" element={<AddService />} />
+                <Route path="/add-service" element={<AddService2 />} />
                 <Route
                   path="/edit-service/:serviceId"
                   element={<EditService />}
