@@ -35,11 +35,18 @@ const LogOutAll = () => {
     try {
       const response = await getActiveSessions();
       if (response.status === 200) {
-        // Sort sessions to put current device first
         const sortedSessions = response.data.activeSessions.sort((a, b) => {
-          if (a.session.userAgent.deviceId === currentDevice) return -1;
-          if (b.session.userAgent.deviceId === currentDevice) return 1;
-          return 0;
+          if (
+            a.session.userAgent.deviceId === currentDevice &&
+            b.session.userAgent.deviceId !== currentDevice
+          )
+            return -1;
+          if (
+            b.session.userAgent.deviceId === currentDevice &&
+            a.session.userAgent.deviceId !== currentDevice
+          )
+            return 1;
+          return a.session.userAgent.ua.localeCompare(b.session.userAgent.ua);
         });
         setActiveSessions(sortedSessions);
       }
@@ -75,7 +82,6 @@ const LogOutAll = () => {
       setLoggingOutSession(sessionId);
       const response = await logoutSession(sessionId);
       if (response.status === 200) {
-        // Refresh the sessions list
         fetchActiveSessions();
       }
     } catch (error) {
@@ -85,7 +91,6 @@ const LogOutAll = () => {
     }
   };
 
-  // Helper function to determine device type icon
   const getDeviceIcon = (userAgent) => {
     const ua = userAgent.ua.toLowerCase();
     if (ua.includes("mobile") || ua.includes("android")) {
@@ -97,20 +102,14 @@ const LogOutAll = () => {
     }
   };
 
-  // Extract device name from user agent
   const getDeviceName = (userAgent) => {
     const ua = userAgent.ua;
-
-    // Try to extract device info from user agent
     let deviceInfo = "Unknown Device";
-
-    // Check for common patterns in user agent strings
     if (ua.includes("iPhone")) {
       deviceInfo = "iPhone";
     } else if (ua.includes("iPad")) {
       deviceInfo = "iPad";
     } else if (ua.includes("Android")) {
-      // Try to extract Android device name
       const androidMatch = ua.match(/Android .+?;.+?([\w\s]+)\s+Build/);
       if (androidMatch && androidMatch[1]) {
         deviceInfo = androidMatch[1].trim();
@@ -124,7 +123,6 @@ const LogOutAll = () => {
     } else if (ua.includes("Linux")) {
       deviceInfo = "Linux Device";
     }
-
     return deviceInfo;
   };
 
@@ -175,32 +173,37 @@ const LogOutAll = () => {
                         position: "relative",
                       }}
                     >
-                      {isCurrentDevice && (
-                        <Chip
-                          label="Current Device"
-                          color="success"
-                          size="small"
-                          sx={{
-                            position: "absolute",
-                            top: 10,
-                            right: 10,
-                            fontWeight: "bold",
-                          }}
-                        />
-                      )}
-
                       <Box
-                        sx={{ display: "flex", alignItems: "center", mb: 1 }}
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          mb: 1,
+                        }}
                       >
-                        <Box sx={{ mr: 2 }}>
-                          {getDeviceIcon(session.session.userAgent)}
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          <Box sx={{ mr: 2 }}>
+                            {getDeviceIcon(session.session.userAgent)}
+                          </Box>
+                          <Typography
+                            variant="h6"
+                            fontWeight={isCurrentDevice ? "bold" : "normal"}
+                          >
+                            {deviceName}
+                          </Typography>
                         </Box>
-                        <Typography
-                          variant="h6"
-                          fontWeight={isCurrentDevice ? "bold" : "normal"}
-                        >
-                          {deviceName}
-                        </Typography>
+
+                        {isCurrentDevice && (
+                          <Chip
+                            label="Current Device"
+                            color="success"
+                            size="small"
+                            sx={{
+                              fontWeight: "bold",
+                              whiteSpace: "nowrap",
+                            }}
+                          />
+                        )}
                       </Box>
 
                       <Typography
@@ -208,11 +211,7 @@ const LogOutAll = () => {
                         color="text.secondary"
                         sx={{ mb: 1 }}
                       >
-                        Browser:{" "}
-                        {session.session.userAgent.ua
-                          .split(" ")
-                          .slice(-2)
-                          .join(" ")}
+                        Full User Agent: {session.session.userAgent.ua}
                       </Typography>
 
                       <Typography
