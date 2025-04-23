@@ -16,6 +16,7 @@ const AuthProvider = ({ children }) => {
   const [isLocationLoading, setLocationLoading] = useState(true);
   const [isUserUpdated, setUserUpdated] = useState(false);
   const [cookies, setCookies] = useCookies(["user_location"]);
+  const COOKIE_AGE = 1800;
   const [serviceLoading, setServiceLoading] = useState(true);
   const [authLoading, setAuthLoading] = useState(true);
 
@@ -125,7 +126,7 @@ const AuthProvider = ({ children }) => {
                   }),
                   {
                     path: "/",
-                    maxAge: 1800,
+                    maxAge: COOKIE_AGE,
                   }
                 );
 
@@ -192,7 +193,7 @@ const AuthProvider = ({ children }) => {
           }),
           {
             path: "/",
-            maxAge: 1800,
+            maxAge: COOKIE_AGE,
           }
         );
         // setLocationLoading(false);
