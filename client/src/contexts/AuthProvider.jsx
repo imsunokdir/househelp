@@ -20,6 +20,7 @@ const AuthProvider = ({ children }) => {
   const [authLoading, setAuthLoading] = useState(true);
 
   const [deviceInfo, setDeviceInfo] = useState("");
+  const [currentDevice, setCurrentDevice] = useState(null);
 
   //get all the categories
   // const [allCategories, setAllCategories] = useState([]);
@@ -227,6 +228,7 @@ const AuthProvider = ({ children }) => {
         if (response.status === 200 && response.data.success) {
           // console.log("resp.data.user:", response.data.user);
           setUser(response.data.user);
+          setCurrentDevice(response.data.userAgent.deviceId);
         }
         // else {
         //   console.log("User not authenticated");
@@ -263,6 +265,8 @@ const AuthProvider = ({ children }) => {
         authLoading,
         deviceInfo,
         setDeviceInfo,
+        currentDevice,
+        setCurrentDevice,
       }}
     >
       {children}

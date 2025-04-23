@@ -1,26 +1,50 @@
-import React, { act, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { getActiveSessions, logOutAll } from "../services/user";
-import { Button, CircularProgress } from "@mui/material";
+import {
+  Button,
+  CircularProgress,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+  Divider,
+  Paper,
+  Box,
+  Chip,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
 import LoadBalls from "../components/LoadingSkeleton/LoadBalls";
 import { AuthContext } from "../contexts/AuthProvider";
 import { useNavigate } from "react-router-dom";
+import LogoutIcon from "@mui/icons-material/Logout";
+import DevicesIcon from "@mui/icons-material/Devices";
+import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
+import ComputerIcon from "@mui/icons-material/Computer";
+import TabletIcon from "@mui/icons-material/Tablet";
 
 const LogOutAll = () => {
-  const { setUser } = useContext(AuthContext);
+  const { setUser, currentDevice } = useContext(AuthContext);
   const [activeSessions, setActiveSessions] = useState([]);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [loggingOutSession, setLoggingOutSession] = useState(null);
   const [isActiveSessionLoading, setActiveSessionsLoading] = useState(true);
   const navigate = useNavigate();
 
   const fetchActiveSessions = async () => {
     try {
       const response = await getActiveSessions();
-      console.log("response:", response.data.activeSessions);
       if (response.status === 200) {
-        setActiveSessions(response.data.activeSessions);
+        // Sort sessions to put current device first
+        const sortedSessions = response.data.activeSessions.sort((a, b) => {
+          if (a.session.userAgent.deviceId === currentDevice) return -1;
+          if (b.session.userAgent.deviceId === currentDevice) return 1;
+          return 0;
+        });
+        setActiveSessions(sortedSessions);
       }
     } catch (error) {
-      console.log("response errrp:", error);
+      console.log("Error fetching active sessions:", error);
     } finally {
       setActiveSessionsLoading(false);
     }
@@ -28,72 +52,231 @@ const LogOutAll = () => {
 
   useEffect(() => {
     fetchActiveSessions();
-  }, []);
+  }, [currentDevice]);
 
-  const handleLogOut = async () => {
+  const handleLogOutAll = async () => {
     try {
       setIsLoggingOut(true);
       const response = await logOutAll();
-
       if (response.status === 200) {
         setActiveSessions([]);
-        setUser();
+        setUser(null);
+        navigate("/login");
       }
     } catch (error) {
-      console.log("logout all error");
+      console.log("Logout all error:", error);
     } finally {
       setIsLoggingOut(false);
     }
   };
+
+  const handleLogOutSession = async (sessionId) => {
+    try {
+      setLoggingOutSession(sessionId);
+      const response = await logoutSession(sessionId);
+      if (response.status === 200) {
+        // Refresh the sessions list
+        fetchActiveSessions();
+      }
+    } catch (error) {
+      console.log("Logout session error:", error);
+    } finally {
+      setLoggingOutSession(null);
+    }
+  };
+
+  // Helper function to determine device type icon
+  const getDeviceIcon = (userAgent) => {
+    const ua = userAgent.ua.toLowerCase();
+    if (ua.includes("mobile") || ua.includes("android")) {
+      return <PhoneAndroidIcon />;
+    } else if (ua.includes("tablet") || ua.includes("ipad")) {
+      return <TabletIcon />;
+    } else {
+      return <ComputerIcon />;
+    }
+  };
+
+  // Extract device name from user agent
+  const getDeviceName = (userAgent) => {
+    const ua = userAgent.ua;
+
+    // Try to extract device info from user agent
+    let deviceInfo = "Unknown Device";
+
+    // Check for common patterns in user agent strings
+    if (ua.includes("iPhone")) {
+      deviceInfo = "iPhone";
+    } else if (ua.includes("iPad")) {
+      deviceInfo = "iPad";
+    } else if (ua.includes("Android")) {
+      // Try to extract Android device name
+      const androidMatch = ua.match(/Android .+?;.+?([\w\s]+)\s+Build/);
+      if (androidMatch && androidMatch[1]) {
+        deviceInfo = androidMatch[1].trim();
+      } else {
+        deviceInfo = "Android Device";
+      }
+    } else if (ua.includes("Windows")) {
+      deviceInfo = "Windows PC";
+    } else if (ua.includes("Macintosh")) {
+      deviceInfo = "Mac";
+    } else if (ua.includes("Linux")) {
+      deviceInfo = "Linux Device";
+    }
+
+    return deviceInfo;
+  };
+
   return isActiveSessionLoading ? (
     <LoadBalls />
   ) : (
-    <div className="p-4">
-      <div className="sm:shadow-md p-2">
+    <Box className="p-4" sx={{ maxWidth: 800, mx: "auto" }}>
+      <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
+        <Typography
+          variant="h5"
+          sx={{
+            mb: 3,
+            fontWeight: "bold",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <DevicesIcon sx={{ mr: 1 }} /> Active Sessions
+        </Typography>
+
         {activeSessions && activeSessions.length > 0 ? (
-          <div>
-            <h2>
+          <>
+            <Typography variant="body1" sx={{ mb: 2 }}>
               You have {activeSessions.length} active{" "}
-              {activeSessions.length > 1 ? "sessions" : "session"}
-            </h2>
+              {activeSessions.length > 1 ? "sessions" : "session"}.
+            </Typography>
 
-            <div>
-              <ul className="flex flex-col gap-3">
-                {activeSessions.map((session) => {
-                  return (
-                    <li style={{ listStyle: "disc" }} key={session._id}>
-                      {session.session.userAgent.ua}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
+            <List sx={{ width: "100%" }}>
+              {activeSessions.map((session, index) => {
+                const isCurrentDevice =
+                  session.session.userAgent.deviceId === currentDevice;
+                const deviceName = getDeviceName(session.session.userAgent);
 
-            <Button
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              type="submit"
-              onClick={handleLogOut}
-              disabled={isLoggingOut}
+                return (
+                  <React.Fragment key={session._id}>
+                    {index > 0 && <Divider sx={{ my: 2 }} />}
+                    <Paper
+                      elevation={isCurrentDevice ? 2 : 0}
+                      sx={{
+                        p: 2,
+                        backgroundColor: isCurrentDevice
+                          ? "rgba(76, 175, 80, 0.1)"
+                          : "transparent",
+                        border: isCurrentDevice
+                          ? "1px solid rgba(76, 175, 80, 0.5)"
+                          : "1px solid rgba(0, 0, 0, 0.12)",
+                        borderRadius: 2,
+                        position: "relative",
+                      }}
+                    >
+                      {isCurrentDevice && (
+                        <Chip
+                          label="Current Device"
+                          color="success"
+                          size="small"
+                          sx={{
+                            position: "absolute",
+                            top: 10,
+                            right: 10,
+                            fontWeight: "bold",
+                          }}
+                        />
+                      )}
+
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", mb: 1 }}
+                      >
+                        <Box sx={{ mr: 2 }}>
+                          {getDeviceIcon(session.session.userAgent)}
+                        </Box>
+                        <Typography
+                          variant="h6"
+                          fontWeight={isCurrentDevice ? "bold" : "normal"}
+                        >
+                          {deviceName}
+                        </Typography>
+                      </Box>
+
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mb: 1 }}
+                      >
+                        Browser:{" "}
+                        {session.session.userAgent.ua
+                          .split(" ")
+                          .slice(-2)
+                          .join(" ")}
+                      </Typography>
+
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mb: 2 }}
+                      >
+                        Last active:{" "}
+                        {new Date(session.updatedAt).toLocaleString()}
+                      </Typography>
+
+                      {!isCurrentDevice && (
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          size="small"
+                          startIcon={<LogoutIcon />}
+                          onClick={() => handleLogOutSession(session._id)}
+                          disabled={loggingOutSession === session._id}
+                          sx={{ mt: 1 }}
+                        >
+                          {loggingOutSession === session._id ? (
+                            <CircularProgress size="1.5rem" color="error" />
+                          ) : (
+                            "Logout from this device"
+                          )}
+                        </Button>
+                      )}
+                    </Paper>
+                  </React.Fragment>
+                );
+              })}
+            </List>
+
+            <Box
+              sx={{ mt: 4, pt: 2, borderTop: "1px solid rgba(0, 0, 0, 0.12)" }}
             >
-              {isLoggingOut ? (
-                <CircularProgress
-                  size="1.5rem"
-                  sx={{
-                    color: "white",
-                  }}
-                />
-              ) : (
-                "Log out of all devices"
-              )}
-            </Button>
-          </div>
+              <Button
+                fullWidth
+                variant="contained"
+                color="error"
+                startIcon={<LogoutIcon />}
+                onClick={handleLogOutAll}
+                disabled={isLoggingOut}
+                sx={{ py: 1.5 }}
+              >
+                {isLoggingOut ? (
+                  <CircularProgress size="1.5rem" sx={{ color: "white" }} />
+                ) : (
+                  "Log out of all devices"
+                )}
+              </Button>
+            </Box>
+          </>
         ) : (
-          <div>You have no active session</div>
+          <Typography
+            variant="body1"
+            sx={{ textAlign: "center", fontSize: 16, py: 4 }}
+          >
+            You have no active sessions.
+          </Typography>
         )}
-      </div>
-    </div>
+      </Paper>
+    </Box>
   );
 };
 

@@ -8,12 +8,6 @@ import Services2 from "./Services2";
 import { AuthContext } from "../contexts/AuthProvider";
 
 const Home = () => {
-  const { deviceInfo } = useContext(AuthContext);
-
-  useEffect(() => {
-    console.log("Device info:", deviceInfo);
-    console.log("n ua:", navigator.userAgent);
-  }, [deviceInfo]);
   return (
     <>
       {/* <Search /> */}

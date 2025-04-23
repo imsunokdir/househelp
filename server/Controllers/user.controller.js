@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const http = require("http");
 const uap = require("ua-parser-js");
+const { v4: uuidv4 } = require("uuid");
 const {
   generateJWTToken,
   sendEmailVerificationMail,
@@ -15,6 +16,7 @@ const ShoutoutClient = require("shoutout-sdk");
 const { default: mongoose } = require("mongoose");
 const checkProfileCompletion = require("../Utils/checkProfileCompletion");
 const Session = require("../Models/session.schema");
+const userAgent = require("user-agent");
 
 require("dotenv").config();
 
@@ -192,13 +194,12 @@ const loginUser = async (req, res) => {
     });
   }
 
-  let ua = uap(req.headers["user-agent"]);
-
-  console.log("user agent:", ua);
+  const ua = uap(req.headers["user-agent"]);
+  const deviceId = uuidv4();
 
   req.session.isAuth = true;
-  req.session.userAgent = ua;
-  req.session.usAg = usAg;
+  req.session.userAgent = { ...ua, deviceId };
+  // req.session.usAg = usAg;
 
   req.session.user = {
     userId: user._id,
@@ -209,7 +210,7 @@ const loginUser = async (req, res) => {
     success: true,
     message: "User logged in successfuly",
     user: req.session.user,
-    ua,
+    userAgent: { ...ua, deviceId },
   });
 };
 
@@ -306,6 +307,7 @@ const authCheck = async (req, res) => {
       res.status(200).json({
         success: true,
         user: req.session.user,
+        userAgent: req.session.userAgent,
       });
     } else {
       res.status(200).json({

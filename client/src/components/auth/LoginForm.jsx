@@ -30,7 +30,8 @@ const LoginForm = () => {
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const { user, isAuth, setUser, setDeviceInfo } = useContext(AuthContext);
+  const { user, isAuth, setUser, setDeviceInfo, setCurrentDevice } =
+    useContext(AuthContext);
   const { handleClose } = useContext(UIContext);
   const { messageApi } = useContext(UIContext);
   const navigate = useNavigate();
@@ -58,6 +59,8 @@ const LoginForm = () => {
         setPassword("");
         handleClose();
         setDeviceInfo(response.data.ua);
+        // console.log("user agebt::", response.data.userAgent.deviceId);
+        setCurrentDevice(response.data.userAgent.deviceId);
 
         navigate(from, { replace: true });
       }
