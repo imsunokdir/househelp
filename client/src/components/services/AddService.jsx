@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { getUserDetails } from "../../services/user";
 import LoadBalls from "../LoadingSkeleton/LoadBalls";
 import AddServiceForm from "./AddServiceForm";
-import { Link } from "@mui/material";
+// import { Link } from "@mui/material";
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 const AddService = () => {
@@ -39,14 +40,14 @@ const AddService = () => {
         (user.isProfileCompleted ? (
           <AddServiceForm />
         ) : (
-          <div>
+          <div className="p-4">
             <p>
               You have not completed your profile, please complete your profile
               first before continuing
             </p>
 
             <p>
-              <Link href="/accounts/personal-info">Go to profile</Link>
+              <Link to="/accounts/personal-info">Go to profile</Link>
             </p>
           </div>
         ))}

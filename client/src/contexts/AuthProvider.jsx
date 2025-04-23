@@ -19,6 +19,8 @@ const AuthProvider = ({ children }) => {
   const [serviceLoading, setServiceLoading] = useState(true);
   const [authLoading, setAuthLoading] = useState(true);
 
+  const [deviceInfo, setDeviceInfo] = useState("");
+
   //get all the categories
   // const [allCategories, setAllCategories] = useState([]);
 
@@ -259,6 +261,8 @@ const AuthProvider = ({ children }) => {
         setServiceLoading,
         // allCategories,
         authLoading,
+        deviceInfo,
+        setDeviceInfo,
       }}
     >
       {children}

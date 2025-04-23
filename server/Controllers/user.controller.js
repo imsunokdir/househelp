@@ -153,7 +153,7 @@ const verifyPasswordReset = async (req, res) => {};
 
 const loginUser = async (req, res) => {
   //loginId: email || username
-  const { loginId, password } = req.body;
+  const { loginId, password, usAg } = req.body;
   if (!loginId || !password) {
     return res.status(400).json({
       message: "Missing user credentials",
@@ -194,10 +194,11 @@ const loginUser = async (req, res) => {
 
   let ua = uap(req.headers["user-agent"]);
 
-  // console.log("user agebt:", ua);
+  console.log("user agent:", ua);
 
   req.session.isAuth = true;
   req.session.userAgent = ua;
+  req.session.usAg = usAg;
 
   req.session.user = {
     userId: user._id,
@@ -208,6 +209,7 @@ const loginUser = async (req, res) => {
     success: true,
     message: "User logged in successfuly",
     user: req.session.user,
+    ua,
   });
 };
 

@@ -10,10 +10,11 @@ import axios from "axios";
 // });
 import axiosInstance from "./axiosInstance";
 
-export const LoginUser = async ({ loginId, password }) =>
+export const LoginUser = async ({ loginId, password, usAg }) =>
   await axiosInstance.post(`/user/login`, {
     loginId,
     password,
+    usAg,
   });
 
 export const registerUser = async ({ email, username, password }) =>

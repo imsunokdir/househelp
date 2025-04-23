@@ -19,7 +19,7 @@ const AuthRootRoute = () => {
   return (
     <div className="flex flex-col items-center min-h-screen py-8 md:py-16 bg-white">
       <ScrollToTop />
-      <div className="w-full max-w-md shadow-md p-4 rounded border m-3">
+      <div className="w-full max-w-md p-4 rounded m-3 sm:border sm:shadow">
         <Routes>
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<LoginForm />} />

@@ -11,7 +11,7 @@ import {
   ThemeProvider,
   Typography,
 } from "@mui/material";
-import { Link as Lk } from "@mui/material";
+// import { Link as Lk } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
 import GoogleIcon from "@mui/icons-material/Google";
 
@@ -180,11 +180,16 @@ const Register = () => {
           </Grid> */}
           <div className="w-full flex justify-between">
             <p className="m-0">
-              Already a user? <Lk href="/user-auth/login">Sign in</Lk>
+              Already a user?{" "}
+              <Link to="/user-auth/login" replace>
+                Sign in
+              </Link>
             </p>
 
             <p className="m-0">
-              <Lk href="/user-auth/forgot-password">Forgot Password</Lk>
+              <Link to="/user-auth/forgot-password" replace>
+                Forgot Password
+              </Link>
             </p>
           </div>
         </Box>

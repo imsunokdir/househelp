@@ -30,7 +30,7 @@ const LoginForm = () => {
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const { user, isAuth, setUser } = useContext(AuthContext);
+  const { user, isAuth, setUser, setDeviceInfo } = useContext(AuthContext);
   const { handleClose } = useContext(UIContext);
   const { messageApi } = useContext(UIContext);
   const navigate = useNavigate();
@@ -44,8 +44,10 @@ const LoginForm = () => {
     e.preventDefault();
     setIsLoggingIn(true);
 
+    const usAg = navigator.userAgent;
+
     try {
-      const response = await LoginUser({ loginId, password });
+      const response = await LoginUser({ loginId, password, usAg });
 
       if (response.status === 200) {
         setUser(response.data.user);
@@ -55,6 +57,7 @@ const LoginForm = () => {
         setLoginId("");
         setPassword("");
         handleClose();
+        setDeviceInfo(response.data.ua);
 
         navigate(from, { replace: true });
       }
@@ -186,7 +189,7 @@ const LoginForm = () => {
             </p>
 
             <p className="m-0">
-              <Lk href="user-auth/forgot-password">Forgot Password</Lk>
+              <Lk href="/user-auth/forgot-password">Forgot Password</Lk>
             </p>
           </div>
         </Box>

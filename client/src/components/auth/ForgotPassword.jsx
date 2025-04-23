@@ -8,11 +8,12 @@ import {
   ThemeProvider,
 } from "@mui/material";
 import { Divider } from "antd";
-import { Link as Lk } from "@mui/material";
+// import { Link as Lk } from "@mui/material";
 import React, { useState } from "react";
 import { LogInIcon } from "lucide-react";
 import { sendResetPasswordLink } from "../../services/user";
 import resetPasswordImage from "../.././assets/reset-password.png";
+import { Link } from "react-router-dom";
 
 const theme = createTheme();
 
@@ -103,11 +104,11 @@ const ForgotPassword = () => {
 
           <Divider className="m-0 p-0" />
 
-          <div className="w-full flex justify-between">
+          {/* <div className="w-full flex justify-between">
             <p className="m-0">
-              Already a user? <Lk href="/user-auth/login">Sign in</Lk>
+              Already a user? <Link to="/user-auth/login">Sign in</Link>
             </p>
-          </div>
+          </div> */}
         </Box>
         {/* <Message onMessage={setFunctions} /> */}
       </ThemeProvider>

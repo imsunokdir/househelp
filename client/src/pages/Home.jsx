@@ -1,12 +1,19 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import NavigationTabs from "../components/nav/NavigationTabs";
 import "./pages.css";
 import Filter from "../components/Filters/Filter";
 import Services from "./Services";
 import Search from "../components/forms/Search";
 import Services2 from "./Services2";
+import { AuthContext } from "../contexts/AuthProvider";
 
 const Home = () => {
+  const { deviceInfo } = useContext(AuthContext);
+
+  useEffect(() => {
+    console.log("Device info:", deviceInfo);
+    console.log("n ua:", navigator.userAgent);
+  }, [deviceInfo]);
   return (
     <>
       {/* <Search /> */}
