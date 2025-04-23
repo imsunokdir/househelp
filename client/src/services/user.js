@@ -74,3 +74,10 @@ export const sendResetPasswordLink = async ({ email }) =>
 
 export const resetThePassword = async ({ token, newPassword }) =>
   await axiosInstance.post("/user/reset-password", { token, newPassword });
+
+export const updateLastActive = async () => {
+  await axiosInstance.post("/user/update-last-active");
+};
+
+export const logoutSession = async (sessionId) =>
+  await axiosInstance.post("/user/logout-session", { sessionId });

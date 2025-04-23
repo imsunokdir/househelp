@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { getActiveSessions, logOutAll } from "../services/user";
+import { getActiveSessions, logOutAll, logoutSession } from "../services/user";
 import {
   Button,
   CircularProgress,
@@ -35,6 +35,7 @@ const LogOutAll = () => {
     try {
       const response = await getActiveSessions();
       if (response.status === 200) {
+        console.log("res res:", response);
         const sortedSessions = response.data.activeSessions.sort((a, b) => {
           if (
             a.session.userAgent.deviceId === currentDevice &&
@@ -78,6 +79,7 @@ const LogOutAll = () => {
   };
 
   const handleLogOutSession = async (sessionId) => {
+    console.log("session id:", sessionId);
     try {
       setLoggingOutSession(sessionId);
       const response = await logoutSession(sessionId);
@@ -101,6 +103,10 @@ const LogOutAll = () => {
       return <ComputerIcon />;
     }
   };
+
+  useEffect(() => {
+    console.log("Active sessions:", activeSessions);
+  }, [activeSessions]);
 
   const getDeviceName = (userAgent) => {
     const ua = userAgent.ua;
@@ -130,7 +136,10 @@ const LogOutAll = () => {
     <LoadBalls />
   ) : (
     <Box className="p-4" sx={{ maxWidth: 800, mx: "auto" }}>
-      <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
+      <Paper
+        elevation={3}
+        sx={{ p: 3, borderRadius: 2, border: "none", boxShadow: "none" }}
+      >
         <Typography
           variant="h5"
           sx={{
@@ -214,14 +223,18 @@ const LogOutAll = () => {
                         Full User Agent: {session.session.userAgent.ua}
                       </Typography>
 
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ mb: 2 }}
-                      >
-                        Last active:{" "}
-                        {new Date(session.updatedAt).toLocaleString()}
-                      </Typography>
+                      {!isCurrentDevice && (
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ mb: 2 }}
+                        >
+                          Last active:{" "}
+                          {new Date(
+                            session.session.lastActive
+                          ).toLocaleString()}
+                        </Typography>
+                      )}
 
                       {!isCurrentDevice && (
                         <Button

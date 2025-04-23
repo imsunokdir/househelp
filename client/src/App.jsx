@@ -32,11 +32,13 @@ import ResetPassword from "./components/auth/ResetPassword";
 import SuccessService from "./components/services/SuccessService";
 import SkeletonCard2 from "./components/LoadingSkeleton/SkeletonCards2";
 import AddService from "./components/services/AddService";
+import TrackUserActivity from "./middlewares/TrackUserActivity";
 
 const App = () => {
   return (
     <>
       <AppProvider>
+        <TrackUserActivity />
         <BrowserRouter>
           <Header />
           <div className="min-h-screen pb-16 sm:pb-0">

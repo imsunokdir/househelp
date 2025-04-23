@@ -16,6 +16,8 @@ const {
   sendResetPasswordLink,
   verifyPasswordReset,
   resetPassword,
+  updateLastActive,
+  logoutSession,
 } = require("../Controllers/user.controller");
 const { isAuth } = require("../Middlewares/isAuth");
 
@@ -41,5 +43,7 @@ userRouter.post("/reset-password", resetPassword);
 
 //
 userRouter.post("/save-user-current-location", saveUserCurrLocation);
+userRouter.post("/update-last-active", updateLastActive);
+userRouter.post("/logout-session", logoutSession);
 
 module.exports = { userRouter };

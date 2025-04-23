@@ -505,6 +505,83 @@ const activeSessions = async (req, res) => {
 
 const forgotPassword = async (req, res) => {};
 
+const updateLastActive = async (req, res) => {
+  try {
+    if (!req.session || !req.session.user) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    req.session.lastActive = new Date(); // ✅ Store last active time directly in session
+
+    // await req.session.save(); // Optional but good practice to force save immediately
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Last active updated" });
+  } catch (error) {
+    console.error("Failed to update last active:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
+  }
+};
+
+const logoutSession = async (req, res) => {
+  // Get the user ID from session
+  const { userId } = req.session.user;
+
+  // Ensure that a user is logged in
+  if (!userId) {
+    return res.status(400).json({ message: "User not found in session" });
+  }
+
+  try {
+    // If a sessionId is provided, log out that specific session
+    if (req.body.sessionId) {
+      const { sessionId } = req.body;
+      const deleteSession = await Session.findOneAndDelete({ _id: sessionId });
+
+      // Check if the session exists
+      if (!deleteSession) {
+        return res.status(404).json({ message: "Session not found" });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: "Successfully logged out from this device",
+      });
+    }
+
+    // If no sessionId provided, log out from all devices
+    const deleteDb = await Session.deleteMany({
+      "session.user.userId": userId,
+    });
+
+    // If no sessions were found to delete
+    if (deleteDb.deletedCount === 0) {
+      return res.status(404).json({ message: "No sessions found to log out" });
+    }
+
+    // Clear the session cookie
+    res.clearCookie("connect.sid", {
+      path: "/", // Ensure the path matches the one used in session config
+      httpOnly: true, // Enhance security by making the cookie inaccessible to JavaScript
+      secure: process.env.NODE_ENV === "production", // Use secure cookie in production
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Successfully logged out from all devices",
+    });
+  } catch (error) {
+    console.error("Logout error:", error);
+    return res.status(500).json({
+      message: "Internal server error during logout",
+      error: error.message || error,
+    });
+  }
+};
+
 module.exports = {
   registerUser,
   verifyUser,
@@ -522,4 +599,6 @@ module.exports = {
   sendResetPasswordLink,
   verifyPasswordReset,
   resetPassword,
+  updateLastActive,
+  logoutSession,
 };
