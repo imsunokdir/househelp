@@ -12,8 +12,11 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Slide from "@mui/material/Slide";
-import { useMediaQuery, useTheme } from "@mui/material";
+import { DialogContent, useMediaQuery, useTheme } from "@mui/material";
 import Test from "../Test";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 import ReviewDialog from "../components/review/ReviewDialog";
 import { getRatingDistribution } from "../services/review";
 import ImageCarousel from "./ImageCarousel";
@@ -21,6 +24,8 @@ import noprofile from "../../src/assets/noprofile.jpg";
 import ServiceAndUser from "./ServiceAndUser";
 import LoadBalls from "../components/LoadingSkeleton/LoadBalls";
 import { AuthContext } from "../contexts/AuthProvider";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
 
 const boxShadowStyle = {
   boxShadow: "-8px 6px 10px rgba(0, 0, 0, 0.2)", // Left and bottom shadow
@@ -41,11 +46,23 @@ const Service = () => {
 
   //modal states
   const [open, setOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  const [previewImage, setPreviewImage] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
   const handleClickOpen = () => {
     setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleImageClick = (url) => {
+    setPreviewImage(url);
+  };
+  const handleClosePreview = () => {
+    setPreviewImage(null);
   };
 
   useEffect(() => {
@@ -120,9 +137,9 @@ const Service = () => {
     </div>
   ) : (
     service && (
-      <div className="bg-gray-50 min-h-screen">
+      <div className="sm:bg-gray-50 min-h-screen">
         <div className="max-w-6xl mx-auto p-4">
-          <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+          <div className="bg-white rounded-lg sm:shadow-md overflow-hidden mb-6">
             <ServiceAndUser
               service={service}
               handleClickOpen={handleClickOpen}
@@ -140,11 +157,17 @@ const Service = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="bg-white rounded-lg shadow-lg p-3 mb-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-4">
               Service Gallery
             </h2>
-            <ImageCarousel service={service} />
+            <ImageCarousel
+              service={service}
+              onImageClick={(index) => {
+                setSelectedIndex(index);
+                setPreviewOpen(true);
+              }}
+            />
           </div>
         </div>
 
@@ -156,6 +179,58 @@ const Service = () => {
           totalReviews={totalReviews}
           averageRating={service.averageRating.toFixed(1)}
         />
+        {/* Image Preview Modal */}
+        <Dialog
+          open={previewOpen}
+          onClose={() => setPreviewOpen(false)}
+          fullWidth
+          maxWidth="lg"
+        >
+          <DialogContent className="bg-black p-0 relative">
+            {/* ❌ Close Button */}
+            <IconButton
+              onClick={() => setPreviewOpen(false)}
+              sx={{
+                position: "absolute",
+                top: 16, // slightly more padding
+                right: 16,
+                color: "gray",
+                zIndex: 10,
+                width: 48,
+                height: 48,
+                backgroundColor: "#e5e7eb", // Tailwind's bg-gray-300
+                borderRadius: "50%",
+                "&:hover": {
+                  backgroundColor: "#d1d5db", // Tailwind's bg-gray-400
+                },
+              }}
+            >
+              <CloseIcon sx={{ fontSize: 28 }} />
+            </IconButton>
+
+            {/* ✅ Image Carousel */}
+            <Swiper
+              initialSlide={selectedIndex}
+              spaceBetween={10}
+              navigation
+              pagination={{ clickable: true }}
+              modules={[Navigation, Pagination]}
+            >
+              {service.images.map((image) => (
+                <SwiperSlide key={image._id}>
+                  <img
+                    src={image.url.replace(
+                      "/upload/",
+                      "/upload/f_auto,q_auto,w_1200/"
+                    )}
+                    alt="Preview"
+                    className="w-full max-h-[80vh] object-contain"
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </DialogContent>
+        </Dialog>
       </div>
     )
   );

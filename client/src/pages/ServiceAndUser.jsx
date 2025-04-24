@@ -90,10 +90,10 @@ const ServiceAndUser = ({
     <div className="p-6">
       <div className="grid md:grid-cols-2 gap-6">
         {/* Left Column - Provider Info */}
-        <div className="flex items-center">
-          <div className="relative">
+        <div className="flex justify-around md:border-r-2 border-gray-200 pr-6">
+          <div className="relative mr-5">
             {/* Profile Image */}
-            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-white shadow-lg">
+            <div className="w-32 h-32 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full overflow-hidden border-4 border-white shadow-lg flex-shrink-0">
               <img
                 src={
                   service.createdBy?.avatar
@@ -112,15 +112,17 @@ const ServiceAndUser = ({
             <div className="absolute inset-0 -z-10 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full scale-150 blur-sm"></div>
           </div>
 
-          <div className="ml-6">
-            <h3 className="text-lg font-medium mb-1">
+          <div className="mt-2 max-w-full">
+            <h2 className="text-lg font-medium mb-1">
               {service.createdBy?.firstName
                 ? `${service.createdBy.firstName} ${service.createdBy?.lastName}`
                 : service.createdBy.username}
-            </h3>
-            <div className="flex items-center text-gray-600 mb-2">
-              <MapPin size={16} className="mr-1" />
-              <span>South ex1 block-e</span>
+            </h2>
+            <div className="flex text-gray-600 mb-2 max-w-full">
+              <MapPin size={16} className="flex-shrink-0 mr-1 mt-1" />
+              <p className="break-all whitespace-normal">
+                South ex1 block-e sadasdadadasdasdasdasd
+              </p>
             </div>
 
             <div className="flex items-center">
@@ -134,6 +136,9 @@ const ServiceAndUser = ({
             </div>
           </div>
         </div>
+
+        {/* Divider - Responsive */}
+        <Divider className="md:hidden" />
 
         {/* Right Column - Service Details */}
         <div className="flex flex-col">
@@ -212,21 +217,6 @@ const ServiceAndUser = ({
           </div>
         </div>
       </div>
-
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        <Alert
-          onClose={handleSnackbarClose}
-          severity={isServiceSaved ? "success" : "info"}
-          sx={{ width: "100%" }}
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
     </div>
   );
 };
