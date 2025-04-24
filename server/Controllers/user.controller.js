@@ -68,31 +68,34 @@ const registerUser = async (req, res) => {
 
 const sendResetPasswordLink = async (req, res) => {
   const { email } = req.body;
+  console.log("email for password reset:", email);
 
   try {
     const user = await User.findOne({ email });
+    console.log("user:", user);
 
     if (user) {
       const verifiedToken = jwt.sign(
         { id: user._id },
         process.env.JWT_SECRET_KEY,
-        {
-          expiresIn: "1h",
-        }
+        { expiresIn: "1h" }
       );
-      user.resetPasswordToken = verifiedToken;
-      user.resetPasswordExpires = Date.now() + 3600000;
-      await user.save();
-      // const verifiedToken = generateJWTTokenForPasswordReset(email);
-      await sendPasswordResetMail({ email, verifiedToken });
 
-      return res.status(200).json({
-        success: true,
-        message:
-          "If an account with that email exists, a password reset link has been sent.",
-      });
+      user.resetPasswordToken = verifiedToken;
+      user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+      await user.save();
+
+      await sendPasswordResetMail({ email, verifiedToken });
     }
+
+    // Always send the same message regardless of whether user exists
+    return res.status(200).json({
+      success: true,
+      message:
+        "If an account with that email exists, a password reset link has been sent.",
+    });
   } catch (error) {
+    console.error("error for pass reset:", error);
     return res.status(500).json({
       success: false,
       message: "Something went wrong. Please try again later.",

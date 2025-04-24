@@ -34,6 +34,7 @@ import SkeletonCard2 from "./components/LoadingSkeleton/SkeletonCards2";
 import AddService from "./components/services/AddService";
 import TrackUserActivity from "./middlewares/TrackUserActivity";
 import AddService2 from "./components/services/AddService2";
+import EmailIfThere from "./components/auth/emailIfThere";
 
 const App = () => {
   return (
@@ -87,6 +88,7 @@ const App = () => {
 
               {/* user routes */}
               <Route path="/user-auth/*" element={<AuthRootRoute />} />
+              <Route path="/email/if-there" element={<EmailIfThere />} />
 
               {/* test routes */}
               <Route path="/test" element={<Test />} />

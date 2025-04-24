@@ -15,9 +15,9 @@ const LoginModal = () => {
       onOk={handleClose}
       footer={null}
     >
-      <Typography component="h1" variant="h5">
+      {/* <Typography component="h1" variant="h5">
         Log in
-      </Typography>
+      </Typography> */}
       <LoginForm />
     </Modal>
   );

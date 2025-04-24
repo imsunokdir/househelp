@@ -3,26 +3,23 @@ import {
   Box,
   Button,
   CircularProgress,
-  Container,
-  createTheme,
   CssBaseline,
-  Grow,
+  Divider,
   TextField,
   ThemeProvider,
   Typography,
+  createTheme,
 } from "@mui/material";
-// import { Link as Lk } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
 import GoogleIcon from "@mui/icons-material/Google";
-
-import Grid from "antd/es/card/Grid";
 import { Link, useNavigate } from "react-router-dom";
-import { Button as AntdBtn, Divider, message, Space } from "antd";
+import { message } from "antd";
+
 import Message from "../Messages/WarningMessage";
-import { LoginUser, registerUser } from "../../services/user";
+import { registerUser } from "../../services/user";
 import { AuthContext } from "../../contexts/AuthProvider";
 import { UIContext } from "../../contexts/UIProvider";
-import { GoogleOutlined } from "@ant-design/icons";
+import gIcon from "../../assets/google-icon.svg";
 
 const theme = createTheme();
 
@@ -31,66 +28,83 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
-  const { user, isAuth, setUser } = useContext(AuthContext);
-  const { handleClose } = useContext(UIContext);
-  const { messageApi } = useContext(UIContext);
+  const [isGoogleLoggingIn, setIsGoogleLoggingIn] = useState(false);
+  const from = location.state?.from?.pathname || "/";
 
+  const { setUser } = useContext(AuthContext);
+  const { messageApi } = useContext(UIContext);
   const navigate = useNavigate();
 
-  //email and password related errors messages
   const [functions, setFunctions] = useState({});
-  const [isGoogelLogginIn, setIsGoogleLogginIn] = useState(false);
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setIsRegistering(true);
     try {
       const response = await registerUser({ email, username, password });
-      console.log("registertration response:", response);
       if (response.status === 200) {
         const { email, _id } = response.data.user;
         navigate(`/email-verification/${_id}/${email}`);
       }
     } catch (error) {
-      console.log("registration error", error);
-      if (error.status === 409) {
+      if (error?.response?.status === 409) {
         message.error(error.response.data.message);
+      } else {
+        message.error("Something went wrong!");
       }
     } finally {
       setIsRegistering(false);
     }
   };
 
-  const handleGoogleLogin = () => {};
+  // const handleGoogleLogin = () => {
+  //   // Your Google login logic here
+  //   setIsGoogleLoggingIn(true);
+  //   // Example: simulate login
+  //   setTimeout(() => setIsGoogleLoggingIn(false), 2000);
+  // };
+
+  const handleGoogleLogin = () => {
+    setIsGoogleLoggingIn(true);
+    const redirectTo = encodeURIComponent(from);
+    const state = encodeURIComponent(`redirectTo=${redirectTo}`);
+    window.location.href = `${
+      import.meta.env.VITE_GOOGLE_REDIRECT
+    }?state=${state}`;
+  };
+
   return (
-    <div className="">
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Message onMessage={setFunctions} />
-      <h2>
-        {/* <Lk href="/email-verification">ok</Lk> */}
-        Register
-      </h2>
-      <ThemeProvider theme={theme}>
-        {/* <Container component="main" maxWidth="xs"></Container> */}
-        <CssBaseline />
+
+      <Box
+        sx={{
+          maxWidth: 400,
+          mx: "auto",
+          bgcolor: "background.paper",
+        }}
+      >
         <Box
           sx={{
-            // marginTop: 8,
             display: "flex",
-            flexDirection: "column",
             alignItems: "center",
+            justifyContent: "center",
           }}
-          component="form"
-          onSubmit={handleRegister}
         >
+          <LoginIcon sx={{ mr: 1 }} />
+          <Typography component="h1" variant="h5" fontWeight="bold">
+            Register
+          </Typography>
+        </Box>
+
+        <Box component="form" onSubmit={handleRegister}>
           <TextField
             margin="normal"
             required
             fullWidth
-            id="email"
             label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
+            type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -98,9 +112,7 @@ const Register = () => {
             margin="normal"
             required
             fullWidth
-            id="username"
-            label="username"
-            name="username"
+            label="Username"
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
@@ -109,93 +121,89 @@ const Register = () => {
             margin="normal"
             required
             fullWidth
-            name="password"
             label="Password"
             type="password"
-            id="password"
-            autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          {isRegistering ? (
+
+          <Button
+            fullWidth
+            variant="contained"
+            type="submit"
+            sx={{ mt: 3, mb: 2 }}
+            disabled={isRegistering}
+            startIcon={isRegistering ? null : <LoginIcon />}
+          >
+            {isRegistering ? (
+              <CircularProgress size="1.5rem" sx={{ color: "white" }} />
+            ) : (
+              "Register using Email and Password"
+            )}
+          </Button>
+
+          <Divider>OR</Divider>
+
+          {isGoogleLoggingIn ? (
             <Button
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-              type="submit"
-              disabled={true}
+              disabled
             >
-              <CircularProgress
-                size="1.5rem"
-                sx={{
-                  color: "white",
-                }}
-              />
+              <CircularProgress size="1.5rem" sx={{ color: "white" }} />
             </Button>
           ) : (
             <Button
               fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              type="submit"
-            >
-              <LoginIcon />
-              Register using Email and password
-            </Button>
-          )}
-
-          <Divider className="m-0 p-0" />
-
-          {isGoogelLogginIn ? (
-            <Button
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-              disabled={true}
-            >
-              <CircularProgress
-                size="1.5rem"
-                sx={{
-                  color: "white",
-                }}
-              />
-            </Button>
-          ) : (
-            <Button
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              variant="outlined"
               onClick={handleGoogleLogin}
+              sx={{
+                mt: 3,
+                mb: 2,
+                color: "#4285F4", // Google blue
+                borderColor: "#4285F4",
+                textTransform: "none",
+                fontWeight: 500,
+                backgroundColor: "#fff",
+                "&:hover": {
+                  backgroundColor: "#f5f5f5",
+                  borderColor: "#4285F4",
+                },
+              }}
             >
-              <GoogleIcon />
-              Sign up with google
+              <img
+                src={gIcon}
+                style={{ height: "25px", width: "25px", marginRight: "8px" }}
+                alt="Google"
+              />
+              Sign up with Google
             </Button>
           )}
 
-          {/* <Grid container="true" className="bg-red-200">
-            <Grid>
-              <Lk>Forgot password</Lk>
-            </Grid>
-            <Grid>ok</Grid>
-          </Grid> */}
-          <div className="w-full flex justify-between">
-            <p className="m-0">
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              mt: 1,
+            }}
+          >
+            <Typography variant="body2">
               Already a user?{" "}
               <Link to="/user-auth/login" replace>
                 Sign in
               </Link>
-            </p>
+            </Typography>
 
-            <p className="m-0">
+            <Typography variant="body2">
               <Link to="/user-auth/forgot-password" replace>
                 Forgot Password
               </Link>
-            </p>
-          </div>
+            </Typography>
+          </Box>
         </Box>
-        <Message onMessage={setFunctions} />
-      </ThemeProvider>
-    </div>
+      </Box>
+    </ThemeProvider>
   );
 };
 
