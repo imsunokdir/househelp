@@ -3,7 +3,7 @@ import { Briefcase, ListFilter, Clock } from "lucide-react";
 
 const SetServiceName = ({ handleInputChange, formData }) => {
   return (
-    <div className="space-y-2 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+    <div className="space-y-2 bg-white p-4 px-2 rounded-lg shadow-sm border border-gray-100">
       <div className="flex items-center border-b border-gray-100 pb-2">
         <Briefcase className="h-4 w-4 mr-2 text-blue-500" />
         <label

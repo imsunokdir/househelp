@@ -33,7 +33,7 @@ const AddService = () => {
     fetchUser();
   }, []);
   return (
-    <div>
+    <div className="">
       {userLoading && <LoadBalls />}
 
       {user &&

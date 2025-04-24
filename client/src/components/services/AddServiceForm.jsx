@@ -102,21 +102,23 @@ const AddServiceForm = () => {
 
   return (
     <Fade in timeout={500}>
-      <div className="min-h-screen bg-gray-100 py-8 px-4">
+      <div className="min-h-screen bg-gray-100 py-4 px-1 sm:py-8 sm:px-4">
         <Message onMessage={setFunctions} />
-        <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
-          <div className="bg-blue-600 text-white py-5 px-6">
-            <h2 className="text-2xl font-semibold">Add New Service</h2>
+        <div className="w-full max-w-full sm:max-w-3xl mx-auto bg-white shadow-lg overflow-hidden">
+          <div className="bg-blue-600 text-white py-2 px-4 sm:py-5 sm:px-6">
+            <h2 className="text-xl sm:text-2xl font-semibold">
+              Add New Service
+            </h2>
             <p className="text-blue-100 mt-1 text-sm">
               Complete the form below to list your service
             </p>
           </div>
 
-          <div className="p-8">
-            <form onSubmit={handleSubmit2} className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="p-2">
+            <form onSubmit={handleSubmit2} className="space-y-6 sm:space-y-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 {/* Service name */}
-                <div className="md:col-span-2">
+                <div className="sm:col-span-2">
                   <SetServiceName
                     formData={formData}
                     handleInputChange={handleInputChange}
@@ -124,7 +126,7 @@ const AddServiceForm = () => {
                 </div>
 
                 {/* Category */}
-                <div className="md:col-span-2">
+                <div className="sm:col-span-2">
                   <ServiceCategoryField
                     categories={categories}
                     handleCategory={handleCategory}
@@ -134,7 +136,7 @@ const AddServiceForm = () => {
                 </div>
 
                 {/* Experience */}
-                <div>
+                <div className="sm:col-span-2">
                   <ServiceExperience
                     formData={formData}
                     handleInputChange={handleInputChange}
@@ -142,7 +144,7 @@ const AddServiceForm = () => {
                 </div>
 
                 {/* Price Range */}
-                <div>
+                <div className="sm:col-span-2">
                   <ServicePriceField
                     formData={formData}
                     handlePriceRangeChange={handlePriceRangeChange}
@@ -150,8 +152,7 @@ const AddServiceForm = () => {
                 </div>
               </div>
 
-              {/* Horizontal divider */}
-              <div className="border-t border-gray-200 my-8"></div>
+              <div className="border-t border-gray-200 my-6 sm:my-8" />
 
               {/* Skills */}
               <ServiceSkillsField
@@ -171,8 +172,7 @@ const AddServiceForm = () => {
                 addAvailability={addAvailability}
               />
 
-              {/* Horizontal divider */}
-              <div className="border-t border-gray-200 my-8"></div>
+              <div className="border-t border-gray-200 my-6 sm:my-8" />
 
               {/* Location */}
               <SetLocationField
