@@ -9,12 +9,14 @@ import carpenter from "../../assets/carpenter.jpg";
 import { Fade } from "@mui/material";
 import { useState, useEffect } from "react";
 import SkeletonCard2 from "../LoadingSkeleton/SkeletonCards2";
+import { useNavigate } from "react-router-dom";
 
 const ServiceCard = ({ service, index, delay }) => {
   const [visible, setVisible] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => setVisible(true), index * delay);
@@ -26,7 +28,8 @@ const ServiceCard = ({ service, index, delay }) => {
   }, [visible, imageLoaded]);
 
   const handleClick = () => {
-    window.open(`/show-service-details/${service._id}`);
+    // window.open(`/show-service-details/${service._id}`);
+    navigate(`/show-service-details/${service._id}`);
   };
 
   const imageSrc =

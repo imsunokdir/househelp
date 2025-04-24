@@ -116,7 +116,7 @@ const AddServiceForm = () => {
 
           <div className="p-2">
             <form onSubmit={handleSubmit2} className="space-y-6 sm:space-y-8">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 bg-green mt-3">
                 {/* Service name */}
                 <div className="sm:col-span-2">
                   <SetServiceName
