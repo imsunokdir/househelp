@@ -9,10 +9,12 @@ import {
   Space,
   Switch,
 } from "antd";
+import ScrollToTop from "../../utils/ScrollToTop";
 
 const SkeletonLoad = () => {
   return (
     <div className="flex flex-col gap-4">
+      <ScrollToTop />
       <Skeleton.Input active size="default" block={true} />
       <Skeleton.Input active size="default" block={true} />
       <Skeleton.Input active size="default" block={false} />

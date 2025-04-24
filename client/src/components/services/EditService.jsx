@@ -338,8 +338,8 @@ const AddServiceForm = () => {
 
   return (
     <>
-      <ScrollToTop />
       <div className="min-h-screen bg-gray-50 p-4">
+        <ScrollToTop />
         <Message onMessage={functions.error} />
         <div
           className={`max-w-2xl mx-auto bg-white rounded-lg shadow-md relative ${
