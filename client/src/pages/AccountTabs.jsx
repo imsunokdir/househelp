@@ -51,7 +51,10 @@ const AccountTabs = () => {
         </div>
 
         {/* Logout button for smaller screens */}
-        <Divider style={{ borderColor: "#d9d9d9" }} />
+        <Divider
+          style={{ borderColor: "#d9d9d9" }}
+          className="block sm:hidden"
+        />
         {/* <Divider /> */}
 
         {/* <FooterDivider /> */}

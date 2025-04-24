@@ -19,15 +19,15 @@ const MyServiceCard = ({ service }) => {
   //   navigate(`/edit-service/${service._id}`);
   // };
   const handleClick = () => {
-    console.log("%%$$%%$^%$%^^^^^^^^^^^^^^^^^^^^^");
     navigate(
-      `/accounts/my-service-menu/my-services/details/edit-service/${service._id}`
+      `/accounts/my-service-menu/my-services/details/edit-service/${service._id}`,
+      { replace: true }
     );
   };
   const items = [
     {
       label: (
-        <a className="no-underline" onClick={handleClick}>
+        <a className="no-underline hover:text-blue-600" onClick={handleClick}>
           Edit
         </a>
       ),
@@ -40,11 +40,13 @@ const MyServiceCard = ({ service }) => {
   ];
 
   return (
-    <div className="p-2">
-      <div className="shadow-md cursor-pointer">
-        <div className=" flex justify-between border">
-          <div className="p-1">
-            <p className="m-0 text-[20px]">{service.serviceName}</p>
+    <div className="p-3">
+      <div className="rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer bg-white">
+        <div className="flex justify-between items-center bg-gray-50 border-b px-4 py-3">
+          <div>
+            <p className="m-0 font-semibold text-lg text-gray-800">
+              {service.serviceName}
+            </p>
           </div>
           <Dropdown
             menu={{
@@ -55,47 +57,62 @@ const MyServiceCard = ({ service }) => {
           >
             <a onClick={(e) => e.preventDefault()}>
               <Space>
-                <div className="service-dropdown">
-                  <span className="dot"></span>
-                  <span className="dot"></span>
-                  <span className="dot"></span>
+                <div className="hover:bg-gray-200 p-1 rounded-full">
+                  <span className="dot bg-gray-600"></span>
+                  <span className="dot bg-gray-600"></span>
+                  <span className="dot bg-gray-600"></span>
                 </div>
               </Space>
             </a>
           </Dropdown>
         </div>
         <div
-          className="flex border p-1"
+          className="flex p-4 border-b"
           onClick={() => navigate(`${service._id}`)}
         >
           {/* first col */}
-          <div className="w-1/3  flex justify-center">
-            <div className="w-[100px] ">
+          <div className="w-1/3 flex justify-center items-center">
+            <div className="w-[100px] h-[100px] overflow-hidden rounded-md">
               <img
                 src={service.images.length > 0 ? service.images[0]?.url : noimg}
-                className="w-full h-full"
+                className="w-full h-full object-cover"
+                alt={service.serviceName}
               />
             </div>
           </div>
           {/* second col */}
-          <div className="w-2/3 border-l p-1">
-            <p className="m-0">Status: {service.status}</p>
-            <p className="m-0">
-              description: "{service.description.slice(0, 55)}"
+          <div className="w-2/3 border-l pl-4 flex flex-col">
+            <p className="m-0 mb-2">
+              <span className="font-medium text-gray-700">Status: </span>
+              <span
+                className={`px-2 py-1 rounded-full text-xs ${
+                  service.status === "Active"
+                    ? "bg-green-100 text-green-800"
+                    : service.status === "Pending"
+                    ? "bg-yellow-100 text-yellow-800"
+                    : "bg-gray-100 text-gray-800"
+                }`}
+              >
+                {service.status}
+              </span>
+            </p>
+            <p className="m-0 text-gray-600 italic">
+              "{service.description.slice(0, 55)}
+              {service.description.length > 55 ? "..." : ""}"
             </p>
           </div>
         </div>
-        <div className="flex gap-2 border">
-          <div className="flex gap-1 items-center justify-center">
-            <EyeIcon />
-            <p className="m-0">
+        <div className="flex justify-start gap-6 bg-gray-50 px-4 py-3">
+          <div className="flex items-center text-gray-600">
+            <EyeIcon size={18} className="mr-2" />
+            <p className="m-0 text-sm">
               {numeral(service.views).format("0.[0]a")} views
             </p>
           </div>
 
-          <div className="flex gap-1 items-center justify-center p-1">
-            <ReviewsOutlined />
-            <p className="m-0"> {service.ratingCount} reviews</p>
+          <div className="flex items-center text-gray-600">
+            <ReviewsOutlined fontSize="small" className="mr-2" />
+            <p className="m-0 text-sm">{service.ratingCount} reviews</p>
           </div>
         </div>
       </div>

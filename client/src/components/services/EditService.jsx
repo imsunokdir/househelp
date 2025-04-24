@@ -292,7 +292,7 @@ const AddServiceForm = () => {
       const response = await updateService2(updatedData);
       if (response.status === 200) {
         setIsFormDirty(false);
-        navigate(`/show-service-details/${serviceId}`);
+        navigate(`/show-service-details/${serviceId}`, { replace: true });
       }
     } catch (error) {
       console.log("error:", error);

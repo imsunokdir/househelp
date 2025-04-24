@@ -69,22 +69,28 @@ const PersonalInfo = () => {
   }, []);
 
   return userLoading ? (
-    <LoadBalls />
+    <div className="flex justify-center items-center min-h-[60vh]">
+      <LoadBalls />
+    </div>
   ) : (
     <Fade in timeout={500}>
-      <div className="max-w-4xl mx-auto p-6">
-        <UploadProfile user={user} />
+      <div className="max-w-4xl mx-auto p-6 bg-white rounded-xl shadow-sm">
+        <div className="mb-8 border-b pb-6">
+          <UploadProfile user={user} />
+        </div>
 
         <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-2">Personal Information</h2>
-          <p className="text-gray-600 mb-6">
+          <h2 className="text-2xl font-bold mb-3 text-gray-800">
+            Personal Information
+          </h2>
+          <p className="text-gray-600 mb-6 text-sm md:text-base">
             Manage your personal information, including phone numbers and email
             address where you can be contacted.
           </p>
         </div>
 
         {user && (
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-6">
             <div className="col-span-2 md:col-span-1">
               <EditableField
                 label="First Name"
@@ -178,7 +184,7 @@ const PersonalInfo = () => {
                 user={user}
               />
             </div>
-            <div className="col-span-2">
+            <div className="col-span-2 mt-2">
               <EditableField
                 label="Bio"
                 value={user.bio}

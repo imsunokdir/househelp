@@ -4,9 +4,9 @@ import { deleteService, fetchServiceById } from "../../services/service";
 import LoadBalls from "../LoadingSkeleton/LoadBalls";
 import MyServiceImageCarousel from "./MyServiceImageCarousel";
 import { formatDistanceToNow } from "date-fns";
-import { Delete, Edit } from "lucide-react";
+import { Delete, Edit, MapPin } from "lucide-react";
 import { DeleteFilled } from "@ant-design/icons";
-import { Button, Divider, message, Modal } from "antd";
+import { Button, Divider, message, Modal, Tag } from "antd";
 import { content } from "flowbite-react/tailwind";
 import ReviewsMain from "../review/ReviewsMain";
 
@@ -57,163 +57,198 @@ const MyServiceDetails = () => {
   };
 
   return serviceLoading ? (
-    <LoadBalls />
+    <div className="flex justify-center items-center min-h-screen">
+      <LoadBalls />
+    </div>
   ) : (
-    <div className="p-3">
-      <div className="flex flex-col md:flex-row gap-2 w-full ">
-        {/* Image Carousel */}
-        <div className=" w-full lg:w-3/4 ">
-          <div className="bg-gray-200 shadow-md">
+    <div className="p-4 max-w-7xl mx-auto bg-gray-50">
+      <div className="flex flex-col md:flex-row gap-6 w-full">
+        {/* Left Column - Image Carousel and Details */}
+        <div className="w-full lg:w-3/4">
+          {/* Image Carousel */}
+          <div className="bg-white rounded-lg overflow-hidden shadow-md mb-6">
             <MyServiceImageCarousel images={service.images} />
           </div>
-          {/* service details */}
-          <div className="shadow-md p-2">
-            <div className="">
-              <p className="text-[25px]">Description</p>
-              <p>"{service.description}"</p>
-            </div>
-            <Divider />
-            <div>
-              <p className="text-[25px]">Details</p>
-              {/* Experience */}
-              <div className="flex flex-col gap-3">
-                {/* Experience */}
-                <table className="w-full border-collapse border border-gray-300">
-                  <tbody>
-                    {/* Experience Row */}
-                    <tr>
-                      <td className="border border-gray-300 p-2 font-bold">
-                        Experience{" "}
-                        <span className="italic font-normal">(in years):</span>
-                      </td>
 
-                      <td className="border border-gray-300 p-2">
-                        {service.experience}
-                      </td>
-                    </tr>
+          {/* Description Card */}
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-3">
+              Description
+            </h2>
+            <p className="text-gray-600 italic leading-relaxed">
+              "{service.description}"
+            </p>
+          </div>
 
-                    {/* Availability */}
-                    <tr>
-                      <td className="border border-gray-300 p-2 font-bold">
-                        Availability
-                      </td>
-                      <td className="border border-gray-300 p-2">
-                        {service.availability.map((avl, i) => (
-                          <div className="flex gap-1" key={i}>
-                            <p className="m-0 w-[100px]">{avl.day}</p>
-                            <p className="m-0">{avl.startTime}</p>
-                            <p className="m-0">to</p>
-                            <p className="m-0">{avl.endTime}</p>
-                          </div>
-                        ))}
-                      </td>
-                    </tr>
+          {/* Details Card */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+              Details
+            </h2>
 
-                    {/* Skills */}
-                    <tr>
-                      <td className="border border-gray-300 p-2 font-bold">
-                        Skills
-                      </td>
-                      <td className="border border-gray-300 p-2">
-                        <div className="flex gap-1 items-center flex-wrap">
-                          {service.skills.map((skill, i) => (
-                            <span
-                              key={i}
-                              className="m-0 border shadow-md p-1 rounded bg-gray-100"
-                            >
-                              {skill}
-                            </span>
-                          ))}
-                          <span className="m-0 border shadow-md p-1 rounded bg-gray-100">
-                            test
+            <div className="overflow-hidden rounded-lg border border-gray-200">
+              <table className="w-full border-collapse">
+                <tbody>
+                  {/* Experience Row */}
+                  <tr className="bg-gray-50">
+                    <td className="p-4 font-medium text-gray-700 w-1/3">
+                      Experience{" "}
+                      <span className="italic font-normal text-sm">
+                        (in years)
+                      </span>
+                    </td>
+                    <td className="p-4 text-gray-800">{service.experience}</td>
+                  </tr>
+
+                  {/* Availability Row */}
+                  <tr>
+                    <td className="p-4 font-medium text-gray-700 w-1/3 border-t border-gray-200">
+                      Availability
+                    </td>
+                    <td className="p-4 text-gray-800 border-t border-gray-200">
+                      {service.availability.map((avl, i) => (
+                        <div
+                          className="flex flex-wrap items-center gap-2 mb-2"
+                          key={i}
+                        >
+                          <span className="font-medium text-gray-800 min-w-[100px]">
+                            {avl.day}:
+                          </span>
+                          <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm">
+                            {avl.startTime} to {avl.endTime}
                           </span>
                         </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+                      ))}
+                    </td>
+                  </tr>
+
+                  {/* Skills Row */}
+                  <tr className="bg-gray-50">
+                    <td className="p-4 font-medium text-gray-700 w-1/3 border-t border-gray-200">
+                      Skills
+                    </td>
+                    <td className="p-4 border-t border-gray-200">
+                      <div className="flex gap-2 items-center flex-wrap">
+                        {service.skills.map((skill, i) => (
+                          <Tag
+                            key={i}
+                            className="px-3 py-1 text-sm"
+                            color="blue"
+                          >
+                            {skill}
+                          </Tag>
+                        ))}
+                        <Tag className="px-3 py-1 text-sm" color="blue">
+                          test
+                        </Tag>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
 
-        {/* Service Details */}
-        <div className=" lg:w-1/4">
-          <div className="shadow-md p-2">
-            <p className="text-[25px] m-0">{service.serviceName}</p>
-            <p className="m-0">
-              Rate: ₹{service.priceRange.minimum} - ₹
-              {service.priceRange.maximum}
-            </p>
-            {/* Posted Time */}
-            <p className="text-[13px] m-0">
+        {/* Right Column - Service Info and Actions */}
+        <div className="lg:w-1/4 flex flex-col gap-6">
+          {/* Service Info Card */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">
+              {service.serviceName}
+            </h1>
+
+            <div className="p-3 bg-blue-50 rounded-lg mb-3">
+              <p className="text-lg font-medium text-gray-700 mb-1">Pricing</p>
+              <p className="text-xl font-semibold text-blue-700">
+                ₹{service.priceRange.minimum} - ₹{service.priceRange.maximum}
+              </p>
+            </div>
+
+            <div className="text-sm text-gray-500">
+              Posted{" "}
               {service.createdAt
                 ? formatDistanceToNow(new Date(service.createdAt), {
                     addSuffix: true,
                   })
                 : "N/A"}
-            </p>
+            </div>
           </div>
-          <div className="shadow-md p-2 flex flex-row md:flex-col">
+
+          {/* Action Buttons */}
+          <div className="bg-white rounded-lg shadow-md p-6">
             <button
               type="button"
-              className="text-black flex bg-white 
-              border border-gray-300  hover:bg-gray-100 
-              font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 
-              dark:bg-gray-800 dark:text-yellow-400 
-              dark:border-gray-600 dark:hover:bg-gray-700 
-              dark:hover:border-gray-600 dark:focus:ring-gray-700 
-              hover:shadow-md"
-              // onClick={() =>
-              //   navigate(
-              //     `/accounts/my-service-menu/my-services/details/edit-service/${service._id}`
-              //   )
-              // }
+              className="w-full mb-3 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg px-5 py-3 transition-colors"
               onClick={() => navigate(`edit-service`)}
             >
-              <Edit />
-              Edit
+              <Edit size={18} />
+              Edit Service
             </button>
 
             <button
               type="button"
-              className="flex items-center text-red-700 hover:text-white border border-red-700 hover:bg-red-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
+              className="w-full flex items-center justify-center gap-2 bg-white hover:bg-red-50 text-red-600 border border-red-600 font-medium rounded-lg px-5 py-3 transition-colors"
               onClick={() => setModal2Open(true)}
             >
               <DeleteFilled />
-              Remove
+              Remove Service
             </button>
           </div>
-          <div>
-            <iframe
-              width="100%"
-              height="250"
-              style={{ border: 0 }}
-              referrerPolicy="no-referrer-when-downgrade"
-              src={`https://maps.google.com/maps?q=${service.location.coordinates[1]}, ${service.location.coordinates[0]}&z=15&output=embed`}
-              allowFullScreen
-            ></iframe>
+
+          {/* Map Card */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <MapPin size={18} className="text-gray-700" />
+              <h3 className="text-lg font-medium text-gray-800 m-0">
+                Location
+              </h3>
+            </div>
+            <div className="rounded-lg overflow-hidden">
+              <iframe
+                width="100%"
+                height="250"
+                style={{ border: 0 }}
+                referrerPolicy="no-referrer-when-downgrade"
+                src={`https://maps.google.com/maps?q=${service.location.coordinates[1]}, ${service.location.coordinates[0]}&z=15&output=embed`}
+                allowFullScreen
+              ></iframe>
+            </div>
           </div>
         </div>
       </div>
-      {/* reviews */}
-      <div className="mt-2">
+
+      {/* Reviews Section */}
+      <div className="mt-6 bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Reviews</h2>
         <ReviewsMain
           serviceId={serviceId}
           averageRating={service.averageRating}
         />
       </div>
+
+      {/* Delete Confirmation Modal */}
       <Modal
         centered
         open={modal2Open}
-        // onOk={() => setModal2Open(false)}
         onOk={handleDelete}
         onCancel={() => setModal2Open(false)}
-        okButtonProps={{ loading: isServiceDeleting }}
+        okButtonProps={{
+          loading: isServiceDeleting,
+          danger: true,
+        }}
+        okText="Delete"
+        title="Confirm Deletion"
+        width={400}
       >
-        <h4 className="text-center">Confirm Delete</h4>
-        <p className="m-0">Are you sure you want to remove this service</p>
-        <p>You cannot undo this process</p>
+        <div className="py-4 text-center">
+          <DeleteFilled className="text-red-500 text-4xl mb-3" />
+          <h4 className="text-lg font-medium mb-3">Delete Service</h4>
+          <p className="text-gray-600 mb-1">
+            Are you sure you want to remove this service?
+          </p>
+          <p className="text-red-500 text-sm">This action cannot be undone.</p>
+        </div>
       </Modal>
     </div>
   );

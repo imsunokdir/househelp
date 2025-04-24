@@ -84,7 +84,6 @@ const Service = () => {
         const response = await fetchServiceById(serviceId);
         if (response.status === 200) {
           setService(response.data.data);
-          // console.log("Service:", service);
         }
       } catch (error) {
         console.log("error", error);
@@ -93,9 +92,7 @@ const Service = () => {
       }
     };
     fetchService();
-    // loadTotalReviews();
     loadRatingDistribution();
-    // getAverageRating();
   }, []);
 
   useEffect(() => {
@@ -105,6 +102,7 @@ const Service = () => {
       console.error("there was an error in updating the service views");
     }
   }, [serviceId]);
+
   const truncateDescription = (text, wordLimit) => {
     const words = text.split(" ");
     return words.length > wordLimit
@@ -117,23 +115,35 @@ const Service = () => {
   };
 
   return serviceLoading ? (
-    <LoadBalls />
+    <div className="flex justify-center items-center min-h-screen">
+      <LoadBalls />
+    </div>
   ) : (
     service && (
-      <div className="bg-white flex flex-col">
-        <div className="mx-1 md:mx-4 mt-2  bg-white rounded p-2">
-          <ServiceAndUser
-            service={service}
-            handleClickOpen={handleClickOpen}
-            handleGiveReview={handleGiveReview}
-            noprofile={noprofile}
-          />
-          <div className=" h-1/2 p-2 rounded shadow-sm">
-            <h2>About my work</h2>
-            <p>"{service.description}"</p>
+      <div className="bg-gray-50 min-h-screen">
+        <div className="max-w-6xl mx-auto p-4">
+          <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+            <ServiceAndUser
+              service={service}
+              handleClickOpen={handleClickOpen}
+              handleGiveReview={handleGiveReview}
+              noprofile={noprofile}
+            />
+
+            <div className="p-6 border-t border-gray-100">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-3">
+                About my work
+              </h2>
+              <p className="text-gray-600 italic leading-relaxed bg-gray-50 p-4 rounded-lg">
+                "{service.description}"
+              </p>
+            </div>
           </div>
 
-          <div className="w-full mt-2 p-2 rounded shadow-md">
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+              Service Gallery
+            </h2>
             <ImageCarousel service={service} />
           </div>
         </div>

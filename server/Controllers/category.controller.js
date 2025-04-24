@@ -40,6 +40,7 @@ const createCategory = async (req, res) => {
 };
 
 const getAllCategories = async (req, res) => {
+  console.log("get catt catt catt **************************************");
   try {
     const categories = await Category.find({});
     // console.log("Category:", categories)
