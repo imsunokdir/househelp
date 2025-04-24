@@ -35,6 +35,7 @@ import AddService from "./components/services/AddService";
 import TrackUserActivity from "./middlewares/TrackUserActivity";
 import AddService2 from "./components/services/AddService2";
 import EmailIfThere from "./components/auth/EmailIfThere";
+import SkeletonLoad from "./components/LoadingSkeleton/SkeletonLoad";
 
 const App = () => {
   return (
@@ -101,6 +102,7 @@ const App = () => {
               <Route path="/success" element={<Success />} />
               <Route path="/test-login" element={<DummyLogin />} />
               <Route path="/test-skeleton" element={<SkeletonCard2 />} />
+              <Route path="/test-skeleton-load" element={<SkeletonLoad />} />
             </Routes>
           </div>
         </BrowserRouter>

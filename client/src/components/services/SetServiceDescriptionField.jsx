@@ -5,7 +5,7 @@ const SetServiceDescriptionField = (params) => {
   const { formData, handleInputChange } = params;
 
   return (
-    <div className="bg-white p-5 rounded-xl shadow-md border border-gray-100">
+    <div className="bg-white p-2 rounded-xl shadow-md border border-gray-100">
       <div className="flex items-center space-x-2 mb-3">
         <AlignLeft className="h-4 w-4 text-blue-600" />
         <label

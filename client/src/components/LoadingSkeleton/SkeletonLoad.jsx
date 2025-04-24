@@ -25,10 +25,25 @@ const SkeletonLoad = () => {
       <div className="flex gap-10 mt-1">
         <Skeleton.Input active size="default" block={false} />
         <Skeleton.Input active size="default" block={false} />
+        {/* <Skeleton.Input active size="default" block={false} /> */}
+      </div>
+      <Skeleton.Input active size="default" block={true} />
+      {/* <Skeleton active /> */}
+      <div className="flex gap-10 mt-1">
+        <Skeleton.Input active size="default" block={false} />
+        <Skeleton.Input active size="default" block={false} />
+      </div>
+      <div className="flex gap-10 mt-1">
+        <Skeleton.Input active size="default" block={false} />
         <Skeleton.Input active size="default" block={false} />
       </div>
       <Skeleton.Input active size="default" block={true} />
-      <Skeleton active />
+      <Skeleton.Input active size="default" block={true} />
+
+      <div className="flex gap-10 mt-1">
+        <Skeleton.Input active size="default" block={false} />
+        <Skeleton.Input active size="default" block={false} />
+      </div>
     </div>
   );
 };
