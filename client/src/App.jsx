@@ -34,7 +34,7 @@ import SkeletonCard2 from "./components/LoadingSkeleton/SkeletonCards2";
 import AddService from "./components/services/AddService";
 import TrackUserActivity from "./middlewares/TrackUserActivity";
 import AddService2 from "./components/services/AddService2";
-import EmailIfThere from "./components/auth/emailIfThere";
+import EmailIfThere from "./components/auth/EmailIfThere";
 
 const App = () => {
   return (

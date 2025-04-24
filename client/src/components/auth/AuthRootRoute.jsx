@@ -4,7 +4,6 @@ import Register from "./Register";
 import LoginForm from "./LoginForm";
 import ForgotPassword from "./ForgotPassword";
 import ScrollToTop from "../../utils/ScrollToTop";
-import EmailIfThere from "./emailIfThere";
 
 const AuthRootRoute = () => {
   useEffect(() => {
@@ -25,7 +24,6 @@ const AuthRootRoute = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          {/* <Route path="/email/if-there" element={<EmailIfThere />} /> */}
         </Routes>
       </div>
     </div>
