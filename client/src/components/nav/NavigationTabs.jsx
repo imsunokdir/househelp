@@ -47,7 +47,7 @@ const NavigationTabs = () => {
     // window.scrollTo({ top: 0, behavior: "auto" });
     const categoryId = event.target.getAttribute("data-id");
     setValue(newValue);
-    // dispatch(categoryActions.changeCategory(categoryId));
+    dispatch(categoryActions.changeCategory(categoryId));
     sessionStorage.setItem("selectedCategoryId", categoryId);
     sessionStorage.setItem("selectedTabIndex", newValue);
   };

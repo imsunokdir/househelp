@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import {
   Dialog,
   IconButton,
@@ -25,8 +25,8 @@ import { fetchServiceByCategoryThunk } from "../../reducers/thunks/servicesThunk
 import { CategoryContext } from "../../contexts/CategoryProvider";
 import { getFilteredCount } from "../../services/service";
 import { getDefaultFilters } from "../../utils/filterUtils";
-import dualball from "../../assets/dualball.svg";
 import { LoadingOutlined } from "@ant-design/icons";
+
 // Transition for dialog
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -45,15 +45,17 @@ const Filter = () => {
 
   // Context
   const { userLocation } = useContext(AuthContext);
-  const abortController = React.useRef(null);
+  const abortController = useRef(null);
 
   // Local state
   const [open, setOpen] = useState(false);
-  // const [currCategory, setCurrCategory] = useState(null);
   const [sessionFilters, setSessionFilters] = useState(null);
   const [countLoading, setCountLoading] = useState(false);
   const [serviceCount, setServiceCount] = useState(0);
   const [localFilters, setLocalFilters] = useState(getDefaultFilters());
+
+  // Ripple state
+  const [showRipple, setShowRipple] = useState(false);
 
   useEffect(() => {
     const stored = sessionStorage.getItem("submittedFilters");
@@ -67,22 +69,6 @@ const Filter = () => {
 
   const page = 1;
 
-  // useEffect(() => {
-  //   const cat = allCategories.find((category) => category._id === categoryId);
-  //   setCurrCategory(cat);
-  // }, [categoryId, allCategories]);
-
-  // const resetFilters = React.useCallback(() => {
-  //   console.log("reset Fil");
-  //   // if (filterCount > 0) {
-  //   setLocalFilters({
-  //     priceRange: { ...filterData.priceRange },
-  //     rating: filterData.rating,
-  //     experience: filterData.experience,
-  //   });
-  //   // }
-  // }, [localFilters, filterData]);
-
   const resetFilters = () => {
     const stored = sessionStorage.getItem("submittedFilters");
     if (stored) {
@@ -90,34 +76,29 @@ const Filter = () => {
     }
   };
 
-  // const handleClickOpen = () => {
-  //   // resetFilters();
-  //   setOpen((prev) => !prev);
-  // };
   const handleClickOpen = React.useCallback(() => {
     setOpen((prev) => !prev);
-  }, [open]);
+  }, []);
 
   const handleClose = React.useCallback(() => {
-    console.log("close");
     resetFilters();
     setOpen(false);
-  }, [open]);
-  // Clear filter
+  }, []);
+
   const handleFilterClear = () => {
     setLocalFilters(getDefaultFilters());
+    setShowRipple(true);
+    setTimeout(() => {
+      setShowRipple(false);
+    }, 500); // Ripple lasts 500ms
   };
 
-  // Apply filter
   const handleFilterSubmit = () => {
     window.scrollTo({ top: 0, behavior: "instant" });
-    // handleClose();
     dispatch(serviceActions.clearServices());
-    // sessionStorage.setItem("sessionFilters", JSON.stringify(localFilters));
     sessionStorage.setItem("submittedFilters", JSON.stringify(localFilters));
     dispatch(filterActions.setAllFilters(localFilters));
     dispatch(filterActions.setIsFilterApplied());
-    // resetFilters();
     handleClose();
 
     dispatch(
@@ -133,14 +114,10 @@ const Filter = () => {
   const cancelPreviousRequest = React.useCallback(() => {
     if (abortController.current) {
       abortController.current.abort();
-      // console.log("Previous request canceled due to category change.");
-      // console.log("✅ Canceling request for previous category:", categoryId);
     }
     abortController.current = new AbortController();
     return abortController.current.signal;
   }, []);
-
-  let cnt = 0;
 
   const getCount = async () => {
     setCountLoading(true);
@@ -175,24 +152,19 @@ const Filter = () => {
   };
 
   useEffect(() => {
-    // sessionStorage.setItem("localFilters", JSON.stringify(localFilters));
     const { coordinates } = userLocation || {};
     if (categoryId && coordinates) {
-      // getCount();
       setCountLoading(true);
-
       getCount();
     }
   }, [localFilters, categoryId, userLocation]);
 
   useEffect(() => {
     if (open) {
-      window.history.pushState({ modal: true }, ""); // Push state when modal opens
+      window.history.pushState({ modal: true }, "");
 
-      const handlePopState = (event) => {
+      const handlePopState = () => {
         if (open) {
-          // resetFilters();
-          // setOpen(false); // Close the modal
           handleClose();
         }
       };
@@ -203,7 +175,7 @@ const Filter = () => {
         window.removeEventListener("popstate", handlePopState);
       };
     }
-  }, [open]);
+  }, [open, handleClose]);
 
   return (
     <div className="w-3/12 flex justify-center">
@@ -234,10 +206,17 @@ const Filter = () => {
             display: "flex",
             flexDirection: "column",
             height: "100%",
+            overflow: "hidden", // Important for ripple
+            position: "relative",
           },
         }}
         className="relative"
       >
+        {/* Ripple Overlay */}
+        {showRipple && (
+          <span className="absolute top-0 left-0 w-full h-full bg-blue-100 animate-ripple z-10" />
+        )}
+
         <Toolbar>
           <IconButton
             edge="start"
@@ -250,7 +229,7 @@ const Filter = () => {
         </Toolbar>
 
         {/* Filter components */}
-        <div className="flex-grow p-5 overflow-y-auto">
+        <div className="flex-grow p-5 overflow-y-auto relative z-20">
           <PriceSlider
             localFilters={localFilters}
             setLocalFilters={setLocalFilters}
@@ -268,16 +247,12 @@ const Filter = () => {
         </div>
 
         {/* Footer */}
-        <div className="absolute bottom-0 left-0 w-full p-4 border-t flex items-center justify-between bg-white">
+        <div className="absolute bottom-0 left-0 w-full p-4 border-t flex items-center justify-between bg-white z-20">
           <button
             className="m-0 p-1 hover:bg-gray-100 rounded cursor-pointer"
             onClick={handleFilterClear}
           >
             Clear all
-            {/* <img
-              src={dualball}
-              style={{ height: "25px", backgroundColor: "red" }}
-            /> */}
           </button>
           <Button
             variant="contained"
@@ -302,6 +277,19 @@ const Filter = () => {
           </Button>
         </div>
       </Dialog>
+
+      {/* Tailwind animation */}
+      <style>
+        {`
+          @keyframes rippleAnimation {
+            0% { opacity: 0.4; transform: scale(0); }
+            100% { opacity: 0; transform: scale(2); }
+          }
+          .animate-ripple {
+            animation: rippleAnimation 0.5s ease-out forwards;
+          }
+        `}
+      </style>
     </div>
   );
 };
