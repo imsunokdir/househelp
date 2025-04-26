@@ -36,6 +36,7 @@ import TrackUserActivity from "./middlewares/TrackUserActivity";
 import AddService2 from "./components/services/AddService2";
 import EmailIfThere from "./components/auth/EmailIfThere";
 import SkeletonLoad from "./components/LoadingSkeleton/SkeletonLoad";
+import Services2 from "./pages/Services2";
 
 const App = () => {
   return (
@@ -47,7 +48,7 @@ const App = () => {
           <div className="min-h-screen pb-16 sm:pb-0">
             <Routes>
               {/* root route */}
-              <Route path="/" element={<Home />} />
+              <Route path="/*" element={<Home />} />
               {/* protected routes */}
               <Route element={<ProtectedRoutes />}>
                 <Route path="/accounts/*" element={<Accounts />} />

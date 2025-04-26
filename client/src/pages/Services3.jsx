@@ -27,10 +27,10 @@ import ScrollToTop from "../utils/ScrollToTop";
 import axios from "axios";
 import { CategoryContext } from "../contexts/CategoryProvider";
 import ScrollServiceToTop from "../utils/ScrollServiceToTop";
-import { useLocation, useNavigationType } from "react-router-dom";
+import { useLocation, useNavigationType, useParams } from "react-router-dom";
 import useScrollSaver from "../hooks/useScrollSaver";
 
-const Services2 = () => {
+const Services3 = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const { userLocation, setUserLocation } = useContext(AuthContext);
@@ -47,8 +47,12 @@ const Services2 = () => {
   const scrollRestoredRef = useRef(false);
   const navigationTypeRef = useRef("new");
   const navigationType = useNavigationType();
+  const params = useParams();
 
-  const { categoryId } = useSelector((store) => store.category);
+  // const { categoryId } = useSelector((store) => store.category);
+  // let categoryId;
+  const [categoryId, setCategoryId] = useState();
+
   const filterData = useSelector((state) => state.filter);
   const page = useSelector((state) =>
     getCurrentPageByCategory(state, categoryId)
@@ -97,6 +101,17 @@ const Services2 = () => {
   // }, [categoryId]);
 
   // Track if we're coming from the back button
+  // console.log("category_id:", categoryId);
+
+  useEffect(() => {
+    if (!categories || categories.length === 0) return;
+
+    if (location.pathname === "/") {
+      setCategoryId(categories[0]._id);
+    } else {
+      setCategoryId(params.categoryId);
+    }
+  }, [location, categories, categoryId]);
 
   useEffect(() => {
     // console.log("Cid:", typeof categoryId);
@@ -111,7 +126,7 @@ const Services2 = () => {
       window.scrollTo({ top: 0, behavior: "auto" });
       scrollRestoredRef.current = true; // Prevent scroll restore
     }
-  }, [categoryId]);
+  }, [categoryId, navigationType]);
 
   useEffect(() => {
     if (categoryId && userLocation.coordinates[0] && hasMore && !services) {
@@ -326,4 +341,4 @@ const Services2 = () => {
   );
 };
 
-export default Services2;
+export default Services3;

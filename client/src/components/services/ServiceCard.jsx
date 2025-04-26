@@ -28,7 +28,15 @@ const ServiceCard = ({ service, index, delay }) => {
   }, [visible, imageLoaded]);
 
   const handleClick = () => {
-    // window.open(`/show-service-details/${service._id}`);
+    // Save the current scroll position with the category ID from Redux store
+    const categoryId = service.categoryId; // Assuming you have access to categoryId
+    // localStorage.setItem(
+    //   `scrollPositionForServices-${categoryId}`,
+    //   window.scrollY.toString()
+    // );
+
+    console.log(" window.scrollY.toString():", window.scrollY.toString());
+
     navigate(`/show-service-details/${service._id}`);
   };
 

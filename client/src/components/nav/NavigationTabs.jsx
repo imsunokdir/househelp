@@ -3,7 +3,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import "./nav.css";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Skeleton } from "antd";
 import { Fade } from "@mui/material";
@@ -13,16 +13,41 @@ import { CategoryContext } from "../../contexts/CategoryProvider";
 const numberOfNavTabs = new Array(10).fill(null);
 
 const NavigationTabs = () => {
-  const { categories, catLoading, value, setValue } =
+  const { categories, catLoading, value, setValue, currCat } =
     useContext(CategoryContext);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // useEffect(() => {
+  //   if (currCat && categories) {
+  //     navigate(`/services/${currCat}`);
+  //   }
+  // }, [currCat, categories]);
+
+  useEffect(() => {
+    if (categories && categories.length > 0) {
+      if (location.pathname === "/") {
+        setValue(0); // or setValue to index of the default category if needed
+      } else {
+        const pathParts = location.pathname.split("/");
+        const currentCategoryId = pathParts[pathParts.length - 1];
+
+        const tabIndex = categories.findIndex(
+          (cat) => cat._id === currentCategoryId
+        );
+        if (tabIndex !== -1) {
+          setValue(tabIndex);
+        }
+      }
+    }
+  }, [location, categories, setValue]);
 
   const handleChange = (event, newValue) => {
+    // window.scrollTo({ top: 0, behavior: "auto" });
     const categoryId = event.target.getAttribute("data-id");
     setValue(newValue);
-
-    dispatch(categoryActions.changeCategory(categoryId));
+    // dispatch(categoryActions.changeCategory(categoryId));
     sessionStorage.setItem("selectedCategoryId", categoryId);
     sessionStorage.setItem("selectedTabIndex", newValue);
   };
@@ -78,7 +103,14 @@ const NavigationTabs = () => {
                     label={category.name}
                     data-id={category._id}
                     key={category._id}
-                    onClick={() => navigate("/")}
+                    onClick={() => {
+                      if (
+                        value !==
+                        categories.findIndex((cat) => cat._id === category._id)
+                      ) {
+                        navigate(`/services/${category._id}`);
+                      }
+                    }}
                     sx={{
                       minWidth: "auto",
                       paddingX: { xs: 1, sm: 2 },
@@ -94,6 +126,7 @@ const NavigationTabs = () => {
                         borderBottom: "2px solid rgba(25, 118, 210, 0.6)",
                       },
                     }}
+                    onTouchStart={(e) => e.target.blur()}
                   />
                 ))}
               </Tabs>

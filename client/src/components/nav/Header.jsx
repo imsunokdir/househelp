@@ -20,7 +20,11 @@ const Header = () => {
     <>
       <header className="main-header sticky top-0 w-full flex justify-between items-center py-2 bg-gray-100">
         <div className="flex gap-2 p-1 w-full items-center justify-between sm:justify-start">
-          <Link to="/" className="ml-2 ">
+          <Link
+            to="/"
+            className="ml-2 "
+            onClick={() => window.scrollTo({ top: 0, behavior: "auto" })}
+          >
             <Fade in={isLoaded} timeout={1000}>
               <div className="w-[50px] h-[50px]">
                 <div

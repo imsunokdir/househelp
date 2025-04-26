@@ -84,6 +84,24 @@ const Service = () => {
     }
   }, [open]);
 
+  useEffect(() => {
+    if (previewOpen) {
+      window.history.pushState({ previewModal: true }, ""); // Push state for preview modal
+
+      const handlePopState = (event) => {
+        if (previewOpen) {
+          setPreviewOpen(false); // Close preview modal on back
+        }
+      };
+
+      window.addEventListener("popstate", handlePopState);
+
+      return () => {
+        window.removeEventListener("popstate", handlePopState);
+      };
+    }
+  }, [previewOpen]);
+
   const loadRatingDistribution = async () => {
     try {
       const response = await getRatingDistribution(serviceId);

@@ -3,6 +3,7 @@ import { createContext } from "react";
 import { getAllCategories } from "../services/category";
 import { useDispatch } from "react-redux";
 import { categoryActions } from "../reducers/category";
+import { useNavigate } from "react-router-dom";
 
 const CategoryContext = createContext(null);
 
@@ -11,6 +12,8 @@ const CategoryProvider = ({ children }) => {
   const [catLoading, setCatLoading] = useState(true);
   const dispatch = useDispatch();
   const [value, setValue] = useState(0);
+  // const navigate = useNavigate();
+  const [currCat, setCurrCat] = useState();
 
   const fetchCategories = async () => {
     try {
@@ -25,12 +28,16 @@ const CategoryProvider = ({ children }) => {
           );
           setCatLoading(false);
           // Set initial value and categoryId to the first category
-
+          setCurrCat(fetchedCategories[0]._id);
+          console.log("fetched curr cat:", fetchedCategories[0]._id);
           dispatch(categoryActions.changeCategory(fetchedCategories[0]._id));
+
           sessionStorage.setItem(
             "selectedCategoryId",
             fetchedCategories[0]._id
           );
+          // navigate(`/services/${fetchedCategories[0]._id}`);
+          setCurrCat(fetchedCategories[0]._id);
         }
         //   else {
         //     functions.warning("No categories found..!!");
@@ -58,7 +65,7 @@ const CategoryProvider = ({ children }) => {
   }, []);
   return (
     <CategoryContext.Provider
-      value={{ categories, catLoading, value, setValue }}
+      value={{ categories, catLoading, value, setValue, currCat }}
     >
       {children}
     </CategoryContext.Provider>

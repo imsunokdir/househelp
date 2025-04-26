@@ -5,7 +5,9 @@ import Filter from "../components/Filters/Filter";
 import Services from "./Services";
 import Search from "../components/forms/Search";
 import Services2 from "./Services2";
+import Services3 from "./Services3";
 import { AuthContext } from "../contexts/AuthProvider";
+import { Route, Routes } from "react-router-dom";
 
 const Home = () => {
   return (
@@ -18,7 +20,12 @@ const Home = () => {
       </div>
 
       {/* <Services /> */}
-      <Services2 />
+
+      <Routes>
+        <Route path="/services/:categoryId" element={<Services3 />} />
+        <Route path="/" element={<Services3 />} />
+      </Routes>
+      {/* <Services2 /> */}
       <div className="bg-white-200 h-[400px]"></div>
     </>
   );
