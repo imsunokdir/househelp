@@ -87,8 +87,8 @@ const NavigationTabs = () => {
                       // size="large"
                       style={{
                         height: "25px",
-                        width: "85px",
-                        animationDuration: "3s",
+                        width: "80px",
+                        animationDuration: "5s",
                       }}
                     />
                   }
