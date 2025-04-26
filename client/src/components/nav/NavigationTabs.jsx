@@ -80,7 +80,26 @@ const NavigationTabs = () => {
               aria-label="scrollable auto tabs example"
             >
               {numberOfNavTabs.map((_, i) => (
-                <Tab label={<Skeleton.Input active size="small" />} key={i} />
+                <Tab
+                  label={
+                    <Skeleton.Button
+                      active
+                      // size="large"
+                      style={{
+                        height: "25px",
+                        width: "85px",
+                        animationDuration: "3s",
+                      }}
+                    />
+                  }
+                  key={i}
+                  sx={{
+                    minWidth: "auto",
+                    paddingX: { xs: 1, sm: 2 },
+                    fontSize: { xs: "12px", sm: "14px" },
+                    marginX: { xs: 0.5, sm: 1 },
+                  }}
+                />
               ))}
             </Tabs>
           ) : (
