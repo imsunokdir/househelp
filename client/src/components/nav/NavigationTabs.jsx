@@ -9,6 +9,7 @@ import { Skeleton } from "antd";
 import { Fade } from "@mui/material";
 import { categoryActions } from "../../reducers/category";
 import { CategoryContext } from "../../contexts/CategoryProvider";
+import { useSearchParams } from "react-router-dom";
 
 const numberOfNavTabs = new Array(10).fill(null);
 
@@ -25,23 +26,24 @@ const NavigationTabs = () => {
   //   }
   // }, [currCat, categories]);
 
+  // Inside component
+  const [searchParams] = useSearchParams();
+
   useEffect(() => {
     if (categories && categories.length > 0) {
-      if (location.pathname === "/") {
-        setValue(0); // or setValue to index of the default category if needed
-      } else {
-        const pathParts = location.pathname.split("/");
-        const currentCategoryId = pathParts[pathParts.length - 1];
+      const currentCategoryId = searchParams.get("tab");
 
-        const tabIndex = categories.findIndex(
-          (cat) => cat._id === currentCategoryId
-        );
-        if (tabIndex !== -1) {
-          setValue(tabIndex);
-        }
+      const tabIndex = categories.findIndex(
+        (cat) => cat._id === currentCategoryId
+      );
+
+      if (tabIndex !== -1) {
+        setValue(tabIndex);
+      } else {
+        setValue(0); // Fallback to first tab if invalid or missing
       }
     }
-  }, [location, categories, setValue]);
+  }, [searchParams, categories, setValue]);
 
   const handleChange = (event, newValue) => {
     // window.scrollTo({ top: 0, behavior: "auto" });
@@ -127,7 +129,8 @@ const NavigationTabs = () => {
                         value !==
                         categories.findIndex((cat) => cat._id === category._id)
                       ) {
-                        navigate(`/services/${category._id}`);
+                        // navigate(`/services/${category._id}`);
+                        navigate(`/services?tab=${category._id}`);
                       }
                     }}
                     sx={{

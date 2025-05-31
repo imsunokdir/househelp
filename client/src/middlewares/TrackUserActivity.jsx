@@ -10,11 +10,11 @@ const TrackUserActivity = () => {
 
   useEffect(() => {
     if (!user) return;
-
+// will trigger at most once every 10 seconds
     const handleActivity = throttle(() => {
       console.log("event triggered");
       updateLastActive();
-    }, 10000); // will trigger at most once every 10 seconds
+    }, 10000); 
 
     const activityEvents = ["click", "scroll", "mousemove", "keydown"];
 

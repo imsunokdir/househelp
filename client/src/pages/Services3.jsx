@@ -7,6 +7,7 @@ import React, {
   useState,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useSearchParams } from "react-router-dom";
 import {
   getBatchesLoadedByCategory,
   getCurrentPageByCategory,
@@ -48,6 +49,8 @@ const Services3 = () => {
   const navigationTypeRef = useRef("new");
   const navigationType = useNavigationType();
   const params = useParams();
+  const [searchParams] = useSearchParams();
+  const currentCategoryId = searchParams.get("tab");
 
   // const { categoryId } = useSelector((store) => store.category);
   // let categoryId;
@@ -109,7 +112,7 @@ const Services3 = () => {
     if (location.pathname === "/") {
       setCategoryId(categories[0]._id);
     } else {
-      setCategoryId(params.categoryId);
+      setCategoryId(currentCategoryId);
     }
   }, [location, categories, categoryId]);
 

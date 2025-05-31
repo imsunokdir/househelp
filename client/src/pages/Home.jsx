@@ -22,7 +22,8 @@ const Home = () => {
       {/* <Services /> */}
 
       <Routes>
-        <Route path="/services/:categoryId" element={<Services3 />} />
+        {/* <Route path="/services/:categoryId" element={<Services3 />} /> */}
+        <Route path="/services" element={<Services3 />} />
         <Route path="/" element={<Services3 />} />
       </Routes>
       {/* <Services2 /> */}

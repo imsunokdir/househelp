@@ -19,7 +19,7 @@ const ProtectedRoutes = () => {
     );
   }
 
-  // If authenticated, render the protected routes
+  // If authenticated, render protected routes
   return <Outlet />;
 };
 
