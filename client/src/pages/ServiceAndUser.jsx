@@ -22,6 +22,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { checkSaveService, toggleSave } from "../services/service";
 import { AuthContext } from "../contexts/AuthProvider";
 import { Alert, Box, Snackbar } from "@mui/material";
+import MessageButton from "../components/chats/MessageButton";
 
 const ServiceAndUser = ({
   service,
@@ -71,7 +72,7 @@ const ServiceAndUser = ({
         setSnackbarMessage(
           res.data.isSaved
             ? "Service saved successfully!"
-            : "Service removed successfully!"
+            : "Service removed successfully!",
         );
         setSnackbarOpen(true);
       }
@@ -99,7 +100,7 @@ const ServiceAndUser = ({
                   service.createdBy?.avatar
                     ? service.createdBy.avatar.replace(
                         "/upload/",
-                        "/upload/f_auto,q_auto,w_550/"
+                        "/upload/f_auto,q_auto,w_550/",
                       )
                     : noprofile
                 }
@@ -216,6 +217,11 @@ const ServiceAndUser = ({
             </div>
           </div>
         </div>
+        <MessageButton
+          workerId={service.createdBy._id}
+          serviceId={service._id}
+          workerName={service.createdBy.username}
+        />
       </div>
     </div>
   );

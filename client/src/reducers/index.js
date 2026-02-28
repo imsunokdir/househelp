@@ -3,6 +3,7 @@ import categorySlice from "./category";
 import userSlice from "./user";
 import serviceSlice from "./service";
 import filterSlice from "./filter";
+import chatReducer from "./chatSlice";
 import { thunk } from "redux-thunk";
 
 const loggerMiddleware = (storeAPI) => (next) => (action) => {
@@ -17,6 +18,7 @@ const rootReducer = configureStore({
     user: userSlice.reducer,
     service: serviceSlice.reducer,
     filter: filterSlice.reducer,
+    chat: chatReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 });

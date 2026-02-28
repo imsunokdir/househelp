@@ -78,7 +78,7 @@ export const fetchServiceByCategory = async (
   longitude,
   latitude,
   filterData,
-  signal
+  signal,
 ) => {
   try {
     const response = await axiosInstance.post(
@@ -92,7 +92,7 @@ export const fetchServiceByCategory = async (
       },
       {
         signal,
-      }
+      },
     );
     return response;
   } catch (error) {
@@ -119,7 +119,7 @@ export const fetchFilteredServices = async (filterData) => {
   console.log("filter options:", filterOptions);
 
   const response = await axiosInstance.get(
-    `/service/filter-services/${categoryId}?longitude=${longitude}&latitude=${latitude}&filterOptions=${filterOptions}`
+    `/service/filter-services/${categoryId}?longitude=${longitude}&latitude=${latitude}&filterOptions=${filterOptions}`,
   );
 
   return response;
@@ -138,7 +138,7 @@ export const createService = async (formDataToSend) => {
 // export const updateService = async (formDataToSend) =>
 //   await axiosInstance.post(`/service/update-service`, formDataToSend);
 export const updateService2 = async (data) =>
-  await axiosInstance.post(`/service/update-service-2`, data);
+  await axiosInstance.post(`/service/update-service`, data);
 
 export const deleteService = async (serviceId) =>
   await axiosInstance.delete(`/service/delete-service/${serviceId}`);
@@ -193,7 +193,7 @@ export const getFilteredCount = async ({
       },
       {
         signal,
-      }
+      },
     );
     return response;
   } catch (error) {

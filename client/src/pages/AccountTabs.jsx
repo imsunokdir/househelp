@@ -45,9 +45,12 @@ const AccountTabs = () => {
           <p className="text-[25px]">Account Settings</p>
           <p className="">Manage your account</p>
         </div>
-        <div className="shadow-md p-2 rounded hover:shadow-lg cursor-pointer">
-          <p className="text-[25px]">Something</p>
-          <p className="">Not created</p>
+        <div
+          className="shadow-md p-2 rounded hover:shadow-lg cursor-pointer"
+          onClick={() => navigate("/accounts/dashboard")}
+        >
+          <p className="text-[25px]">Dashboard</p>
+          <p className="">View your stats and listings</p>
         </div>
 
         {/* Logout button for smaller screens */}

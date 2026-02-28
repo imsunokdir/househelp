@@ -8,12 +8,17 @@ import Services2 from "./Services2";
 import Services3 from "./Services3";
 import { AuthContext } from "../contexts/AuthProvider";
 import { Route, Routes } from "react-router-dom";
+import SearchBar from "../components/search/SearchBar";
 
 const Home = () => {
   return (
     <>
       {/* <Search /> */}
-      <div className="navigation sticky top-[55px] z-10 w-full   flex items-center  shadow-md bg-white">
+      {/* <div className="navigation sticky top-[55px] z-10 w-full   flex items-center  shadow-md bg-white"> */}
+      <div className="py-3 bg-white border-b border-gray-100">
+        <SearchBar />
+      </div>
+      <div className="navigation  top-[55px] w-full   flex items-center  shadow-md bg-white">
         <NavigationTabs />
         <Filter />
         {/* <FilterDialog /> */}

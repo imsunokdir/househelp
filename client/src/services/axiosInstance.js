@@ -13,7 +13,7 @@ axiosInstance.interceptors.response.use(
   (error) => {
     console.error("Axios Interceptor Error:", error.response || error.message);
     return Promise.reject(error);
-  }
+  },
 );
 
 export default axiosInstance;

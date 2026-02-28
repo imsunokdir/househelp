@@ -58,19 +58,19 @@ const Services3 = () => {
 
   const filterData = useSelector((state) => state.filter);
   const page = useSelector((state) =>
-    getCurrentPageByCategory(state, categoryId)
+    getCurrentPageByCategory(state, categoryId),
   );
   const hasMore = useSelector((state) =>
-    getHasMoreServicesByCategory(state, categoryId)
+    getHasMoreServicesByCategory(state, categoryId),
   );
 
   const serviceStatus = useSelector(getServiceStatus);
   const services = useSelector((state) =>
-    getServicesByCategory(state, categoryId)
+    getServicesByCategory(state, categoryId),
   );
 
   const batchesLoaded = useSelector((state) =>
-    getBatchesLoadedByCategory(state, categoryId)
+    getBatchesLoadedByCategory(state, categoryId),
   );
 
   const BATCH_SIZE = 10; // 10 services per batch
@@ -119,8 +119,8 @@ const Services3 = () => {
   useEffect(() => {
     // console.log("Cid:", typeof categoryId);
     if (!categoryId) return;
-    console.log("c_id 1:", categoryId);
-    console.log("nav type:", navigationType);
+    // console.log("c_id 1:", categoryId);
+    // console.log("nav type:", navigationType);
     if (navigationType === "POP") {
       navigationTypeRef.current = "back_forward";
     } else {
@@ -133,7 +133,7 @@ const Services3 = () => {
 
   useEffect(() => {
     if (categoryId && userLocation.coordinates[0] && hasMore && !services) {
-      console.log("first service load useEffect:", navigationTypeRef.current);
+      // console.log("first service load useEffect:", navigationTypeRef.current);
 
       setLoadingMore(true);
       scrollRestoredRef.current = false;
@@ -145,7 +145,7 @@ const Services3 = () => {
           userLocation,
           filterData,
           signal,
-        })
+        }),
       ).finally(() => {
         setLoadingMore(false);
       });
@@ -164,22 +164,22 @@ const Services3 = () => {
 
       let savedScrollPosition;
 
-      console.log("navigationTypeRef.current:", navigationTypeRef.current);
+      // console.log("navigationTypeRef.current:", navigationTypeRef.current);
 
       if (navigationTypeRef.current === "back_forward") {
         savedScrollPosition = sessionStorage.getItem(
-          `navScrollPosition-${categoryId}`
+          `navScrollPosition-${categoryId}`,
         );
-        console.log("Restoring from back navigation:", savedScrollPosition);
+        // console.log("Restoring from back navigation:", savedScrollPosition);
       } else {
         savedScrollPosition = localStorage.getItem(
-          `scrollPositionForServices-${categoryId}`
+          `scrollPositionForServices-${categoryId}`,
         );
         console.log("Restoring from refresh:", savedScrollPosition);
       }
 
       if (savedScrollPosition) {
-        console.log("if savedScrollPosition");
+        // console.log("if savedScrollPosition");
         const targetPosition = parseInt(savedScrollPosition);
 
         const waitForContentAndScroll = (target, attempts = 10) => {
@@ -191,7 +191,7 @@ const Services3 = () => {
           const pageHeight = document.body.scrollHeight;
 
           if (pageHeight > target) {
-            console.log("pageHeight>target");
+            // console.log("pageHeight>target");
             window.scrollTo({ top: target, behavior: "auto" });
             scrollRestoredRef.current = true;
           } else {
@@ -203,7 +203,7 @@ const Services3 = () => {
         };
 
         waitForContentAndScroll(targetPosition);
-        console.log("_______________________________");
+        // console.log("_______________________________");
       }
     }
   }, [services, categoryId]);
@@ -236,7 +236,7 @@ const Services3 = () => {
         userLocation,
         filterData,
         signal,
-      })
+      }),
     );
     setLoadingMore(false);
   };
@@ -259,12 +259,12 @@ const Services3 = () => {
         {
           root: null,
           rootMargin: "0px 0px -10%",
-        }
+        },
       );
 
       if (node) observer.current.observe(node);
     },
-    [hasMore, batchesLoaded, cancelPreviousRequest, categoryId]
+    [hasMore, batchesLoaded, cancelPreviousRequest, categoryId],
   );
 
   const handleLoadMore = () => {

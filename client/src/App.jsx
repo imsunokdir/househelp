@@ -1,17 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import Header from "./components/nav/Header";
 import Home from "./pages/Home";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
 import Service from "./pages/Service";
-
 import AppProvider from "./contexts/AppProvider";
 import AddServiceForm from "./components/services/AddServiceForm";
 import Test from "./Test";
 import EditService from "./components/services/EditService";
 import GiveReviewPage from "./components/review/GiveReviewPage";
 import GiveReviewSkeleton from "./components/LoadingSkeleton/GiveReviewSkeleton";
-// import Test2 from "./Test2/Test2";
 import Test2 from "./Test2/Test2";
 import Test3 from "./Test3/Test3";
 import Test4 from "./pages/Accounts";
@@ -38,79 +35,97 @@ import EmailIfThere from "./components/auth/EmailIfThere";
 import SkeletonLoad from "./components/LoadingSkeleton/SkeletonLoad";
 import Services2 from "./pages/Services2";
 import TestTabSkeleton from "./Test5/TestTabSkeleton";
+import ChatPanel from "./components/chats/ChatPanel";
+import { AuthContext } from "./contexts/AuthProvider";
+import SearchResults from "./pages/SearchResults";
 
-const App = () => {
+// ── Inner component — can access AuthContext since it's inside AppProvider ────
+const AppContent = () => {
+  const { user } = useContext(AuthContext);
+  const currentUserId = user?.userId;
+
   return (
     <>
-      <AppProvider>
-        <TrackUserActivity />
-        <BrowserRouter>
-          <Header />
-          <div className="min-h-screen pb-16 sm:pb-0">
-            <Routes>
-              {/* root route */}
-              <Route path="/*" element={<Home />} />
-              {/* protected routes */}
-              <Route element={<ProtectedRoutes />}>
-                <Route path="/accounts/*" element={<Accounts />} />
-                <Route
-                  path="/service-creation-success/:serviceId"
-                  element={<SuccessService />}
-                />
-                <Route path="/add-service" element={<AddService2 />} />
-                <Route
-                  path="/edit-service/:serviceId"
-                  element={<EditService />}
-                />
-                <Route
-                  path="/write-review/:serviceId"
-                  element={<GiveReviewPage />}
-                />
-              </Route>
-
-              {/* service routes */}
+      <TrackUserActivity />
+      <BrowserRouter>
+        <Header />
+        <div className="min-h-screen pb-16 sm:pb-0">
+          <Routes>
+            {/* root route */}
+            <Route path="/*" element={<Home />} />
+            <Route path="/search" element={<SearchResults />} />
+            {/* protected routes */}
+            <Route element={<ProtectedRoutes />}>
+              <Route path="/accounts/*" element={<Accounts />} />
               <Route
-                path="/show-service-details/:serviceId"
-                element={<Service />}
+                path="/service-creation-success/:serviceId"
+                element={<SuccessService />}
               />
-
-              {/* token related routes */}
+              <Route path="/add-service" element={<AddService2 />} />
               <Route
-                path="email-verification/:userId/:email"
-                element={<EmailVrfSent />}
+                path="/edit-service/:serviceId"
+                element={<EditService />}
               />
               <Route
-                path="reset-password/:verifiedToken"
-                element={<ResetPassword />}
+                path="/write-review/:serviceId"
+                element={<GiveReviewPage />}
               />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route
-                path="/email-verification-done/:verifiedToken"
-                element={<EmailVerified />}
-              />
+            </Route>
 
-              {/* user routes */}
-              <Route path="/user-auth/*" element={<AuthRootRoute />} />
-              <Route path="/email/if-there" element={<EmailIfThere />} />
+            {/* service routes */}
+            <Route
+              path="/show-service-details/:serviceId"
+              element={<Service />}
+            />
 
-              {/* test routes */}
-              <Route path="/test" element={<Test />} />
-              <Route path="/test2" element={<Test2 />} />
-              <Route path="/test3" element={<Test3 />} />
-              <Route path="/test4/*" element={<Test4 />} />
-              <Route path="/test5/*" element={<MyServiceCard />} />
-              <Route path="/load" element={<LoadBalls />} />
-              <Route path="/error" element={<Error />} />
-              <Route path="/success" element={<Success />} />
-              <Route path="/test-login" element={<DummyLogin />} />
-              <Route path="/test-skeleton" element={<SkeletonCard2 />} />
-              <Route path="/test-skeleton-load" element={<SkeletonLoad />} />
-              <Route path="/test-skeleton-tabs" element={<TestTabSkeleton />} />
-            </Routes>
-          </div>
-        </BrowserRouter>
-      </AppProvider>
+            {/* token related routes */}
+            <Route
+              path="email-verification/:userId/:email"
+              element={<EmailVrfSent />}
+            />
+            <Route
+              path="reset-password/:verifiedToken"
+              element={<ResetPassword />}
+            />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route
+              path="/email-verification-done/:verifiedToken"
+              element={<EmailVerified />}
+            />
+
+            {/* user routes */}
+            <Route path="/user-auth/*" element={<AuthRootRoute />} />
+            <Route path="/email/if-there" element={<EmailIfThere />} />
+
+            {/* test routes */}
+            <Route path="/test" element={<Test />} />
+            <Route path="/test2" element={<Test2 />} />
+            <Route path="/test3" element={<Test3 />} />
+            <Route path="/test4/*" element={<Test4 />} />
+            <Route path="/test5/*" element={<MyServiceCard />} />
+            <Route path="/load" element={<LoadBalls />} />
+            <Route path="/error" element={<Error />} />
+            <Route path="/success" element={<Success />} />
+            <Route path="/test-login" element={<DummyLogin />} />
+            <Route path="/test-skeleton" element={<SkeletonCard2 />} />
+            <Route path="/test-skeleton-load" element={<SkeletonLoad />} />
+            <Route path="/test-skeleton-tabs" element={<TestTabSkeleton />} />
+          </Routes>
+        </div>
+      </BrowserRouter>
+
+      {/* ChatPanel lives outside BrowserRouter but inside AuthContext */}
+      <ChatPanel currentUserId={currentUserId} />
     </>
+  );
+};
+
+// ── Root component ─────────────────────────────────────────────────────────────
+const App = () => {
+  return (
+    <AppProvider>
+      <AppContent />
+    </AppProvider>
   );
 };
 

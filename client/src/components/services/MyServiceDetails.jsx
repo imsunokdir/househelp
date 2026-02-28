@@ -9,6 +9,7 @@ import { DeleteFilled } from "@ant-design/icons";
 import { Button, Divider, message, Modal, Tag } from "antd";
 import { content } from "flowbite-react/tailwind";
 import ReviewsMain from "../review/ReviewsMain";
+import BoostCard from "./BoostCard";
 
 const MyServiceDetails = () => {
   const { serviceId } = useParams();
@@ -195,6 +196,7 @@ const MyServiceDetails = () => {
               Remove Service
             </button>
           </div>
+          <BoostCard service={service} onBoostUpdate={fetchService} />
 
           {/* Map Card */}
           <div className="bg-white rounded-lg shadow-md p-6">

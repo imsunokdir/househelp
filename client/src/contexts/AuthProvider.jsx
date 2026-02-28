@@ -68,7 +68,7 @@ const AuthProvider = ({ children }) => {
           const { latitude, longitude } = position.coords;
           try {
             const response = await fetch(
-              `https://api.opencagedata.com/geocode/v1/json?q=${latitude}%2C${longitude}&key=${mapApi}`
+              `https://api.opencagedata.com/geocode/v1/json?q=${latitude}%2C${longitude}&key=${mapApi}`,
             );
             if (response.ok) {
               const data = await response.json();
@@ -109,7 +109,7 @@ const AuthProvider = ({ children }) => {
 
                 localStorage.setItem(
                   "user_location",
-                  JSON.stringify(user_location)
+                  JSON.stringify(user_location),
                 );
 
                 //set location in cookie
@@ -127,7 +127,7 @@ const AuthProvider = ({ children }) => {
                   {
                     path: "/",
                     maxAge: COOKIE_AGE,
-                  }
+                  },
                 );
 
                 setLocationLoading(false);
@@ -149,7 +149,7 @@ const AuthProvider = ({ children }) => {
           } catch (error) {
             setLocationLoading(false);
             reject(
-              new Error(`Error in fetching geocode data: ${error.message}`)
+              new Error(`Error in fetching geocode data: ${error.message}`),
             );
           }
         },
@@ -157,7 +157,7 @@ const AuthProvider = ({ children }) => {
           console.log("Error in getting location:", error);
           setLocationLoading(false);
           reject(error);
-        }
+        },
       );
     });
   };
@@ -182,7 +182,7 @@ const AuthProvider = ({ children }) => {
         };
         localStorage.setItem(
           "aprx_user_location",
-          JSON.stringify(user_location)
+          JSON.stringify(user_location),
         );
         setCookies(
           "user_location",
@@ -194,7 +194,7 @@ const AuthProvider = ({ children }) => {
           {
             path: "/",
             maxAge: COOKIE_AGE,
-          }
+          },
         );
         // setLocationLoading(false);
       }
@@ -213,7 +213,7 @@ const AuthProvider = ({ children }) => {
       // Save to localStorage if needed
       localStorage.setItem(
         "aprx_user_location",
-        JSON.stringify(cookies.user_location)
+        JSON.stringify(cookies.user_location),
       );
 
       // Set location in state from cookie
@@ -249,6 +249,7 @@ const AuthProvider = ({ children }) => {
         if (response.status === 200 && response.data.success) {
           // console.log("resp.data.user:", response.data.user);
           setUser(response.data.user);
+
           setCurrentDevice(response.data.userAgent.deviceId);
         }
         // else {

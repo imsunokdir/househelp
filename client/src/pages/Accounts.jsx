@@ -17,6 +17,7 @@ import DynamicBreadCrumbs from "./DynamicBreadCrumbs";
 import ScrollToTop from "../utils/ScrollToTop";
 import EditService from "../components/services/EditService";
 import { NavigationProvider } from "../contexts/NavigationContext";
+import WorkerDashboard from "./WorkerDashboard";
 
 const Accounts = () => {
   return (
@@ -30,6 +31,7 @@ const Accounts = () => {
             <Route path="/" element={<AccountTabs />} />
             <Route path="profile-check" element={<ProfileCheck />} />
             <Route path="personal-info" element={<PersonalInfo />} />
+            <Route path="dashboard" element={<WorkerDashboard />} />
             {/* Service Menu */}
             <Route path="my-service-menu" element={<MyServiceMenu />} />
             <Route
