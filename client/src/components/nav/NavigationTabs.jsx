@@ -1,15 +1,9 @@
-import React, { useContext, useEffect } from "react";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Box from "@mui/material/Box";
-import "./nav.css";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useContext, useEffect, useRef } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { Skeleton } from "antd";
 import { Fade } from "@mui/material";
 import { categoryActions } from "../../reducers/category";
 import { CategoryContext } from "../../contexts/CategoryProvider";
-import { useSearchParams } from "react-router-dom";
 
 const numberOfNavTabs = new Array(10).fill(null);
 
@@ -18,143 +12,77 @@ const NavigationTabs = () => {
     useContext(CategoryContext);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
-
-  // useEffect(() => {
-  //   if (currCat && categories) {
-  //     navigate(`/services/${currCat}`);
-  //   }
-  // }, [currCat, categories]);
-
-  // Inside component
+  const scrollRef = useRef(null);
+  const activeTabRef = useRef(null);
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
     if (categories && categories.length > 0) {
       const currentCategoryId = searchParams.get("tab");
-
       const tabIndex = categories.findIndex(
-        (cat) => cat._id === currentCategoryId
+        (cat) => cat._id === currentCategoryId,
       );
-
-      if (tabIndex !== -1) {
-        setValue(tabIndex);
-      } else {
-        setValue(0); // Fallback to first tab if invalid or missing
-      }
+      setValue(tabIndex !== -1 ? tabIndex : 0);
     }
   }, [searchParams, categories, setValue]);
 
-  const handleChange = (event, newValue) => {
-    // window.scrollTo({ top: 0, behavior: "auto" });
-    const categoryId = event.target.getAttribute("data-id");
-    setValue(newValue);
-    dispatch(categoryActions.changeCategory(categoryId));
-    sessionStorage.setItem("selectedCategoryId", categoryId);
-    sessionStorage.setItem("selectedTabIndex", newValue);
+  // Scroll active tab into view
+  useEffect(() => {
+    if (activeTabRef.current && scrollRef.current) {
+      activeTabRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
+    }
+  }, [value]);
+
+  const handleChange = (category, index) => {
+    setValue(index);
+    dispatch(categoryActions.changeCategory(category._id));
+    sessionStorage.setItem("selectedCategoryId", category._id);
+    sessionStorage.setItem("selectedTabIndex", index);
+    if (value !== index) {
+      navigate(`/services?tab=${category._id}`);
+    }
   };
 
   return (
-    <div className="w-10/12">
+    <div className="w-10/12 overflow-hidden">
       <Fade in timeout={1000}>
-        <Box
-          sx={{
-            width: "100%",
-            bgcolor: "background.paper",
-            "& .MuiTabs-scroller": {
-              paddingLeft: "0px !important",
-              marginLeft: "0px !important",
-            },
-            "& .MuiTabs-flexContainer": {
-              marginLeft: "0px !important",
-            },
-            "& .MuiTab-root:first-of-type": {
-              marginLeft: "0px !important",
-            },
-          }}
+        <div
+          ref={scrollRef}
+          className="flex items-center overflow-x-auto gap-1.5 py-1"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          {catLoading ? (
-            <Tabs
-              value={false}
-              variant="scrollable"
-              scrollButtons={false}
-              allowScrollButtonsMobile
-              aria-label="scrollable auto tabs example"
-            >
-              {numberOfNavTabs.map((_, i) => (
-                <Tab
-                  label={
-                    <Skeleton.Button
-                      active
-                      // size="large"
-                      style={{
-                        height: "25px",
-                        width: "80px",
-                        animationDuration: "5s",
-                      }}
-                    />
-                  }
+          {catLoading
+            ? numberOfNavTabs.map((_, i) => (
+                <div
                   key={i}
-                  sx={{
-                    minWidth: "auto",
-                    paddingX: { xs: 1, sm: 2 },
-                    fontSize: { xs: "12px", sm: "14px" },
-                    marginX: { xs: 0.5, sm: 1 },
-                  }}
+                  className="flex-shrink-0 h-8 rounded-full bg-gray-100 animate-pulse"
+                  style={{ width: `${60 + (i % 3) * 20}px` }}
                 />
-              ))}
-            </Tabs>
-          ) : (
-            <Fade in timeout={1000}>
-              <Tabs
-                value={value}
-                onChange={handleChange}
-                variant="scrollable"
-                scrollButtons={false}
-                allowScrollButtonsMobile
-                aria-label="scrollable auto tabs example"
-                textColor="primary"
-                indicatorColor="primary"
-                // TabIndicatorProps={{
-                //   style: { backgroundColor: "orange" },
-                // }}
-              >
-                {categories.map((category) => (
-                  <Tab
-                    label={category.name}
-                    data-id={category._id}
+              ))
+            : categories.map((category, index) => {
+                const isActive = value === index;
+                return (
+                  <button
                     key={category._id}
-                    onClick={() => {
-                      if (
-                        value !==
-                        categories.findIndex((cat) => cat._id === category._id)
-                      ) {
-                        // navigate(`/services/${category._id}`);
-                        navigate(`/services?tab=${category._id}`);
-                      }
-                    }}
-                    sx={{
-                      minWidth: "auto",
-                      paddingX: { xs: 1, sm: 2 },
-                      fontSize: { xs: "12px", sm: "14px" },
-                      marginX: { xs: 0.5, sm: 1 },
-                      "&.Mui-selected": {
-                        color: "#1976d2",
-                        borderBottom: "2px solid rgba(25, 118, 210, 1)",
-                        cursor: "default",
-                      },
-                      "&:hover:not(.Mui-selected)": {
-                        color: "rgba(25, 118, 210, 0.6)",
-                        borderBottom: "2px solid rgba(25, 118, 210, 0.6)",
-                      },
-                    }}
+                    ref={isActive ? activeTabRef : null}
+                    onClick={() => handleChange(category, index)}
                     onTouchStart={(e) => e.target.blur()}
-                  />
-                ))}
-              </Tabs>
-            </Fade>
-          )}
-        </Box>
+                    className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap border
+                      ${
+                        isActive
+                          ? "bg-gray-900 text-white border-gray-900 shadow-sm"
+                          : "bg-white text-gray-500 border-gray-200 hover:border-gray-400 hover:text-gray-800"
+                      }`}
+                  >
+                    {category.name}
+                  </button>
+                );
+              })}
+        </div>
       </Fade>
     </div>
   );

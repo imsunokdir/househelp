@@ -1,31 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { getMyServices } from "../../services/service";
-import { Empty, Button } from "antd";
 import { useNavigate, Outlet } from "react-router-dom";
-import { Fade } from "@mui/material";
+import { motion } from "framer-motion";
+import { Plus, Layers } from "lucide-react";
 import LoadBalls from "../LoadingSkeleton/LoadBalls";
 import MyServiceCard from "./MyServiceCard";
 
 const MyServices = () => {
   const [myServices, setMyServices] = useState(null);
-  const [isError, setIsError] = useState(null);
   const [isServiceLoading, setServiceLoading] = useState(true);
   const navigate = useNavigate();
-
-  const handleAddService = () => {
-    navigate("/accounts/add-service-form"); // match the exact route from MyServiceMenu
-  };
 
   useEffect(() => {
     setServiceLoading(true);
     const fetchMyServices = async () => {
       try {
         const response = await getMyServices();
-        if (response.status === 200) {
-          setMyServices(response.data.data);
-        }
+        if (response.status === 200) setMyServices(response.data.data);
       } catch (error) {
-        setIsError(error);
+        console.error("Error fetching services:", error);
       } finally {
         setServiceLoading(false);
       }
@@ -33,37 +26,68 @@ const MyServices = () => {
     fetchMyServices();
   }, []);
 
-  useEffect(() => {
-    console.log("service:", myServices);
-  }, [myServices]);
+  if (isServiceLoading)
+    return (
+      <div className="flex justify-center items-center py-20">
+        <LoadBalls />
+      </div>
+    );
 
-  return isServiceLoading ? (
-    <LoadBalls />
-  ) : (
-    <div>
-      <div className="p-3 rounded">
-        <h3>My Services</h3>
-
-        {myServices && myServices.length > 0 ? (
-          <Fade in timeout={500}>
-            <div className="grid grid-cols-1 gap-3">
-              {myServices.map((service) => (
-                <MyServiceCard service={service} key={service._id} />
-              ))}
-            </div>
-          </Fade>
-        ) : (
-          <div>
-            <Empty description="No services found.. !!" />
-            <p className="mt-2">Do you wanna be a service provider?</p>
-          </div>
-        )}
-        <div className="mt-3">
-          <Button onClick={handleAddService}>+ Add Service</Button>
+  return (
+    <div className="p-4 max-w-2xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-5">
+        <div>
+          <h2 className="text-lg font-bold text-gray-900">My Services</h2>
+          {myServices?.length > 0 && (
+            <p className="text-sm text-gray-400 mt-0.5">
+              {myServices.length}{" "}
+              {myServices.length === 1 ? "listing" : "listings"}
+            </p>
+          )}
         </div>
+        <button
+          onClick={() => navigate("/accounts/add-service-form")}
+          className="flex items-center gap-2 bg-gray-900 hover:bg-gray-700 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-colors"
+        >
+          <Plus size={16} />
+          Add Service
+        </button>
       </div>
 
-      {/* Outlet for nested route */}
+      {/* List */}
+      {myServices && myServices.length > 0 ? (
+        <div className="space-y-3">
+          {myServices.map((service, i) => (
+            <MyServiceCard service={service} key={service._id} index={i} />
+          ))}
+        </div>
+      ) : (
+        // Empty state
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-2xl border border-dashed border-gray-200 p-12 text-center"
+        >
+          <div className="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Layers size={24} className="text-gray-400" />
+          </div>
+          <h3 className="text-base font-semibold text-gray-700 mb-1">
+            No services yet
+          </h3>
+          <p className="text-sm text-gray-400 mb-5">
+            Start offering your skills to people nearby
+          </p>
+          <button
+            onClick={() => navigate("/accounts/add-service-form")}
+            className="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-700 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition-colors"
+          >
+            <Plus size={15} />
+            Post your first service
+          </button>
+        </motion.div>
+      )}
+
       <Outlet />
     </div>
   );

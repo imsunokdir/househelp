@@ -1,15 +1,9 @@
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Typography,
-} from "@material-tailwind/react";
 import carpenter from "../../assets/carpenter.jpg";
 import { Fade } from "@mui/material";
 import { useState, useEffect } from "react";
 import SkeletonCard2 from "../LoadingSkeleton/SkeletonCards2";
 import { useNavigate } from "react-router-dom";
+import { MapPin, Star, Zap } from "lucide-react";
 
 const ServiceCard = ({ service, index, delay }) => {
   const [visible, setVisible] = useState(false);
@@ -28,15 +22,7 @@ const ServiceCard = ({ service, index, delay }) => {
   }, [visible, imageLoaded]);
 
   const handleClick = () => {
-    // Save the current scroll position with the category ID from Redux store
-    const categoryId = service.categoryId; // Assuming you have access to categoryId
-    // localStorage.setItem(
-    //   `scrollPositionForServices-${categoryId}`,
-    //   window.scrollY.toString()
-    // );
-
-    console.log(" window.scrollY.toString():", window.scrollY.toString());
-
+    console.log("window.scrollY.toString():", window.scrollY.toString());
     navigate(`/show-service-details/${service._id}`);
   };
 
@@ -45,67 +31,71 @@ const ServiceCard = ({ service, index, delay }) => {
       ? carpenter
       : service.images[0].url.replace(
           "/upload/",
-          "/upload/f_auto,q_auto,w_720/"
+          "/upload/f_auto,q_auto,w_720/",
         );
 
   const renderActualContent = () => (
     <Fade in={showContent} timeout={500}>
       <div className="flex flex-col h-full">
-        <CardHeader
-          shadow={false}
-          floated={false}
-          className="h-44 rounded-xl overflow-hidden"
-        >
+        {/* Image */}
+        <div className="relative h-44 overflow-hidden rounded-xl flex-shrink-0">
           <img
             src={imageSrc}
-            alt="Service"
-            className="h-full w-full object-cover"
+            alt={service.serviceName}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             onLoad={() => setImageLoaded(true)}
             onError={() => setImageError(true)}
           />
-        </CardHeader>
+          {/* Boost badge */}
+          {service.isBoosted && (
+            <div className="absolute top-2 left-2 flex items-center gap-1 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+              <Zap size={9} /> Top
+            </div>
+          )}
+          {/* Rating pill */}
+          {service.averageRating > 0 && (
+            <div className="absolute top-2 right-2 flex items-center gap-1 bg-white/90 backdrop-blur-sm text-gray-800 text-xs font-semibold px-2 py-0.5 rounded-full shadow-sm">
+              <Star size={10} className="text-yellow-400 fill-yellow-400" />
+              {service.averageRating.toFixed(1)}
+            </div>
+          )}
+        </div>
 
-        <CardBody className="pt-2 pb-1 px-4 ">
-          <div className="flex justify-between items-center pb-2">
-            <Typography
-              color="blue-gray"
-              className="font-medium text-base truncate w-[85%] leading-tight m-0"
-            >
-              {service.serviceName}
-            </Typography>
-            <Typography
-              color="blue-gray"
-              className="font-medium text-sm leading-tight m-0"
-            >
-              {service.averageRating.toFixed(1)}☆
-            </Typography>
-          </div>
+        {/* Content */}
+        <div className="flex flex-col flex-1 pt-2.5 px-0.5">
+          {/* Name */}
+          <h3 className="font-semibold text-gray-900 text-sm leading-snug truncate">
+            {service.serviceName}
+          </h3>
 
-          <Typography
-            variant="small"
-            color="gray"
-            className="opacity-75 text-sm leading-snug mt-1 m-0"
-          >
-            {service.description.slice(0, 45)}...
-          </Typography>
-        </CardBody>
+          {/* Description */}
+          <p className="text-gray-400 text-xs leading-snug mt-1 line-clamp-2">
+            {service.description.slice(0, 55)}...
+          </p>
 
-        <CardFooter className="flex flex-col py-0 mt-2">
-          <div className="flex justify-between text-sm">
-            <span className="font-semibold">
-              ₹{service.priceRange.minimum} - ₹{service.priceRange.maximum}
+          {/* Footer */}
+          <div className="flex items-center justify-between mt-auto pt-2">
+            <span className="text-sm font-bold text-gray-900">
+              ₹{service.priceRange.minimum}
+              <span className="text-gray-400 font-normal text-xs">
+                {" "}
+                – ₹{service.priceRange.maximum}
+              </span>
             </span>
-            <span>{service.distanceInKm.toFixed()} km</span>
+            <span className="flex items-center gap-1 text-xs text-gray-400">
+              <MapPin size={11} />
+              {service.distanceInKm.toFixed(1)} km
+            </span>
           </div>
-        </CardFooter>
+        </div>
       </div>
     </Fade>
   );
 
   return (
-    <Card
+    <div
       onClick={handleClick}
-      className="cursor-pointer flex flex-col h-full bg-white shadow-none"
+      className="group cursor-pointer flex flex-col h-full bg-white rounded-xl"
     >
       {!showContent ? (
         <SkeletonCard2 index={index} delay={delay} />
@@ -113,7 +103,7 @@ const ServiceCard = ({ service, index, delay }) => {
         renderActualContent()
       )}
 
-      {/* Preload image invisibly to trigger onLoad */}
+      {/* Preload image invisibly */}
       <img
         src={imageSrc}
         onLoad={() => setImageLoaded(true)}
@@ -121,7 +111,7 @@ const ServiceCard = ({ service, index, delay }) => {
         style={{ display: "none" }}
         alt=""
       />
-    </Card>
+    </div>
   );
 };
 

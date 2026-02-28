@@ -1,126 +1,55 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { fetchServiceById, updateServiceViews } from "../services/service";
-import UserDetails from "../components/UserDetails";
-import { Rate } from "antd";
-import Reviews from "../components/services/Reviews";
-import { getAvgRating, getReviewCount } from "../services/reviews";
-
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import Slide from "@mui/material/Slide";
-import { DialogContent, useMediaQuery, useTheme } from "@mui/material";
-import Test from "../Test";
+import { getRatingDistribution } from "../services/review";
+import { motion } from "framer-motion";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import ReviewDialog from "../components/review/ReviewDialog";
-import { getRatingDistribution } from "../services/review";
 import ImageCarousel from "./ImageCarousel";
-import noprofile from "../../src/assets/noprofile.jpg";
 import ServiceAndUser from "./ServiceAndUser";
 import LoadBalls from "../components/LoadingSkeleton/LoadBalls";
-import { AuthContext } from "../contexts/AuthProvider";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
 import PreviewImageModal from "./PreviewImageModal";
-
-const boxShadowStyle = {
-  boxShadow: "-8px 6px 10px rgba(0, 0, 0, 0.2)", // Left and bottom shadow
-};
+import noprofile from "../../src/assets/noprofile.jpg";
 
 const Service = () => {
   const { serviceId } = useParams();
   const [service, setService] = useState();
-  const [showMore, setShowMore] = useState(false);
-  const [totalReviews, setTotalReviews] = useState(null);
   const [serviceLoading, setServiceLoading] = useState(true);
   const [rateDist, setRateDist] = useState(null);
-  const [averageRating, setAverageRating] = useState(null);
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const { user, isAuth } = useContext(AuthContext);
-
-  //modal states
+  const [totalReviews, setTotalReviews] = useState(null);
   const [open, setOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
-
-  const [previewImage, setPreviewImage] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const navigate = useNavigate();
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleImageClick = (url) => {
-    setPreviewImage(url);
-  };
-  const handleClosePreview = () => {
-    setPreviewImage(null);
-  };
-
+  // Close modals on browser back
   useEffect(() => {
-    if (open) {
-      window.history.pushState({ modal: true }, ""); // Push state when modal opens
-
-      const handlePopState = (event) => {
-        if (open) {
-          setOpen(false); // Close the modal
-        }
-      };
-
-      window.addEventListener("popstate", handlePopState);
-
-      return () => {
-        window.removeEventListener("popstate", handlePopState);
-      };
-    }
+    if (!open) return;
+    window.history.pushState({ modal: true }, "");
+    const handler = () => setOpen(false);
+    window.addEventListener("popstate", handler);
+    return () => window.removeEventListener("popstate", handler);
   }, [open]);
 
   useEffect(() => {
-    if (previewOpen) {
-      window.history.pushState({ previewModal: true }, ""); // Push state for preview modal
-
-      const handlePopState = (event) => {
-        if (previewOpen) {
-          setPreviewOpen(false); // Close preview modal on back
-        }
-      };
-
-      window.addEventListener("popstate", handlePopState);
-
-      return () => {
-        window.removeEventListener("popstate", handlePopState);
-      };
-    }
+    if (!previewOpen) return;
+    window.history.pushState({ previewModal: true }, "");
+    const handler = () => setPreviewOpen(false);
+    window.addEventListener("popstate", handler);
+    return () => window.removeEventListener("popstate", handler);
   }, [previewOpen]);
-
-  const loadRatingDistribution = async () => {
-    try {
-      const response = await getRatingDistribution(serviceId);
-
-      if (response.status === 200) {
-        setRateDist(response.data);
-      }
-    } catch (error) {
-      console.log("dist err:", error);
-    }
-  };
 
   useEffect(() => {
     const fetchService = async () => {
       try {
-        const response = await fetchServiceById(serviceId);
-        if (response.status === 200) {
-          setService(response.data.data);
-        }
+        const [serviceRes, distRes] = await Promise.all([
+          fetchServiceById(serviceId),
+          getRatingDistribution(serviceId),
+        ]);
+        if (serviceRes.status === 200) setService(serviceRes.data.data);
+        if (distRes.status === 200) setRateDist(distRes.data);
       } catch (error) {
         console.log("error", error);
       } finally {
@@ -128,55 +57,98 @@ const Service = () => {
       }
     };
     fetchService();
-    loadRatingDistribution();
-  }, []);
+  }, [serviceId]);
 
   useEffect(() => {
     try {
       serviceId && updateServiceViews(serviceId);
     } catch (error) {
-      console.error("there was an error in updating the service views");
+      console.error("error updating views");
     }
   }, [serviceId]);
 
-  const truncateDescription = (text, wordLimit) => {
-    const words = text.split(" ");
-    return words.length > wordLimit
-      ? words.slice(0, wordLimit).join(" ") + "..."
-      : text;
-  };
+  if (serviceLoading)
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <LoadBalls />
+      </div>
+    );
 
-  const handleGiveReview = () => {
-    navigate(`/write-review/${serviceId}`);
-  };
+  if (!service) return null;
 
-  return serviceLoading ? (
-    <div className="flex justify-center items-center min-h-screen">
-      <LoadBalls />
-    </div>
-  ) : (
-    service && (
-      <div className="sm:bg-gray-50 min-h-screen">
-        <div className="max-w-6xl mx-auto p-4">
-          <div className="bg-white rounded-lg sm:shadow-md overflow-hidden mb-6">
-            <ServiceAndUser
-              service={service}
-              handleClickOpen={handleClickOpen}
-              handleGiveReview={handleGiveReview}
-              noprofile={noprofile}
-            />
+  return (
+    <div className="min-h-screen bg-gray-50/50">
+      <div className="max-w-5xl mx-auto px-0 sm:px-4 py-0 sm:py-6 space-y-4">
+        {/* ── Main card ───────────────────────────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35 }}
+          className="bg-white sm:rounded-2xl shadow-sm sm:border border-gray-100 overflow-hidden"
+        >
+          <ServiceAndUser
+            service={service}
+            handleClickOpen={() => setOpen(true)}
+            handleGiveReview={() => navigate(`/write-review/${serviceId}`)}
+            noprofile={noprofile}
+          />
+        </motion.div>
 
-            <div className="p-6 border-t border-gray-100">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-3">
-                About my work
-              </h2>
-              <p className="text-gray-600 italic leading-relaxed bg-gray-50 p-4 rounded-lg">
-                "{service.description}"
-              </p>
+        {/* ── Description ─────────────────────────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, delay: 0.05 }}
+          className="bg-white sm:rounded-2xl shadow-sm sm:border border-gray-100 p-5 sm:p-6"
+        >
+          <h2 className="text-base font-semibold text-gray-800 mb-3">
+            About this service
+          </h2>
+          <p className="text-gray-500 italic leading-relaxed text-sm border-l-2 border-gray-200 pl-4">
+            "{service.description}"
+          </p>
+        </motion.div>
+
+        {/* ── Availability ─────────────────────────────────────────────── */}
+        {service.availability?.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.08 }}
+            className="bg-white sm:rounded-2xl shadow-sm sm:border border-gray-100 p-5 sm:p-6"
+          >
+            <h2 className="text-base font-semibold text-gray-800 mb-3">
+              Availability
+            </h2>
+            <div className="space-y-2">
+              {service.availability.map((avl, i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between py-1.5 border-b border-gray-50 last:border-0"
+                >
+                  <span className="text-sm text-gray-600 font-medium w-28">
+                    {avl.day}
+                  </span>
+                  <span className="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-medium">
+                    {avl.startTime} – {avl.endTime}
+                  </span>
+                </div>
+              ))}
             </div>
-          </div>
+          </motion.div>
+        )}
 
-          <div className=" sm:p-0 border-t border-gray-100">
+        {/* ── Images ───────────────────────────────────────────────────── */}
+        {service.images?.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: 0.1 }}
+            className="bg-white sm:rounded-2xl shadow-sm sm:border border-gray-100 p-4 sm:p-6"
+          >
+            <h2 className="text-base font-semibold text-gray-800 mb-4">
+              Work Gallery
+            </h2>
             <ImageCarousel
               service={service}
               onImageClick={(index) => {
@@ -184,26 +156,29 @@ const Service = () => {
                 setPreviewOpen(true);
               }}
             />
-          </div>
-        </div>
+          </motion.div>
+        )}
 
-        <ReviewDialog
-          handleClose={handleClose}
-          open={open}
-          rateDist={rateDist}
-          serviceId={serviceId}
-          totalReviews={totalReviews}
-          averageRating={service.averageRating.toFixed(1)}
-        />
-        {/* Image Preview Modal */}
-        <PreviewImageModal
-          previewOpen={previewOpen}
-          setPreviewOpen={setPreviewOpen}
-          service={service}
-          selectedIndex={selectedIndex}
-        />
+        {/* Bottom padding */}
+        <div className="h-8" />
       </div>
-    )
+
+      {/* Modals */}
+      <ReviewDialog
+        handleClose={() => setOpen(false)}
+        open={open}
+        rateDist={rateDist}
+        serviceId={serviceId}
+        totalReviews={totalReviews}
+        averageRating={service.averageRating.toFixed(1)}
+      />
+      <PreviewImageModal
+        previewOpen={previewOpen}
+        setPreviewOpen={setPreviewOpen}
+        service={service}
+        selectedIndex={selectedIndex}
+      />
+    </div>
   );
 };
 

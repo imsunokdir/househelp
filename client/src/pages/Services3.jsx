@@ -78,34 +78,6 @@ const Services3 = () => {
 
   useScrollSaver(categoryId);
 
-  // Continuously save scroll position
-  // useEffect(() => {
-  //   const handleScroll = (event) => {
-  //     const currentScrollY = window.scrollY;
-  //     console.log("current event from:", event.type);
-
-  //     localStorage.setItem(
-  //       `scrollPositionForServices-${categoryId}`,
-  //       currentScrollY.toString()
-  //     );
-  //     sessionStorage.setItem(
-  //       `navScrollPosition-${categoryId}`,
-  //       currentScrollY.toString()
-  //     );
-  //   };
-
-  //   window.addEventListener("scroll", handleScroll);
-  //   window.addEventListener("beforeunload", handleScroll);
-
-  //   return () => {
-  //     window.removeEventListener("scroll", handleScroll);
-  //     window.removeEventListener("beforeunload", handleScroll);
-  //   };
-  // }, [categoryId]);
-
-  // Track if we're coming from the back button
-  // console.log("category_id:", categoryId);
-
   useEffect(() => {
     if (!categories || categories.length === 0) return;
 
@@ -208,14 +180,6 @@ const Services3 = () => {
     }
   }, [services, categoryId]);
 
-  // useEffect(() => {
-  //   if (services && categoryId) {
-  //     // localStorage.setItem(`scrollPositionForServices-${categoryId}`, 0);
-  //     // sessionStorage.setItem(`navScrollPosition-${categoryId}`, 0);
-  //     window.scrollTo({ top: 0, behavior: "auto" });
-  //   }
-  // }, [categoryId, services]);
-
   // Memoize the cancelPreviousRequest function using useCallback
   const cancelPreviousRequest = useCallback(() => {
     if (abortController.current) {
@@ -279,10 +243,6 @@ const Services3 = () => {
         className="h-[300px] w-full"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        // transition={{
-        //   duration: 0.2,
-        //   delay: (i * skDelay) / 1000,
-        // }}
       >
         <SkeletonCard2 index={i} delay={delay} />
       </motion.div>

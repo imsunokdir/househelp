@@ -26,12 +26,13 @@ import UploadImagesByLen from "./UploadImagesByLen";
 import CurrentServiceImages from "./CurrentServiceImages";
 import SetServiceStatus from "./SetServiceStatus";
 import ScrollToTop from "../../utils/ScrollToTop";
-import ROUTES from "../../constants/routes";
 import NavigationContext from "../../contexts/NavigationContext";
 import { useBeforeUnload } from "../../hooks/useBeforeUnload";
 import useWarnOnUnsavedChanges from "../../hooks/useWarnOnUnsavedChangesBlocker";
+import { motion } from "framer-motion";
+import { ArrowLeft, Save } from "lucide-react";
 
-const AddServiceForm = () => {
+const EditService = () => {
   const { serviceId } = useParams();
   const navigate = useNavigate();
   const hasUnloaded = useRef(false);
@@ -47,7 +48,6 @@ const AddServiceForm = () => {
 
   const { isFormDirty, setIsFormDirty, setPendingNavigation } =
     useContext(NavigationContext);
-  const isIntentionallyNavigating = useRef(false);
 
   const {
     categories,
@@ -102,9 +102,8 @@ const AddServiceForm = () => {
 
   useEffect(() => {
     if (formData && initialFormData) {
-      const currentFormDataStr = JSON.stringify(formData);
       const hasChanges =
-        currentFormDataStr !== initialFormData ||
+        JSON.stringify(formData) !== initialFormData ||
         fileList.length > 0 ||
         imagesToBeDeleted.length > 0;
       setIsFormDirty(hasChanges);
@@ -112,155 +111,10 @@ const AddServiceForm = () => {
   }, [formData, fileList, imagesToBeDeleted, initialFormData]);
 
   useEffect(() => {
-    const currLen = currImages.length;
-    const fileLen = fileList.length;
-    const imagesDelLen = imagesToBeDeleted.length;
-    setAvlSlots(currLen + fileLen - imagesDelLen);
+    setAvlSlots(currImages.length + fileList.length - imagesToBeDeleted.length);
   }, [fileList, imagesToBeDeleted, currImages]);
 
-  // useEffect(() => {
-  //   const handleBeforeUnload = (event) => {
-  //     if (isFormDirty) {
-  //       event.preventDefault();
-  //       event.returnValue =
-  //         "You have unsaved changes. Are you sure you want to leave?";
-  //       return event.returnValue;
-  //     }
-  //   };
-
-  //   const handlePopState = (event) => {
-  //     if (isFormDirty) {
-  //       event.preventDefault();
-  //       Modal.confirm({
-  //         title: "Unsaved Changes",
-  //         content:
-  //           "You have unsaved changes. Are you sure you want to leave without saving?",
-  //         onOk: () => {
-  //           window.history.go(-1);
-  //         },
-  //       });
-  //     }
-  //   };
-
-  //   window.addEventListener("beforeunload", handleBeforeUnload);
-  //   window.addEventListener("popstate", handlePopState);
-  //   return () => {
-  //     window.removeEventListener("beforeunload", handleBeforeUnload);
-  //     window.removeEventListener("popstate", handlePopState);
-  //   };
-  // }, [isFormDirty]);
-
-  // useEffect(() => {
-  //   // Push a dummy state when component mounts
-  //   if (!hasUnloaded.current) {
-  //     window.history.pushState(
-  //       { preventNavigation: true },
-  //       "",
-  //       window.location.pathname
-  //     );
-  //   }
-
-  //   const handlePopState = (event) => {
-  //     if (isFormDirty) {
-  //       // Push state again to prevent immediate navigation
-  //       window.history.pushState(
-  //         { preventNavigation: true },
-  //         "",
-  //         window.location.pathname
-  //       );
-
-  //       // Now show confirmation modal
-  //       Modal.confirm({
-  //         title: "Unsaved Changes",
-  //         content:
-  //           "You have unsaved changes. Are you sure you want to leave without saving?",
-  //         onOk: () => {
-  //           hasUnloaded.current = true;
-  //           window.history.back();
-  //         },
-  //       });
-  //     }
-  //   };
-
-  //   const handleBeforeUnload = (event) => {
-  //     if (isFormDirty) {
-  //       event.preventDefault();
-  //       event.returnValue =
-  //         "You have unsaved changes. Are you sure you want to leave?";
-  //       return event.returnValue;
-  //     }
-  //   };
-
-  //   window.addEventListener("popstate", handlePopState);
-  //   window.addEventListener("beforeunload", handleBeforeUnload);
-
-  //   return () => {
-  //     window.removeEventListener("popstate", handlePopState);
-  //     window.removeEventListener("beforeunload", handleBeforeUnload);
-  //   };
-  // }, [isFormDirty]);
-
-  // In your AddServiceForm component
-
-  // Remove all the complex history manipulation code
-
-  // In your AddServiceForm component
-
   useBeforeUnload(isFormDirty);
-  // useWarnOnUnsavedChanges({
-  //   isDirty: isFormDirty,
-  //   onConfirmLeave: () => {
-  //     setIsFormDirty(false);
-  //     navigate(-1);
-  //   },
-  // });
-
-  // useEffect(() => {
-  //   // Only set up when the form is dirty
-  //   if (!isFormDirty) return;
-
-  //   // Handle beforeunload for browser close/refresh
-  //   const handleBeforeUnload = (event) => {
-  //     event.preventDefault();
-  //     event.returnValue =
-  //       "You have unsaved changes. Are you sure you want to leave?";
-  //     return event.returnValue;
-  //   };
-
-  //   // Push a state entry to the history stack
-  //   // window.history.pushState(null, "", window.location.pathname);
-
-  //   // Handler for back/forward button clicks
-  //   const handlePopState = (event) => {
-  //     // Prevent the navigation
-  //     window.history.pushState(null, "", window.location.pathname);
-
-  //     // Show confirmation dialog
-  //     Modal.confirm({
-  //       title: "Unsaved Changes",
-  //       content:
-  //         "You have unsaved changes. Are you sure you want to leave without saving?",
-  //       onOk: () => {
-  //         // Clear dirty flag and navigate away
-  //         setIsFormDirty(false);
-  //         // Use setTimeout to ensure React state updates before navigation
-  //         setTimeout(() => {
-  //           navigate(-1);
-  //         }, 0);
-  //       },
-  //     });
-  //   };
-
-  //   window.addEventListener("beforeunload", handleBeforeUnload);
-  //   window.addEventListener("popstate", handlePopState);
-
-  //   return () => {
-  //     window.removeEventListener("beforeunload", handleBeforeUnload);
-  //     window.removeEventListener("popstate", handlePopState);
-  //   };
-  // }, [isFormDirty, navigate, setIsFormDirty]);
-
-  // Add a simple React Router location listener to watch for navigation
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -268,10 +122,9 @@ const AddServiceForm = () => {
     setIsUpdating(true);
 
     if (avlSlots > 8) {
-      const message = `Please remove ${avlSlots - 8} ${
-        avlSlots - 8 === 1 ? "image" : "images"
-      }`;
-      setErrors((prev) => [message]);
+      setErrors([
+        `Please remove ${avlSlots - 8} ${avlSlots - 8 === 1 ? "image" : "images"}`,
+      ]);
       setIsUpdating(false);
       return;
     }
@@ -279,17 +132,14 @@ const AddServiceForm = () => {
     const isError = validateServiceData(formData);
     try {
       if (!isError.isValid) {
-        setErrors((prev) => [...(prev || []), ...isError.errors]);
+        setErrors([...([] || []), ...isError.errors]);
         return;
       }
-
-      const updatedData = {
+      const response = await updateService2({
         formData,
         imagesToBeDeleted,
         serviceId,
-      };
-
-      const response = await updateService2(updatedData);
+      });
       if (response.status === 200) {
         setIsFormDirty(false);
         navigate(`/show-service-details/${serviceId}`, { replace: true });
@@ -305,54 +155,82 @@ const AddServiceForm = () => {
   useTempImageCleanup(fileList);
   useWarnOnUnsavedChanges({ isFormDirty, setIsFormDirty });
 
-  // useEffect(() => {
-  //   if (!isFormDirty) return;
-
-  //   const handlePopState = (event) => {
-  //     Modal.confirm({
-  //       title: "Unsaved Changes",
-  //       content:
-  //         "You have unsaved changes. Are you sure you want to leave without saving?",
-  //       onOk: () => {
-  //         setIsFormDirty(false);
-  //         // Allow back navigation
-  //         navigate(-1);
-  //       },
-  //       onCancel: () => {
-  //         // Push state back to stop the back nav (reverting browser nav)
-  //         window.history.pushState(null, "", window.location.pathname);
-  //       },
-  //     });
-  //   };
-
-  //   // Listen to back button navigation
-  //   window.addEventListener("popstate", handlePopState);
-
-  //   // Push a dummy state to prevent immediate back nav
-  //   window.history.pushState(null, "", window.location.pathname);
-
-  //   return () => {
-  //     window.removeEventListener("popstate", handlePopState);
-  //   };
-  // }, [isFormDirty, navigate]);
+  const sections = [
+    {
+      label: "Basic Info",
+      fields: ["name", "category", "experience", "price"],
+    },
+    { label: "Schedule & Skills", fields: ["availability", "skills"] },
+    { label: "Location & Media", fields: ["location", "images", "status"] },
+    { label: "Description", fields: ["description"] },
+  ];
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50 p-2">
-        <ScrollToTop />
-        <Message onMessage={functions.error} />
-        <div
-          className={`max-w-2xl mx-auto bg-white rounded-lg shadow-md relative ${
-            isUpdating ? "opacity-50 pointer-events-none" : ""
-          }`}
-        >
-          <div className="p-6">
-            <h2 className="text-2xl font-bold mb-6">Update Service</h2>
-            {isServiceLoading ? (
+      <ScrollToTop />
+      <Message onMessage={functions.error} />
+
+      <div className="min-h-screen bg-gray-50/50">
+        {/* ── Top bar ─────────────────────────────────────────────────── */}
+        <div className="bg-white border-b border-gray-100 sticky top-[55px] z-10">
+          <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+              >
+                <ArrowLeft size={18} className="text-gray-500" />
+              </button>
+              <div>
+                <h1 className="text-base font-semibold text-gray-900 leading-tight">
+                  Edit Service
+                </h1>
+                {isFormDirty && (
+                  <p className="text-xs text-orange-500">Unsaved changes</p>
+                )}
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              form="edit-service-form"
+              disabled={isUpdating}
+              className="flex items-center gap-2 bg-gray-900 hover:bg-gray-700 disabled:bg-gray-300 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition-colors"
+            >
+              {isUpdating ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Save size={15} />
+              )}
+              {isUpdating ? "Saving..." : "Save Changes"}
+            </button>
+          </div>
+        </div>
+
+        {/* ── Form ────────────────────────────────────────────────────── */}
+        <div className="max-w-3xl mx-auto px-4 py-6">
+          {isServiceLoading ? (
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <SkeletonLoad />
-            ) : (
-              <Fade in timeout={1000}>
-                <form onSubmit={handleUpdate} className="space-y-6">
+            </div>
+          ) : (
+            <Fade in timeout={500}>
+              <form
+                id="edit-service-form"
+                onSubmit={handleUpdate}
+                className={`space-y-4 ${isUpdating ? "opacity-50 pointer-events-none" : ""}`}
+              >
+                {/* Basic Info */}
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.05 }}
+                  className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5"
+                >
+                  <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">
+                    Basic Info
+                  </h2>
                   <SetServiceName
                     formData={formData}
                     handleInputChange={handleInputChange}
@@ -363,14 +241,28 @@ const AddServiceForm = () => {
                     loading={loading}
                     formData={formData}
                   />
-                  <ServiceExperience
-                    formData={formData}
-                    handleInputChange={handleInputChange}
-                  />
-                  <ServicePriceField
-                    formData={formData}
-                    handlePriceRangeChange={handlePriceRangeChange}
-                  />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <ServiceExperience
+                      formData={formData}
+                      handleInputChange={handleInputChange}
+                    />
+                    <ServicePriceField
+                      formData={formData}
+                      handlePriceRangeChange={handlePriceRangeChange}
+                    />
+                  </div>
+                </motion.div>
+
+                {/* Schedule & Skills */}
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5"
+                >
+                  <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">
+                    Schedule & Skills
+                  </h2>
                   <ServiceAvailability
                     formData={formData}
                     updateAvailability={updateAvailability}
@@ -385,6 +277,18 @@ const AddServiceForm = () => {
                     removeSkill={removeSkill}
                     addSkill={addSkill}
                   />
+                </motion.div>
+
+                {/* Location & Media */}
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 }}
+                  className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5"
+                >
+                  <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">
+                    Location & Media
+                  </h2>
                   <SetLocationField
                     formData={formData}
                     setFormData={setFormData}
@@ -409,20 +313,53 @@ const AddServiceForm = () => {
                     formData={formData}
                     handleInputChange={handleInputChange}
                   />
+                </motion.div>
+
+                {/* Description */}
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5"
+                >
+                  <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">
+                    Description
+                  </h2>
                   <SetServiceDescriptionField
                     formData={formData}
                     handleInputChange={handleInputChange}
                   />
-                  <ServiceFormValiddationError errors={errors} />
-                  <ServiceUpdateButton isUpdating={isUpdating} />
-                </form>
-              </Fade>
-            )}
-          </div>
+                </motion.div>
+
+                {/* Validation errors */}
+                {errors && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                    <ServiceFormValiddationError errors={errors} />
+                  </motion.div>
+                )}
+
+                {/* Mobile save button */}
+                <div className="pb-6 sm:hidden">
+                  <button
+                    type="submit"
+                    disabled={isUpdating}
+                    className="w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-gray-700 disabled:bg-gray-300 text-white text-sm font-medium px-5 py-3 rounded-xl transition-colors"
+                  >
+                    {isUpdating ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Save size={15} />
+                    )}
+                    {isUpdating ? "Saving..." : "Save Changes"}
+                  </button>
+                </div>
+              </form>
+            </Fade>
+          )}
         </div>
       </div>
     </>
   );
 };
 
-export default AddServiceForm;
+export default EditService;
