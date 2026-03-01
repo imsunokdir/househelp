@@ -142,7 +142,7 @@ if (process.env.NODE_ENV === "production") {
 
 // ─── Start Server ────────────────────────────────────────────────────────────
 server.listen(PORT, async () => {
-  await dbConfig();
+  dbConfig();
   cloudinaryConfig();
   console.log(`Server has started on port: ${PORT}`);
 });
