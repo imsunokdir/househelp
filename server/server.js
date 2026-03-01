@@ -2,6 +2,8 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 
+const https = require("https");
+
 const { userRouter } = require("./Routes/user.route");
 const dbConfig = require("./Configurations/db.config");
 const cors = require("cors");
@@ -121,6 +123,22 @@ app.get("/dashboard-page", (req, res) => res.render("dashboard"));
 // ─── Initialize Socket.io ────────────────────────────────────────────────────
 initSocket(io);
 setIO(io); // Give notification helper access to io
+
+// Self-ping to prevent Render free tier sleep
+if (process.env.NODE_ENV === "production") {
+  setInterval(
+    () => {
+      https
+        .get(`${process.env.BACKEND_URL}/health`, (res) => {
+          console.log(`Self-ping: ${res.statusCode}`);
+        })
+        .on("error", (err) => {
+          console.log("Self-ping failed:", err.message);
+        });
+    },
+    14 * 60 * 1000,
+  );
+}
 
 // ─── Start Server ────────────────────────────────────────────────────────────
 server.listen(PORT, async () => {
