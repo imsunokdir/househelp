@@ -1,11 +1,9 @@
 import React, { useContext } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { MessageSquare } from "lucide-react";
 import { getOrCreateConversation } from "../../reducers/thunks/chatThunk";
+import { openChat } from "../../reducers/chatSlice";
 import { AuthContext } from "../../contexts/AuthProvider";
-
-// Place this button on your Service detail page
-// Props: workerId, serviceId, workerName
 
 const MessageButton = ({ workerId, serviceId, workerName }) => {
   const dispatch = useDispatch();
@@ -13,14 +11,14 @@ const MessageButton = ({ workerId, serviceId, workerName }) => {
 
   const handleMessage = () => {
     if (!user) {
-      // redirect to login if not authenticated
       window.location.href = "/user-auth/login";
       return;
     }
+    // Open chat panel instantly — don't wait for API
+    dispatch(openChat());
     dispatch(getOrCreateConversation({ workerId, serviceId }));
   };
 
-  // Don't show button if user IS the worker
   if (user?._id === workerId || user?.userId === workerId) return null;
 
   return (

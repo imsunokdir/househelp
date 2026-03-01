@@ -1,16 +1,41 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector, shallowEqual } from "react-redux";
-// import { fetchMessages } from "../../reducers/chatSlice";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, ArrowLeft, CheckCheck } from "lucide-react";
 import useChatSocket, { getSocket } from "../../hooks/useChatSocket";
 import { fetchMessages } from "../../reducers/thunks/chatThunk";
 import { markMessagesRead } from "../../reducers/chatSlice";
 
+const MessageSkeleton = () => (
+  <div className="flex flex-col gap-3 px-4 py-4">
+    {/* Other person message */}
+    <div className="flex justify-start">
+      <div className="h-8 w-40 bg-gray-200 rounded-2xl rounded-bl-sm animate-pulse" />
+    </div>
+    {/* My message */}
+    <div className="flex justify-end">
+      <div className="h-8 w-52 bg-blue-100 rounded-2xl rounded-br-sm animate-pulse" />
+    </div>
+    {/* Other */}
+    <div className="flex justify-start">
+      <div className="h-8 w-32 bg-gray-200 rounded-2xl rounded-bl-sm animate-pulse" />
+    </div>
+    {/* My message */}
+    <div className="flex justify-end">
+      <div className="h-8 w-44 bg-blue-100 rounded-2xl rounded-br-sm animate-pulse" />
+    </div>
+    {/* Other */}
+    <div className="flex justify-start">
+      <div className="h-16 w-56 bg-gray-200 rounded-2xl rounded-bl-sm animate-pulse" />
+    </div>
+  </div>
+);
+
 const ChatWindow = ({ conversationId, currentUserId, onBack }) => {
   const dispatch = useDispatch();
   const [text, setText] = useState("");
   const [isOtherTyping, setIsOtherTyping] = useState(false);
+  const [optimisticMessages, setOptimisticMessages] = useState([]);
   const typingTimeoutRef = useRef(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -30,12 +55,10 @@ const ChatWindow = ({ conversationId, currentUserId, onBack }) => {
     shallowEqual,
   );
   const messagesLoading = useSelector((state) => state.chat.messagesLoading);
-
   const conversations = useSelector(
     (state) => state.chat.conversations,
     shallowEqual,
   );
-
   const onlineUsers = useSelector(
     (state) => state.chat.onlineUsers,
     shallowEqual,
@@ -47,7 +70,11 @@ const ChatWindow = ({ conversationId, currentUserId, onBack }) => {
   );
   const isOtherOnline = onlineUsers[otherParticipant?._id];
 
-  // Join conversation room and load messages
+  // Clear optimistic messages when real ones arrive
+  useEffect(() => {
+    if (messages.length > 0) setOptimisticMessages([]);
+  }, [messages.length]);
+
   useEffect(() => {
     if (!conversationId) return;
     dispatch(fetchMessages({ conversationId }));
@@ -65,20 +92,9 @@ const ChatWindow = ({ conversationId, currentUserId, onBack }) => {
   }, [messages.length]);
 
   useEffect(() => {
-    if (!conversationId || messages.length === 0) return;
-    if (messages.length === lastReadRef.current) return; // no new messages
-
-    lastReadRef.current = messages.length;
-    markRead(conversationId, currentUserId);
-    dispatch(markMessagesRead({ conversationId }));
-  }, [messages.length]); // depend on length only, not the full array
-
-  // Scroll to bottom on new messages
-  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isOtherTyping]);
+  }, [messages, optimisticMessages, isOtherTyping]);
 
-  // Listen for typing events from the other user
   useEffect(() => {
     const socket = getSocket();
     if (!socket) return;
@@ -110,6 +126,18 @@ const ChatWindow = ({ conversationId, currentUserId, onBack }) => {
 
   const handleSend = () => {
     if (!text.trim()) return;
+
+    // Add optimistic message immediately
+    const optimistic = {
+      _id: `optimistic-${Date.now()}`,
+      text: text.trim(),
+      sender: { _id: currentUserId },
+      conversation: conversationId,
+      createdAt: new Date().toISOString(),
+      pending: true,
+    };
+    setOptimisticMessages((prev) => [...prev, optimistic]);
+
     sendMessage(conversationId, text.trim(), currentUserId);
     setText("");
     stopTyping(conversationId, currentUserId);
@@ -135,13 +163,8 @@ const ChatWindow = ({ conversationId, currentUserId, onBack }) => {
 
   const isRead = (msg) => msg.readBy?.some((r) => r.user !== currentUserId);
 
-  if (messagesLoading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
+  // Combine real + optimistic messages
+  const allMessages = [...messages, ...optimisticMessages];
 
   return (
     <div className="flex flex-col h-full">
@@ -188,95 +211,106 @@ const ChatWindow = ({ conversationId, currentUserId, onBack }) => {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2 bg-gray-50">
-        {messages.length === 0 ? (
+      <div className="flex-1 overflow-y-auto bg-gray-50">
+        {messagesLoading ? (
+          <MessageSkeleton />
+        ) : allMessages.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <p className="text-sm text-gray-400">Say hello! 👋</p>
           </div>
         ) : (
-          <AnimatePresence initial={false}>
-            {messages.map((msg, i) => {
-              const mine = isMyMessage(msg);
-              const read = isRead(msg);
-              const showTime =
-                i === 0 ||
-                new Date(msg.createdAt) - new Date(messages[i - 1]?.createdAt) >
-                  300000;
+          <div className="px-4 py-4 space-y-2">
+            <AnimatePresence initial={false}>
+              {allMessages.map((msg, i) => {
+                const mine = isMyMessage(msg);
+                const read = isRead(msg);
+                const showTime =
+                  i === 0 ||
+                  new Date(msg.createdAt) -
+                    new Date(allMessages[i - 1]?.createdAt) >
+                    300000;
 
-              return (
-                <React.Fragment key={msg._id || i}>
-                  {showTime && (
-                    <div className="flex justify-center my-2">
-                      <span className="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
-                        {new Date(msg.createdAt).toLocaleString([], {
-                          month: "short",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </span>
-                    </div>
-                  )}
-                  <motion.div
-                    initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ duration: 0.15 }}
-                    className={`flex ${mine ? "justify-end" : "justify-start"}`}
-                  >
-                    <div
-                      className={`max-w-[75%] ${mine ? "items-end" : "items-start"} flex flex-col`}
+                return (
+                  <React.Fragment key={msg._id || i}>
+                    {showTime && (
+                      <div className="flex justify-center my-2">
+                        <span className="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
+                          {new Date(msg.createdAt).toLocaleString([], {
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                    )}
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ duration: 0.15 }}
+                      className={`flex ${mine ? "justify-end" : "justify-start"}`}
                     >
                       <div
-                        className={`px-3 py-2 rounded-2xl text-sm leading-relaxed
-                          ${
-                            mine
-                              ? "bg-blue-500 text-white rounded-br-sm"
-                              : "bg-white text-gray-800 rounded-bl-sm shadow-sm border border-gray-100"
-                          }`}
+                        className={`max-w-[75%] ${mine ? "items-end" : "items-start"} flex flex-col`}
                       >
-                        {msg.text}
+                        <div
+                          className={`px-3 py-2 rounded-2xl text-sm leading-relaxed transition-colors duration-300
+                            ${
+                              mine
+                                ? msg.pending
+                                  ? "bg-blue-300 text-white rounded-br-sm"
+                                  : "bg-blue-500 text-white rounded-br-sm"
+                                : "bg-white text-gray-800 rounded-bl-sm shadow-sm border border-gray-100"
+                            }`}
+                        >
+                          {msg.text}
+                        </div>
+                        <div
+                          className={`flex items-center gap-1 mt-1 ${mine ? "flex-row-reverse" : ""}`}
+                        >
+                          <span className="text-[10px] text-gray-400">
+                            {msg.pending
+                              ? "sending..."
+                              : formatTime(msg.createdAt)}
+                          </span>
+                          {mine && !msg.pending && (
+                            <CheckCheck
+                              size={12}
+                              className={
+                                read ? "text-blue-400" : "text-gray-300"
+                              }
+                            />
+                          )}
+                        </div>
                       </div>
-                      <div
-                        className={`flex items-center gap-1 mt-1 ${mine ? "flex-row-reverse" : ""}`}
-                      >
-                        <span className="text-[10px] text-gray-400">
-                          {formatTime(msg.createdAt)}
-                        </span>
-                        {mine && (
-                          <CheckCheck
-                            size={12}
-                            className={read ? "text-blue-400" : "text-gray-300"}
-                          />
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                </React.Fragment>
-              );
-            })}
-          </AnimatePresence>
-        )}
+                    </motion.div>
+                  </React.Fragment>
+                );
+              })}
+            </AnimatePresence>
 
-        {/* Typing indicator */}
-        {isOtherTyping && (
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="flex justify-start"
-          >
-            <div className="bg-white border border-gray-100 shadow-sm px-4 py-2.5 rounded-2xl rounded-bl-sm flex gap-1 items-center">
-              {[0, 1, 2].map((i) => (
-                <span
-                  key={i}
-                  className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"
-                  style={{ animationDelay: `${i * 0.15}s` }}
-                />
-              ))}
-            </div>
-          </motion.div>
+            {/* Typing indicator */}
+            {isOtherTyping && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="flex justify-start"
+              >
+                <div className="bg-white border border-gray-100 shadow-sm px-4 py-2.5 rounded-2xl rounded-bl-sm flex gap-1 items-center">
+                  {[0, 1, 2].map((i) => (
+                    <span
+                      key={i}
+                      className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"
+                      style={{ animationDelay: `${i * 0.15}s` }}
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
         )}
-        <div ref={messagesEndRef} />
       </div>
 
       {/* Input */}
