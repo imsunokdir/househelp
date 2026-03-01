@@ -31,6 +31,7 @@
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "shoutout-sdk": "^3.0.4",
+    "socket.io": "^4.8.3",
     "ua-parser-js": "^2.0.0",
     "user-agent": "^1.0.4",
     "uuid": "^11.1.0"

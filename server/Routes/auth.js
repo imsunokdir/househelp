@@ -76,7 +76,7 @@ router.get(
       console.log("google error", error);
     }
   }
-);
+); 
 
 // Logout
 router.get("/logout", (req, res) => {

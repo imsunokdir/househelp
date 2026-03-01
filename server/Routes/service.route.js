@@ -1,66 +1,66 @@
 const express = require("express");
 const {
-  registerService,
+  createService,
   getAllServices,
   getServiceByCategory,
   getServiceById,
   getMyServices,
   updateService,
   getNearbyServices,
-  getNearbyServicesTest,
-  getFilteredServices,
   deleteService,
-  getNearbyServicesTest2,
   updateServiceViews,
-
-  checkSavedService,
   toggleSaveService,
+  checkSavedService,
   getSavedServices,
   deleteSingleSavedService,
   uploadServiceImage,
   deleteServiceImage,
-  createService,
-  updateService2,
   getFilteredServiceCount,
+  searchServices,
 } = require("../Controllers/service.controller");
 const { isAuth } = require("../Middlewares/isAuth");
+
 const serviceRouter = express.Router();
 
 const multer = require("multer");
-// const upload = multer({ storage: multer.memoryStorage() });
-
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-serviceRouter.post(
-  "/register-service",
-  upload.array("serviceImages", 8),
-  registerService
-);
+// ─── Service CRUD ─────────────────────────────────────────────────────────────
+serviceRouter.post("/create-service", isAuth, createService);
 serviceRouter.get("/get-all-services", getAllServices);
 serviceRouter.get("/get-service/:serviceId", getServiceById);
 serviceRouter.get("/service-category/:categoryId", getServiceByCategory);
 serviceRouter.get("/my-services", isAuth, getMyServices);
-// serviceRouter.post(
-//   "/update-service",
-//   upload.array("updatedImages", 8),
-//   updateService
-// );
-serviceRouter.post("/update-service-2", updateService2);
-serviceRouter.post("/get-nearby-services/:categoryId", getNearbyServicesTest2);
-serviceRouter.get("/filter-services/:categoryId", getFilteredServices);
-serviceRouter.delete("/delete-service/:serviceId", deleteService);
+serviceRouter.post("/update-service", isAuth, updateService);
+serviceRouter.delete("/delete-service/:serviceId", isAuth, deleteService);
+
+// ─── Nearby & Filtered ───────────────────────────────────────────────────────
+serviceRouter.post("/get-nearby-services/:categoryId", getNearbyServices);
+serviceRouter.post("/get-filtered-count/:categoryId", getFilteredServiceCount);
+
+// ─── Views ────────────────────────────────────────────────────────────────────
 serviceRouter.put("/views/inc", updateServiceViews);
-serviceRouter.put("/save-service", toggleSaveService);
-serviceRouter.get("/check-saved-service", checkSavedService);
-serviceRouter.get("/get-saved-services", getSavedServices);
-serviceRouter.post("/delete-single-saved-service", deleteSingleSavedService);
+
+// ─── Saved Services ───────────────────────────────────────────────────────────
+serviceRouter.put("/save-service", isAuth, toggleSaveService);
+serviceRouter.get("/check-saved-service", isAuth, checkSavedService);
+serviceRouter.get("/get-saved-services", isAuth, getSavedServices);
+serviceRouter.delete(
+  "/delete-single-saved-service",
+  isAuth,
+  deleteSingleSavedService,
+);
+
+// ─── Service Images ───────────────────────────────────────────────────────────
 serviceRouter.post(
   "/upload-service-image",
+  isAuth,
   upload.single("image"),
-  uploadServiceImage
+  uploadServiceImage,
 );
-serviceRouter.post("/delete-service-form-image", deleteServiceImage);
-serviceRouter.post("/create-service", createService);
-serviceRouter.post("/get-filtered-count/:categoryId", getFilteredServiceCount);
+serviceRouter.delete("/delete-service-image", isAuth, deleteServiceImage);
+
+serviceRouter.post("/search", searchServices);
+
 module.exports = { serviceRouter };

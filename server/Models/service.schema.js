@@ -44,7 +44,7 @@ const serviceSchema = new Schema(
             min: 0,
           },
         },
-        { _id: false }
+        { _id: false },
       ),
       required: [true, "Price range is required"],
       validate: {
@@ -84,7 +84,7 @@ const serviceSchema = new Schema(
               default: true,
             },
           },
-          { _id: false }
+          { _id: false },
         ),
       ],
       required: [true, "At least one availability slot is required"],
@@ -129,17 +129,46 @@ const serviceSchema = new Schema(
     images: [
       {
         url: { type: String },
-        public_id:{type:String}
+        public_id: { type: String },
       },
     ],
     views: {
       type: Number,
       default: 0,
     },
+    isBoosted: {
+      type: Boolean,
+      default: false,
+    },
+    boostExpiresAt: {
+      type: Date,
+      default: null,
+    },
+    expiresAt: {
+      type: Date,
+      default: () => new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+    },
+
+    isExpired: {
+      type: Boolean,
+      default: false,
+    },
+
+    // Monetization
+    isPaid: {
+      type: Boolean,
+      default: false, // false = free listing
+    },
+
+    renewalCount: {
+      type: Number,
+      default: 0, // how many times this listing has been renewed
+    },
   },
+
   {
     timestamps: true,
-  }
+  },
 );
 
 // Add indexes
@@ -154,6 +183,25 @@ serviceSchema.pre("save", function (next) {
   }
   next();
 });
+
+serviceSchema.index({ expiresAt: 1 }); // For expiry queries
+serviceSchema.index({ createdBy: 1, isPaid: 1 }); // For free tier limit check
+serviceSchema.index({ isBoosted: 1, boostExpiresAt: 1 });
+serviceSchema.index(
+  {
+    serviceName: "text",
+    description: "text",
+    skills: "text",
+  },
+  {
+    weights: {
+      serviceName: 10,
+      skills: 5,
+      description: 1,
+    },
+    name: "service_text_index",
+  },
+);
 
 const Service = mongoose.model("Service", serviceSchema);
 
