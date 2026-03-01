@@ -8,7 +8,7 @@ import {
 } from "../reducers/chatSlice";
 import { fetchConversations } from "../reducers/thunks/chatThunk";
 
-const SOCKET_URL = import.meta.env.VITE_APP_BASE;
+const SOCKET_URL = import.meta.env.VITE_ROOT_ROUTE;
 
 let socketInstance = null;
 
